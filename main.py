@@ -1,4 +1,4 @@
-# Quick test checking sync/
+# Quick checking sync//
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -27,7 +27,7 @@ def load_housing_data():
     return pd.read_csv(Path("datasets/housing/housing.csv"))
 
 housing = load_housing_data()
-print(housing.head())
+# print(housing.head())
 
 # housing.info()
 # print(housing.describe())
