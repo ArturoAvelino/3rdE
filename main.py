@@ -1,36 +1,72 @@
 # Quick checking sync//
 
-def print_hi(name):
+#c def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+#c     print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
 
 
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+#c if __name__ == '__main__':
+#c     print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
-from pathlib import Path
-import pandas as pd
-import tarfile
-import urllib.request
+#c from pathlib import Path
+#c import pandas as pd
+#c import tarfile
+#c import urllib.request
 
-def load_housing_data():
-    tarball_path = Path("datasets/housing.tgz")
-    if not tarball_path.is_file():
-        Path("datasets").mkdir(parents=True, exist_ok=True)
-        url = "https://github.com/ageron/data/raw/main/housing.tgz"
-        urllib.request.urlretrieve(url, tarball_path)
-    with tarfile.open(tarball_path) as housing_tarball:
-            housing_tarball.extractall(path="datasets")
-    return pd.read_csv(Path("datasets/housing/housing.csv"))
+#c def load_housing_data():
+#c     tarball_path = Path("datasets/housing.tgz")
+#c     if not tarball_path.is_file():
+#c         Path("datasets").mkdir(parents=True, exist_ok=True)
+#c         url = "https://github.com/ageron/data/raw/main/housing.tgz"
+#c         urllib.request.urlretrieve(url, tarball_path)
+#c     with tarfile.open(tarball_path) as housing_tarball:
+#c             housing_tarball.extractall(path="datasets")
+#c     return pd.read_csv(Path("datasets/housing/housing.csv"))
 
-housing = load_housing_data()
-# print(housing.head())
+#c housing = load_housing_data()
+#c print("housing.head()\n", housing.head())
+#     longitude  latitude  ...  median_house_value  ocean_proximity
+# 0    -122.23     37.88  ...            452600.0         NEAR BAY
+# 1    -122.22     37.86  ...            358500.0         NEAR BAY
+# 2    -122.24     37.85  ...            352100.0         NEAR BAY
+# 3    -122.25     37.85  ...            341300.0         NEAR BAY
+# 4    -122.25     37.85  ...            342200.0         NEAR BAY
+# [5 rows x 10 columns]
 
-# housing.info()
-# print(housing.describe())
+
+#c print("\nhousing.info()\n",housing.info())
+# RangeIndex: 20640 entries, 0 to 20639
+# Data columns (total 10 columns):
+#  #   Column              Non-Null Count  Dtype
+# ---  ------              --------------  -----
+#  0   longitude           20640 non-null  float64
+#  1   latitude            20640 non-null  float64
+#  2   housing_median_age  20640 non-null  float64
+#  3   total_rooms         20640 non-null  float64
+#  4   total_bedrooms      20433 non-null  float64
+#  5   population          20640 non-null  float64
+#  6   households          20640 non-null  float64
+#  7   median_income       20640 non-null  float64
+#  8   median_house_value  20640 non-null  float64
+#  9   ocean_proximity     20640 non-null  object
+# dtypes: float64(9), object(1)
+# memory usage: 1.6+ MB
+
+
+#c print("\nhousing.describe()\n", housing.describe())
+#            longitude      latitude  ...  median_income  median_house_value
+# count  20640.000000  20640.000000  ...   20640.000000        20640.000000
+# mean    -119.569704     35.631861  ...       3.870671       206855.816909
+# std        2.003532      2.135952  ...       1.899822       115395.615874
+# min     -124.350000     32.540000  ...       0.499900        14999.000000
+# 25%     -121.800000     33.930000  ...       2.563400       119600.000000
+# 50%     -118.490000     34.260000  ...       3.534800       179700.000000
+# 75%     -118.010000     37.710000  ...       4.743250       264725.000000
+# max     -114.310000     41.950000  ...      15.000100       500001.000000
+# [8 rows x 9 columns]
 
 # --------------------------30
 
@@ -40,57 +76,57 @@ housing = load_housing_data()
 # save the figures in high-res for the book.
 
 # extra code – code to save the figures as high-res PNGs for the book
-IMAGES_PATH = Path() / "images" / "end_to_end_project"
-IMAGES_PATH.mkdir(parents=True, exist_ok=True)
+#c IMAGES_PATH = Path() / "images" / "end_to_end_project"
+#c IMAGES_PATH.mkdir(parents=True, exist_ok=True)
 
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
-    path = IMAGES_PATH / f"{fig_id}.{fig_extension}"
-    if tight_layout:
-        plt.tight_layout()
-    plt.savefig(path, format=fig_extension, dpi=resolution)
+#c def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
+#c     path = IMAGES_PATH / f"{fig_id}.{fig_extension}"
+#c     if tight_layout:
+#c         plt.tight_layout()
+#c     plt.savefig(path, format=fig_extension, dpi=resolution)
 
 
-import matplotlib.pyplot as plt
+#c import matplotlib.pyplot as plt
 
 # extra code – the next 5 lines define the default font sizes
-plt.rc('font', size=14)
-plt.rc('axes', labelsize=14, titlesize=14)
-plt.rc('legend', fontsize=14)
-plt.rc('xtick', labelsize=10)
-plt.rc('ytick', labelsize=10)
+#c plt.rc('font', size=14)
+#c plt.rc('axes', labelsize=14, titlesize=14)
+#c plt.rc('legend', fontsize=14)
+#c plt.rc('xtick', labelsize=10)
+#c plt.rc('ytick', labelsize=10)
 
-"""
+#c """
 # Plotting
-housing.hist(bins=50, figsize=(12, 8))
-save_fig("attribute_histogram_plots")  # extra code
-plt.show()"""
+#c housing.hist(bins=50, figsize=(12, 8))
+#c save_fig("attribute_histogram_plots")  # extra code
+#c plt.show()"""
 
 # --------------------------30
-import numpy as np
+#c import numpy as np
 
 # Stratified sampling
-housing["income_cat"] = pd.cut(housing["median_income"],
-                               bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
-                               labels=[1, 2, 3, 4, 5])
-"""
+#c housing["income_cat"] = pd.cut(housing["median_income"],
+#c                                bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
+#c                                labels=[1, 2, 3, 4, 5])
+#c """
 # Plotting
-housing["income_cat"].value_counts().sort_index().plot.bar(rot=0, grid=True)
-plt.xlabel("Income category")
-plt.ylabel("Number of districts")
-save_fig("housing_income_cat_bar_plot")  # extra code
-plt.show()"""
+#c housing["income_cat"].value_counts().sort_index().plot.bar(rot=0, grid=True)
+#c plt.xlabel("Income category")
+#c plt.ylabel("Number of districts")
+#c save_fig("housing_income_cat_bar_plot")  # extra code
+#c plt.show()"""
 
 
-from sklearn.model_selection import train_test_split
+#c from sklearn.model_selection import train_test_split
 
-strat_train_set, strat_test_set = train_test_split(
-    housing, test_size=0.2, stratify=housing["income_cat"], random_state=42)
+#c strat_train_set, strat_test_set = train_test_split(
+#c     housing, test_size=0.2, stratify=housing["income_cat"], random_state=42)
 
 # the income category proportions in the training set:
-strat_train_ratio = strat_train_set["income_cat"].value_counts() / len(strat_train_set)
+#c strat_train_ratio = strat_train_set["income_cat"].value_counts() / len(strat_train_set)
 
 # the income category proportions in the test set:
-strat_test_ratio = strat_test_set["income_cat"].value_counts() / len(strat_test_set)
+#c strat_test_ratio = strat_test_set["income_cat"].value_counts() / len(strat_test_set)
 
 # print the result to verify that the stratified sampling is done
 # print(strat_train_ratio)
@@ -113,13 +149,13 @@ strat_test_ratio = strat_test_set["income_cat"].value_counts() / len(strat_test_
 
 # You won’t use the income_cat column again, so you might as well drop it,
 # reverting the data back to its original state:
-for set_ in (strat_train_set, strat_test_set):
-    set_.drop("income_cat", axis=1, inplace=True)
+#c for set_ in (strat_train_set, strat_test_set):
+#c     set_.drop("income_cat", axis=1, inplace=True)
 
 # Since you’re going to experiment with various transformations of the full
 # training set, you should make a copy of the original so you can revert to
 # it afterwards:
-housing = strat_train_set.copy()
+#c housing = strat_train_set.copy()
 
 # --------------------------------------------------------60
 # # Discover and Visualize the Data to Gain Insights
@@ -182,7 +218,7 @@ housing = strat_train_set.copy()
 #c housing["rooms_per_house"] = housing["total_rooms"] / housing["households"]
 #c housing["bedrooms_ratio"] = housing["total_bedrooms"] / housing["total_rooms"]
 #c housing["people_per_house"] = housing["population"] / housing["households"]
-#c
+
 #c corr_matrix = housing.corr(numeric_only=True)
 #c print(corr_matrix["median_house_value"].sort_values(ascending=False))
 #c print(" ") # whiteline
@@ -207,8 +243,8 @@ housing = strat_train_set.copy()
 # that `strat_train_set.drop()` creates a copy of `strat_train_set` without
 # the column, it doesn't actually modify `strat_train_set` itself, unless
 # you pass `inplace=True`):
-housing = strat_train_set.drop("median_house_value", axis=1)
-housing_labels = strat_train_set["median_house_value"].copy()
+#c housing = strat_train_set.drop("median_house_value", axis=1)
+#c housing_labels = strat_train_set["median_house_value"].copy()
 
 # --------------------------30
 
@@ -221,10 +257,10 @@ housing_labels = strat_train_set["median_house_value"].copy()
 # Drop some outliers:
 
 #c from sklearn.ensemble import IsolationForest
-#c
+
 #c isolation_forest = IsolationForest(random_state=42)
 #c outlier_pred = isolation_forest.fit_predict(X)
-#c
+
 #c outlier_pred
 
 # If you wanted to drop outliers, you would run the following code:
@@ -279,9 +315,9 @@ housing_labels = strat_train_set["median_house_value"].copy()
 # --------------------------30
 # RBF to transform multimodal distributions
 
-from sklearn.metrics.pairwise import rbf_kernel
+#c from sklearn.metrics.pairwise import rbf_kernel
 
-age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
+#c age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
 
 # Figure 2–18. It is a histogram.
 
@@ -301,20 +337,20 @@ age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
 #c gamma2 = 0.03
 #c rbf1 = rbf_kernel(ages, [[35]], gamma=gamma1)
 #c rbf2 = rbf_kernel(ages, [[35]], gamma=gamma2)
-#c
+
 #c fig, ax1 = plt.subplots()
-#c
+
 #c ax1.set_xlabel("Housing median age")
 #c ax1.set_ylabel("Number of districts")
 #c ax1.hist(housing["housing_median_age"], bins=50)
-#c
+
 #c ax2 = ax1.twinx()  # create a twin axis that shares the same x-axis
 #c color = "blue"
 #c ax2.plot(ages, rbf1, color=color, label="gamma = 0.10")
 #c ax2.plot(ages, rbf2, color=color, label="gamma = 0.03", linestyle="--")
 #c ax2.tick_params(axis='y', labelcolor=color)
 #c ax2.set_ylabel("Age similarity", color=color)
-#c
+
 #c plt.legend(loc="upper left")
 #c save_fig("RBF_age_similarity")
 #c plt.show()
@@ -332,37 +368,37 @@ age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
 
 # ---> Version proposed by the AI Assistance of PyCharm to fix an issue when
 # the using "HalvingRandomSearchCV()" for hyperparameter tunning.
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.cluster import KMeans
-from sklearn.metrics.pairwise import rbf_kernel
+#c from sklearn.base import BaseEstimator, TransformerMixin
+#c from sklearn.cluster import KMeans
+#c from sklearn.metrics.pairwise import rbf_kernel
 
 
-class ClusterSimilarity(BaseEstimator, TransformerMixin):
-    def __init__(self, n_clusters=10, gamma=1.0, random_state=None):
-        self.n_clusters = n_clusters
-        self.gamma = gamma
-        self.random_state = random_state
+#c class ClusterSimilarity(BaseEstimator, TransformerMixin):
+#c     def __init__(self, n_clusters=10, gamma=1.0, random_state=None):
+#c         self.n_clusters = n_clusters
+#c         self.gamma = gamma
+#c         self.random_state = random_state
 
-    def fit(self, x, y=None, sample_weight=None):
+#c     def fit(self, x, y=None, sample_weight=None):
         # Dynamically adjust n_clusters if there are fewer samples than clusters
-        n_samples = x.shape[0]
-        effective_n_clusters = min(self.n_clusters, n_samples)
-        if effective_n_clusters != self.n_clusters:
-            print(
-                f"Warning: Adjusting number of clusters from {self.n_clusters} to {effective_n_clusters} "
-                f"to match the available number of samples ({n_samples}).")
-        self.n_clusters = effective_n_clusters
+#c         n_samples = x.shape[0]
+#c         effective_n_clusters = min(self.n_clusters, n_samples)
+#c         if effective_n_clusters != self.n_clusters:
+#c             print(
+#c                 f"Warning: Adjusting number of clusters from {self.n_clusters} to {effective_n_clusters} "
+#c                 f"to match the available number of samples ({n_samples}).")
+#c         self.n_clusters = effective_n_clusters
 
-        self.kmeans_ = KMeans(self.n_clusters, n_init=10,
-                              random_state=self.random_state)
-        self.kmeans_.fit(x, sample_weight=sample_weight)
-        return self  # Always return self!
+#c         self.kmeans_ = KMeans(self.n_clusters, n_init=10,
+#c                               random_state=self.random_state)
+#c         self.kmeans_.fit(x, sample_weight=sample_weight)
+#c         return self  # Always return self!
 
-    def transform(self, x):
-        return rbf_kernel(x, self.kmeans_.cluster_centers_, gamma=self.gamma)
+#c     def transform(self, x):
+#c         return rbf_kernel(x, self.kmeans_.cluster_centers_, gamma=self.gamma)
 
-    def get_feature_names_out(self, names=None):
-        return [f"Cluster {i} similarity" for i in range(self.n_clusters)]
+#c     def get_feature_names_out(self, names=None):
+#c         return [f"Cluster {i} similarity" for i in range(self.n_clusters)]
 # <---
 
 # ---> Original version by Aurélien Géron. It works well, except when trying
@@ -393,13 +429,13 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
 #c cluster_simil = ClusterSimilarity(n_clusters=10, gamma=1., random_state=42)
 #c similarities = cluster_simil.fit_transform(housing[["latitude", "longitude"]],
 #c                                            sample_weight=housing_labels)
-#c
+
 #c housing_renamed = housing.rename(columns={
 #c     "latitude": "Latitude", "longitude": "Longitude",
 #c     "population": "Population",
 #c     "median_house_value": "Median house value (ᴜsᴅ)"})
 #c housing_renamed["Max cluster similarity"] = similarities.max(axis=1)
-#c
+
 #c housing_renamed.plot(kind="scatter", x="Longitude", y="Latitude", grid=True,
 #c                      s=housing_renamed["Population"] / 100, label="Population",
 #c                      c="Max cluster similarity",
@@ -416,92 +452,92 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
 # ------------------------------------------------------------------70
 # Pipelines
 
-def monkey_patch_get_signature_names_out():
-    """Monkey patch some classes which did not handle get_feature_names_out()
-       correctly in Scikit-Learn 1.0.*."""
-    from inspect import Signature, signature, Parameter
+#c def monkey_patch_get_signature_names_out():
+#c     """Monkey patch some classes which did not handle get_feature_names_out()
+#c        correctly in Scikit-Learn 1.0.*."""
+#c     from inspect import Signature, signature, Parameter
     # import pandas as pd # Not actually used in this function definition
-    from sklearn.impute import SimpleImputer
+#c     from sklearn.impute import SimpleImputer
     # from sklearn.pipeline import make_pipeline, Pipeline # Not actually used in this function
-    from sklearn.preprocessing import FunctionTransformer, StandardScaler
+#c     from sklearn.preprocessing import FunctionTransformer, StandardScaler
 
-    default_get_feature_names_out = StandardScaler.get_feature_names_out
+#c     default_get_feature_names_out = StandardScaler.get_feature_names_out
 
-    if not hasattr(SimpleImputer, "get_feature_names_out"):
-      print("Monkey-patching SimpleImputer.get_feature_names_out()")
-      SimpleImputer.get_feature_names_out = default_get_feature_names_out
+#c     if not hasattr(SimpleImputer, "get_feature_names_out"):
+#c       print("Monkey-patching SimpleImputer.get_feature_names_out()")
+#c       SimpleImputer.get_feature_names_out = default_get_feature_names_out
 
-    if not hasattr(FunctionTransformer, "get_feature_names_out"):
-        print("Monkey-patching FunctionTransformer.get_feature_names_out()")
-        orig_init = FunctionTransformer.__init__
-        orig_sig = signature(orig_init)
+#c     if not hasattr(FunctionTransformer, "get_feature_names_out"):
+#c         print("Monkey-patching FunctionTransformer.get_feature_names_out()")
+#c         orig_init = FunctionTransformer.__init__
+#c         orig_sig = signature(orig_init)
 
-        def __init__(*args, feature_names_out=None, **kwargs):
-            orig_sig.bind(*args, **kwargs)
-            orig_init(*args, **kwargs)
-            args[0].feature_names_out = feature_names_out
+#c         def __init__(*args, feature_names_out=None, **kwargs):
+#c             orig_sig.bind(*args, **kwargs)
+#c             orig_init(*args, **kwargs)
+#c             args[0].feature_names_out = feature_names_out
 
-        __init__.__signature__ = Signature(
-            list(signature(orig_init).parameters.values()) + [
-                Parameter("feature_names_out", Parameter.KEYWORD_ONLY)])
+#c         __init__.__signature__ = Signature(
+#c             list(signature(orig_init).parameters.values()) + [
+#c                 Parameter("feature_names_out", Parameter.KEYWORD_ONLY)])
 
-        def get_feature_names_out(self, names=None):
-            if callable(self.feature_names_out):
-                return self.feature_names_out(self, names)
-            assert self.feature_names_out == "one-to-one"
-            return default_get_feature_names_out(self, names)
+#c         def get_feature_names_out(self, names=None):
+#c             if callable(self.feature_names_out):
+#c                 return self.feature_names_out(self, names)
+#c             assert self.feature_names_out == "one-to-one"
+#c             return default_get_feature_names_out(self, names)
 
-        FunctionTransformer.__init__ = __init__
-        FunctionTransformer.get_feature_names_out = get_feature_names_out
+#c         FunctionTransformer.__init__ = __init__
+#c         FunctionTransformer.get_feature_names_out = get_feature_names_out
 
-monkey_patch_get_signature_names_out()
-
-
-from sklearn.pipeline import make_pipeline, Pipeline
-from sklearn.impute import SimpleImputer
-from sklearn.compose import ColumnTransformer
-from sklearn.compose import make_column_selector
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import FunctionTransformer
+#c monkey_patch_get_signature_names_out()
 
 
-cat_pipeline = make_pipeline(
-    SimpleImputer(strategy="most_frequent"),
-    OneHotEncoder(handle_unknown="ignore"))
+#c from sklearn.pipeline import make_pipeline, Pipeline
+#c from sklearn.impute import SimpleImputer
+#c from sklearn.compose import ColumnTransformer
+#c from sklearn.compose import make_column_selector
+#c from sklearn.preprocessing import StandardScaler
+#c from sklearn.preprocessing import OneHotEncoder
+#c from sklearn.preprocessing import FunctionTransformer
+
+
+#c cat_pipeline = make_pipeline(
+#c     SimpleImputer(strategy="most_frequent"),
+#c     OneHotEncoder(handle_unknown="ignore"))
 
 # --------------------------30
 # The main functions and pipeline
-def column_ratio(x):
-    return x[:, [0]] / x[:, [1]]
+#c def column_ratio(x):
+#c     return x[:, [0]] / x[:, [1]]
 
-def ratio_name(function_transformer, feature_names_in):
-    return ["ratio"]  # feature names out
+#c def ratio_name(function_transformer, feature_names_in):
+#c     return ["ratio"]  # feature names out
 
-def ratio_pipeline():
-    return make_pipeline(
-        SimpleImputer(strategy="median"),
-        FunctionTransformer(column_ratio, feature_names_out=ratio_name),
-        StandardScaler())
+#c def ratio_pipeline():
+#c     return make_pipeline(
+#c         SimpleImputer(strategy="median"),
+#c         FunctionTransformer(column_ratio, feature_names_out=ratio_name),
+#c         StandardScaler())
 
-log_pipeline = make_pipeline(
-    SimpleImputer(strategy="median"),
-    FunctionTransformer(np.log, feature_names_out="one-to-one"),
-    StandardScaler())
-cluster_simil = ClusterSimilarity(n_clusters=10, gamma=1., random_state=42)
-default_num_pipeline = make_pipeline(SimpleImputer(strategy="median"),
-                                     StandardScaler())
+#c log_pipeline = make_pipeline(
+#c     SimpleImputer(strategy="median"),
+#c     FunctionTransformer(np.log, feature_names_out="one-to-one"),
+#c     StandardScaler())
+#c cluster_simil = ClusterSimilarity(n_clusters=10, gamma=1., random_state=42)
+#c default_num_pipeline = make_pipeline(SimpleImputer(strategy="median"),
+#c                                      StandardScaler())
 # Defining the main pipeline:
-preprocessing = ColumnTransformer([
-        ("bedrooms", ratio_pipeline(), ["total_bedrooms", "total_rooms"]),
-        ("rooms_per_house", ratio_pipeline(), ["total_rooms", "households"]),
-        ("people_per_house", ratio_pipeline(), ["population", "households"]),
-        ("log", log_pipeline, ["total_bedrooms", "total_rooms", "population",
-                               "households", "median_income"]),
-        ("geo", cluster_simil, ["latitude", "longitude"]),
-        ("cat", cat_pipeline, make_column_selector(dtype_include=object)),
-    ],
-    remainder=default_num_pipeline)  # one column remaining: housing_median_age
+#c preprocessing = ColumnTransformer([
+#c         ("bedrooms", ratio_pipeline(), ["total_bedrooms", "total_rooms"]),
+#c         ("rooms_per_house", ratio_pipeline(), ["total_rooms", "households"]),
+#c         ("people_per_house", ratio_pipeline(), ["population", "households"]),
+#c         ("log", log_pipeline, ["total_bedrooms", "total_rooms", "population",
+#c                                "households", "median_income"]),
+#c         ("geo", cluster_simil, ["latitude", "longitude"]),
+#c         ("cat", cat_pipeline, make_column_selector(dtype_include=object)),
+#c     ],
+#c     remainder=default_num_pipeline)  # one column remaining: housing_median_age
 
 # Test the pipeline above
 #c housing_prepared = preprocessing.fit_transform(housing)
@@ -556,13 +592,13 @@ preprocessing = ColumnTransformer([
 # instead of `mean_squared_error(labels, predictions, squared=False)`. The
 # following `try`/`except` block tries to import `root_mean_squared_error`,
 # and if it fails it just defines it.
-try:
-    from sklearn.metrics import root_mean_squared_error
-except ImportError:
-    from sklearn.metrics import mean_squared_error
+#c try:
+#c     from sklearn.metrics import root_mean_squared_error
+#c except ImportError:
+#c     from sklearn.metrics import mean_squared_error
 
-    def root_mean_squared_error(labels, predictions):
-        return mean_squared_error(labels, predictions, squared=False)
+#c     def root_mean_squared_error(labels, predictions):
+#c         return mean_squared_error(labels, predictions, squared=False)
 
 #c lin_rmse = root_mean_squared_error(housing_labels, housing_predictions)
 #c print(round(lin_rmse, 4))
@@ -571,7 +607,7 @@ except ImportError:
 # --------------------------30
 # Decision Tree
 
-from sklearn.tree import DecisionTreeRegressor
+#c from sklearn.tree import DecisionTreeRegressor
 #c tree_reg = make_pipeline(preprocessing, DecisionTreeRegressor(random_state=42))
 #c tree_reg.fit(housing, housing_labels)
 
@@ -592,8 +628,8 @@ from sklearn.tree import DecisionTreeRegressor
 # ----------------------------------------------------------------------------80
 # Better Evaluation Using Cross-Validation
 
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import cross_validate
+#c from sklearn.model_selection import cross_val_score
+#c from sklearn.model_selection import cross_validate
 
 # Note:
 # The `cross_val_score()` function itself does not directly provide
@@ -691,7 +727,7 @@ from sklearn.model_selection import cross_validate
 # --------------------------30
 # Random Forest with Cross-Validation
 
-from sklearn.ensemble import RandomForestRegressor
+#c from sklearn.ensemble import RandomForestRegressor
 
 # Using "cross_validate()". (Best)
 
@@ -778,10 +814,10 @@ from sklearn.ensemble import RandomForestRegressor
 # Let’s assume that you now have a shortlist of promising models. You now
 # need to fine-tune them.
 
-forest_pipe = Pipeline([
-    ("preprocessing", preprocessing),
-    ("random_forest", RandomForestRegressor(random_state=42)),
-])
+#c forest_pipe = Pipeline([
+#c     ("preprocessing", preprocessing),
+#c     ("random_forest", RandomForestRegressor(random_state=42)),
+#c ])
 
 # --------------------------------------------------------60
 # Grid Search
@@ -818,7 +854,8 @@ forest_pipe = Pipeline([
 #                   Pipeline(steps=[('simpleimputer',
 #                                    SimpleImputer(strategy='median')),
 #                                   ('functiontransformer',
-#                                    FunctionTransformer(feature_names_out=<function ratio_name at 0x144b4fb...
+#                                    FunctionTransformer(feature_names_out=
+#                                           <function ratio_name at 0x144b4fb...
 #                   ClusterSimilarity(n_clusters=15,
 #                                     random_state=42),
 #                   ['latitude', 'longitude']),
@@ -827,7 +864,8 @@ forest_pipe = Pipeline([
 #                                    SimpleImputer(strategy='most_frequent')),
 #                                   ('onehotencoder',
 #                                    OneHotEncoder(handle_unknown='ignore'))]),
-#                   <sklearn.compose._column_transformer.make_column_selector object at 0x144fca610>)])),
+#                   <sklearn.compose._column_transformer.make_column_selector o
+#                                                       bject at 0x144fca610>)])),
 #   ('random_forest',
 #    RandomForestRegressor(max_features=6, random_state=42))])
 
@@ -904,49 +942,49 @@ forest_pipe = Pipeline([
 #
 # extra code – plots a few distributions you can use in randomized search
 
-from scipy.stats import randint, uniform, geom, expon
+#c from scipy.stats import randint, uniform, geom, expon
 
-xs1 = np.arange(0, 7 + 1)
-randint_distrib = randint(0, 7 + 1).pmf(xs1)
+#c xs1 = np.arange(0, 7 + 1)
+#c randint_distrib = randint(0, 7 + 1).pmf(xs1)
 
-xs2 = np.linspace(0, 7, 500)
-uniform_distrib = uniform(0, 7).pdf(xs2)
+#c xs2 = np.linspace(0, 7, 500)
+#c uniform_distrib = uniform(0, 7).pdf(xs2)
 
-xs3 = np.arange(0, 7 + 1)
-geom_distrib = geom(0.5).pmf(xs3)
+#c xs3 = np.arange(0, 7 + 1)
+#c geom_distrib = geom(0.5).pmf(xs3)
 
-xs4 = np.linspace(0, 7, 500)
-expon_distrib = expon(scale=1).pdf(xs4)
+#c xs4 = np.linspace(0, 7, 500)
+#c expon_distrib = expon(scale=1).pdf(xs4)
 
-plt.figure(figsize=(12, 7))
+#c plt.figure(figsize=(12, 7))
 
-plt.subplot(2, 2, 1)
-plt.bar(xs1, randint_distrib, label="scipy.randint(0, 7 + 1)")
-plt.ylabel("Probability")
-plt.legend()
-plt.axis([-1, 8, 0, 0.2])
+#c plt.subplot(2, 2, 1)
+#c plt.bar(xs1, randint_distrib, label="scipy.randint(0, 7 + 1)")
+#c plt.ylabel("Probability")
+#c plt.legend()
+#c plt.axis([-1, 8, 0, 0.2])
 
-plt.subplot(2, 2, 2)
-plt.fill_between(xs2, uniform_distrib, label="scipy.uniform(0, 7)")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([-1, 8, 0, 0.2])
+#c plt.subplot(2, 2, 2)
+#c plt.fill_between(xs2, uniform_distrib, label="scipy.uniform(0, 7)")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([-1, 8, 0, 0.2])
 
-plt.subplot(2, 2, 3)
-plt.bar(xs3, geom_distrib, label="scipy.geom(0.5)")
-plt.xlabel("Hyperparameter value")
-plt.ylabel("Probability")
-plt.legend()
-plt.axis([0, 7, 0, 1])
+#c plt.subplot(2, 2, 3)
+#c plt.bar(xs3, geom_distrib, label="scipy.geom(0.5)")
+#c plt.xlabel("Hyperparameter value")
+#c plt.ylabel("Probability")
+#c plt.legend()
+#c plt.axis([0, 7, 0, 1])
 
-plt.subplot(2, 2, 4)
-plt.fill_between(xs4, expon_distrib, label="scipy.expon(scale=1)")
-plt.xlabel("Hyperparameter value")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([0, 7, 0, 1])
+#c plt.subplot(2, 2, 4)
+#c plt.fill_between(xs4, expon_distrib, label="scipy.expon(scale=1)")
+#c plt.xlabel("Hyperparameter value")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([0, 7, 0, 1])
 
-save_fig("probability_functions_for_random_search")
+#c save_fig("probability_functions_for_random_search")
 # plt.show()
 
 
@@ -959,51 +997,51 @@ save_fig("probability_functions_for_random_search")
 
 # extra code – shows the difference between expon and loguniform
 
-from scipy.stats import loguniform
+#c from scipy.stats import loguniform
 
-xs1 = np.linspace(0, 7, 500)
-expon_distrib = expon(scale=1).pdf(xs1)
+#c xs1 = np.linspace(0, 7, 500)
+#c expon_distrib = expon(scale=1).pdf(xs1)
 
-log_xs2 = np.linspace(-5, 3, 500)
-log_expon_distrib = np.exp(log_xs2 - np.exp(log_xs2))
+#c log_xs2 = np.linspace(-5, 3, 500)
+#c log_expon_distrib = np.exp(log_xs2 - np.exp(log_xs2))
 
-xs3 = np.linspace(0.001, 1000, 500)
-loguniform_distrib = loguniform(0.001, 1000).pdf(xs3)
+#c xs3 = np.linspace(0.001, 1000, 500)
+#c loguniform_distrib = loguniform(0.001, 1000).pdf(xs3)
 
-log_xs4 = np.linspace(np.log(0.001), np.log(1000), 500)
-log_loguniform_distrib = uniform(np.log(0.001), np.log(1000)).pdf(log_xs4)
+#c log_xs4 = np.linspace(np.log(0.001), np.log(1000), 500)
+#c log_loguniform_distrib = uniform(np.log(0.001), np.log(1000)).pdf(log_xs4)
 
-plt.figure(figsize=(12, 7))
+#c plt.figure(figsize=(12, 7))
 
-plt.subplot(2, 2, 1)
-plt.fill_between(xs1, expon_distrib,
-                 label="scipy.expon(scale=1)")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([0, 7, 0, 1])
+#c plt.subplot(2, 2, 1)
+#c plt.fill_between(xs1, expon_distrib,
+#c                  label="scipy.expon(scale=1)")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([0, 7, 0, 1])
 
-plt.subplot(2, 2, 2)
-plt.fill_between(log_xs2, log_expon_distrib,
-                 label="log(X) with X ~ expon")
-plt.legend()
-plt.axis([-5, 3, 0, 1])
+#c plt.subplot(2, 2, 2)
+#c plt.fill_between(log_xs2, log_expon_distrib,
+#c                  label="log(X) with X ~ expon")
+#c plt.legend()
+#c plt.axis([-5, 3, 0, 1])
 
-plt.subplot(2, 2, 3)
-plt.fill_between(xs3, loguniform_distrib,
-                 label="scipy.loguniform(0.001, 1000)")
-plt.xlabel("Hyperparameter value")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([0.001, 1000, 0, 0.005])
+#c plt.subplot(2, 2, 3)
+#c plt.fill_between(xs3, loguniform_distrib,
+#c                  label="scipy.loguniform(0.001, 1000)")
+#c plt.xlabel("Hyperparameter value")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([0.001, 1000, 0, 0.005])
 
-plt.subplot(2, 2, 4)
-plt.fill_between(log_xs4, log_loguniform_distrib,
-                 label="log(X) with X ~ loguniform")
-plt.xlabel("Log of hyperparameter value")
-plt.legend()
-plt.axis([-8, 1, 0, 0.2])
+#c plt.subplot(2, 2, 4)
+#c plt.fill_between(log_xs4, log_loguniform_distrib,
+#c                  label="log(X) with X ~ loguniform")
+#c plt.xlabel("Log of hyperparameter value")
+#c plt.legend()
+#c plt.axis([-8, 1, 0, 0.2])
 
-save_fig("probability_functions_exp_loguniform_for_random_search")
+#c save_fig("probability_functions_exp_loguniform_for_random_search")
 # plt.show()
 
 
@@ -1041,7 +1079,8 @@ save_fig("probability_functions_exp_loguniform_for_random_search")
 #                       Pipeline(steps=[('simpleimputer',
 #                            SimpleImputer(strategy='median')),
 #                           ('functiontransformer',
-#                            FunctionTransformer(feature_names_out=<function ratio_name at 0x11ac28b...
+#                            FunctionTransformer(feature_names_out=
+#                                       <function ratio_name at 0x11ac28b...
 #                       ClusterSimilarity(n_clusters=45,
 #                                         random_state=42),
 #                       ['latitude', 'longitude']),
@@ -1050,7 +1089,8 @@ save_fig("probability_functions_exp_loguniform_for_random_search")
 #                            SimpleImputer(strategy='most_frequent')),
 #                           ('onehotencoder',
 #                            OneHotEncoder(handle_unknown='ignore'))]),
-#                       <sklearn.compose._column_transformer.make_column_selector object at 0x11dbf6f10>)])),
+#                       <sklearn.compose._column_transformer.make_column_selector
+#                                                       object at 0x11dbf6f10>)])),
 #   ('random_forest',
 #    RandomForestRegressor(max_features=9, random_state=42))])
 
@@ -1142,6 +1182,246 @@ save_fig("probability_functions_exp_loguniform_for_random_search")
 # ----------------------------------------------------------------------------80
 # Analyzing the Best Models and Their Errors
 
+#c final_model = forest_rand_srch.best_estimator_
+
+#c feature_importances = final_model.named_steps["random_forest"].feature_importances_
+#c print(feature_importances.round(2))
+# [0.06 0.05 0.05 0.01 0.01 0.01 0.01 0.19 0.01 0.01 0.02 0.04 0.01 0.
+#  0.02 0.01 0.01 0.01 0.02 0.01 0.   0.01 0.01 0.01 0.01 0.02 0.02 0.01
+#  0.01 0.01 0.02 0.01 0.01 0.01 0.01 0.01 0.01 0.   0.01 0.01 0.02 0.01
+#  0.01 0.02 0.01 0.01 0.01 0.01 0.02 0.02 0.01 0.01 0.01 0.   0.08 0.
+#  0.   0.   0.01]
+
+#c feature_imp_sorted = sorted(zip(feature_importances,
+#c            final_model["preprocessing"].get_feature_names_out()),
+#c        reverse=True)
+
+#c print(feature_imp_sorted)
+# [(np.float64(0.18901772752260965), 'log__median_income'),
+# (np.float64(0.07519718294444783), 'cat__ocean_proximity_INLAND'),
+# (np.float64(0.06368885514209106), 'bedrooms__ratio'),
+# (np.float64(0.052269006448954984), 'rooms_per_house__ratio'),
+# (np.float64(0.04648465413462927), 'people_per_house__ratio'),
+# (np.float64(0.04284851790565368), 'geo__Cluster 3 similarity'),
+# (np.float64(0.023328049652780496), 'geo__Cluster 17 similarity'),
+# (np.float64(0.022238253533182), 'geo__Cluster 18 similarity'),
+# (np.float64(0.022194673655250526), 'geo__Cluster 22 similarity'),
+# (np.float64(0.01859877667208851), 'geo__Cluster 40 similarity'),
+# (np.float64(0.01780189964394329), 'geo__Cluster 10 similarity'),
+# (np.float64(0.01730806454731114), 'geo__Cluster 41 similarity'),
+# (np.float64(0.016888879511081256), 'geo__Cluster 35 similarity'),
+# (np.float64(0.01628583573372508), 'geo__Cluster 6 similarity'),
+# (np.float64(0.015846054619681672), 'geo__Cluster 2 similarity'),
+# (np.float64(0.015393321731047401), 'geo__Cluster 32 similarity'),
+# (np.float64(0.014021412676113494), 'geo__Cluster 21 similarity'),
+# (np.float64(0.013625993562233386), 'geo__Cluster 43 similarity'),
+# (np.float64(0.012944682039851803), 'geo__Cluster 39 similarity'),
+# (np.float64(0.012307675124178118), 'geo__Cluster 7 similarity'),
+# (np.float64(0.012297144595634062), 'geo__Cluster 31 similarity'),
+# (np.float64(0.012088017778021426), 'geo__Cluster 38 similarity'),
+# (np.float64(0.012073241980503281), 'geo__Cluster 26 similarity'),
+# (np.float64(0.011600272434573013), 'geo__Cluster 14 similarity'),
+# (np.float64(0.011499691531676905), 'geo__Cluster 30 similarity'),
+# (np.float64(0.011171540423071134), 'geo__Cluster 34 similarity'),
+# (np.float64(0.010403408502549864), 'geo__Cluster 0 similarity'),
+# (np.float64(0.01038662524332695), 'remainder__housing_median_age'),
+# (np.float64(0.010345217182478822), 'geo__Cluster 42 similarity'),
+# (np.float64(0.01028728734562454), 'geo__Cluster 4 similarity'),
+# (np.float64(0.009922246264068731), 'geo__Cluster 1 similarity'),
+# (np.float64(0.00931760536371674), 'geo__Cluster 37 similarity'),
+# (np.float64(0.009142833139374095), 'geo__Cluster 44 similarity'),
+# (np.float64(0.00904445620150606), 'geo__Cluster 28 similarity'),
+# (np.float64(0.00902353483024036), 'geo__Cluster 8 similarity'),
+# (np.float64(0.008314124769262958), 'geo__Cluster 25 similarity'),
+# (np.float64(0.008237276360095502), 'geo__Cluster 15 similarity'),
+# (np.float64(0.008209325573490026), 'geo__Cluster 11 similarity'),
+# (np.float64(0.007439196817084087), 'geo__Cluster 36 similarity'),
+# (np.float64(0.007265826511074997), 'geo__Cluster 33 similarity'),
+# (np.float64(0.0071876019761469975), 'geo__Cluster 23 similarity'),
+# (np.float64(0.007056087836479924), 'geo__Cluster 27 similarity'),
+# (np.float64(0.006942780755401469), 'log__total_rooms'),
+# (np.float64(0.006699376929183603), 'geo__Cluster 16 similarity'),
+# (np.float64(0.006674876554855022), 'log__population'),
+# (np.float64(0.006627269250787917), 'geo__Cluster 20 similarity'),
+# (np.float64(0.006176061385653615), 'geo__Cluster 24 similarity'),
+# (np.float64(0.006159285192697616), 'log__total_bedrooms'),
+# (np.float64(0.006040094152696972), 'geo__Cluster 19 similarity'),
+# (np.float64(0.005957714456374491), 'log__households'),
+# (np.float64(0.005862620130221602), 'geo__Cluster 13 similarity'),
+# (np.float64(0.005142237508844201), 'geo__Cluster 9 similarity'),
+# (np.float64(0.004639366249839571), 'geo__Cluster 12 similarity'),
+# (np.float64(0.004392608787329616), 'geo__Cluster 5 similarity'),
+# (np.float64(0.0035625780289471397), 'geo__Cluster 29 similarity'),
+# (np.float64(0.0024966245281915194), 'cat__ocean_proximity_<1H OCEAN'),
+# (np.float64(0.0014963382093688303), 'cat__ocean_proximity_NEAR OCEAN'),
+# (np.float64(0.000513409806063684), 'cat__ocean_proximity_NEAR BAY'),
+# (np.float64(1.4678612688170039e-05), 'cat__ocean_proximity_ISLAND')]
+
+
+# ----------------------------------------------------------------------------80
+# Evaluate your system on the test set
+
+#c X_test = strat_test_set.drop("median_house_value", axis=1)
+#c y_test = strat_test_set["median_house_value"].copy()
+
+#c testset_predictions = final_model.predict(X_test)
+
+#c testset_rmse = root_mean_squared_error(y_test, testset_predictions)
+
+#c print(f"RMSE from test dataset: {testset_rmse:.2f}")
+# RMSE from test dataset: 41533.24
+
+# --------------------------------------------------------60
+# Compute a 95% confidence interval for the test RMSE:
+
+#c from scipy import stats
+
+#c def rmse(squared_errors):
+#c     return np.sqrt(np.mean(squared_errors))
+
+#c confidence_interv = 0.95
+#c squared_errors = (testset_predictions - y_test) ** 2
+#c boot_result = stats.bootstrap([squared_errors], rmse,
+#c                               confidence_level=confidence_interv,
+#c                               random_state=42)
+#c rmse_lower, rmse_upper = boot_result.confidence_interval
+
+#c print(f"95% confidence interval for RMSE: [{rmse_lower:.2f}, {rmse_upper:.2f}]")
+# 95% confidence interval for RMSE: [39614.92, 43774.66]
+
+
+# ############################################################################80
+# Launch, Monitor, And Maintain Your System
+
+# Save the final model:
+#c import joblib
+
+#c joblib.dump(final_model, "my_california_housing_model.pkl")
+
+# ----------------------------------------------------------------------------80
+# Now you can deploy this model to production. For example, the following
+# code could be a script that would run in production:
+
+# You can load it and use it. For this you must first import any custom
+# classes and functions the model relies on you can load it and use it. For
+# this you must first import any custom classes and functions the model
+# relies on
+# --------------------------30
+# (Re)definition of the main functions and pipeline
+
+from pathlib import Path
+import pandas as pd
+import tarfile
+import urllib.request
+import matplotlib.pyplot as plt
+import numpy as np
+
+def load_housing_data():
+    tarball_path = Path("datasets/housing.tgz")
+    if not tarball_path.is_file():
+        Path("datasets").mkdir(parents=True, exist_ok=True)
+        url = "https://github.com/ageron/data/raw/main/housing.tgz"
+        urllib.request.urlretrieve(url, tarball_path)
+    with tarfile.open(tarball_path) as housing_tarball:
+            housing_tarball.extractall(path="datasets")
+    return pd.read_csv(Path("datasets/housing/housing.csv"))
+
+housing = load_housing_data()
+#c print("housing.head()\n", housing.head())
+
+#c print("housing.info()\n", housing.info())
+print("\nhousing.describe()\n", housing.describe())
+
+
+from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.compose import make_column_selector
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import FunctionTransformer
+
+# --------------------------30
+# (Re)definition of the custome class
+
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.cluster import KMeans
+from sklearn.metrics.pairwise import rbf_kernel
+
+
+class ClusterSimilarity(BaseEstimator, TransformerMixin):
+    def __init__(self, n_clusters=10, gamma=1.0, random_state=None):
+        self.n_clusters = n_clusters
+        self.gamma = gamma
+        self.random_state = random_state
+
+    def fit(self, x, y=None, sample_weight=None):
+        # Dynamically adjust n_clusters if there are fewer samples than clusters
+        n_samples = x.shape[0]
+        effective_n_clusters = min(self.n_clusters, n_samples)
+        if effective_n_clusters != self.n_clusters:
+            print(
+                f"Warning: Adjusting number of clusters from {self.n_clusters} to {effective_n_clusters} "
+                f"to match the available number of samples ({n_samples}).")
+        self.n_clusters = effective_n_clusters
+
+        self.kmeans_ = KMeans(self.n_clusters, n_init=10,
+                              random_state=self.random_state)
+        self.kmeans_.fit(x, sample_weight=sample_weight)
+        return self  # Always return self!
+
+    def transform(self, x):
+        return rbf_kernel(x, self.kmeans_.cluster_centers_, gamma=self.gamma)
+
+    def get_feature_names_out(self, names=None):
+        return [f"Cluster {i} similarity" for i in range(self.n_clusters)]
+
+cat_pipeline = make_pipeline(
+    SimpleImputer(strategy="most_frequent"),
+    OneHotEncoder(handle_unknown="ignore"))
+
+def column_ratio(x):
+    return x[:, [0]] / x[:, [1]]
+
+def ratio_name(function_transformer, feature_names_in):
+    return ["ratio"]  # feature names out
+
+def ratio_pipeline():
+    return make_pipeline(
+        SimpleImputer(strategy="median"),
+        FunctionTransformer(column_ratio, feature_names_out=ratio_name),
+        StandardScaler())
+
+#c log_pipeline = make_pipeline(
+#c     SimpleImputer(strategy="median"),
+#c     FunctionTransformer(np.log, feature_names_out="one-to-one"),
+#c     StandardScaler())
+#c cluster_simil = ClusterSimilarity(n_clusters=10, gamma=1., random_state=42)
+#c default_num_pipeline = make_pipeline(SimpleImputer(strategy="median"),
+#c                                      StandardScaler())
+# Defining the main pipeline:
+#c preprocessing = ColumnTransformer([
+#c         ("bedrooms", ratio_pipeline(), ["total_bedrooms", "total_rooms"]),
+#c         ("rooms_per_house", ratio_pipeline(), ["total_rooms", "households"]),
+#c         ("people_per_house", ratio_pipeline(), ["population", "households"]),
+#c         ("log", log_pipeline, ["total_bedrooms", "total_rooms", "population",
+#c                                "households", "median_income"]),
+#c         ("geo", cluster_simil, ["latitude", "longitude"]),
+#c         ("cat", cat_pipeline, make_column_selector(dtype_include=object)),
+#c     ],
+#c     remainder=default_num_pipeline)  # one column remaining: housing_median_age
+
+# --------------------------30
+import joblib
+
+
+final_model_reloaded = joblib.load("my_california_housing_model.pkl")
+
+new_data = housing.iloc[:5]  # pretend these are new districts
+predictions = final_model_reloaded.predict(new_data)
+
+print("\nPredictions:\n", predictions)
+# [434759.11 376218.06 381842.1  341939.   322989.  ]
 
 # ############################################################################80
 
