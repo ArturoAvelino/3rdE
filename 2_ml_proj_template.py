@@ -385,7 +385,8 @@
 #c         effective_n_clusters = min(self.n_clusters, n_samples)
 #c         if effective_n_clusters != self.n_clusters:
 #c             print(
-#c                 f"Warning: Adjusting number of clusters from {self.n_clusters} to {effective_n_clusters} "
+#c                 f"Warning: Adjusting number of clusters from {self.n_clusters} "
+#c                 f"to {effective_n_clusters}"
 #c                 f"to match the available number of samples ({n_samples}).")
 #c         self.n_clusters = effective_n_clusters
 
@@ -888,7 +889,8 @@
                 #, "std_test_rmse", "std_train_rmse"
 #c              ]
 #c forest_grid_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
-#c forest_grid_cv_val_scores[score_cols] = -forest_grid_cv_val_scores[score_cols].round().astype(np.int64)
+#c forest_grid_cv_val_scores[score_cols] = \
+#c   -forest_grid_cv_val_scores[score_cols].round().astype(np.int64)
 
 #c print(forest_grid_cv_val_scores.head())
 #     n_clusters  max_features  mean_test_rmse  mean_train_rmse
@@ -1113,7 +1115,8 @@
                 #, "std_test_rmse", "std_train_rmse"
 #c              ]
 #c forest_rand_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
-#c forest_rand_cv_val_scores[score_cols] = -forest_rand_cv_val_scores[score_cols].round().astype(np.int64)
+#c forest_rand_cv_val_scores[score_cols] = \
+#c     -forest_rand_cv_val_scores[score_cols].round().astype(np.int64)
 
 #c print(forest_rand_cv_val_scores.head())
 #    n_clusters  max_features  mean_test_rmse  mean_train_rmse
@@ -1175,7 +1178,8 @@
                 #, "std_test_rmse", "std_train_rmse"
 #c              ]
 #c forest_halv_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
-#c forest_halv_cv_val_scores[score_cols] = -forest_halv_cv_val_scores[score_cols].round().astype(np.int64)
+#c forest_halv_cv_val_scores[score_cols] = \
+#c     -forest_halv_cv_val_scores[score_cols].round().astype(np.int64)
 
 #c print(forest_halv_cv_val_scores.head())
 
@@ -1361,7 +1365,8 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
         effective_n_clusters = min(self.n_clusters, n_samples)
         if effective_n_clusters != self.n_clusters:
             print(
-                f"Warning: Adjusting number of clusters from {self.n_clusters} to {effective_n_clusters} "
+                f"Warning: Adjusting number of clusters from {self.n_clusters} "
+                f"to {effective_n_clusters}"
                 f"to match the available number of samples ({n_samples}).")
         self.n_clusters = effective_n_clusters
 
