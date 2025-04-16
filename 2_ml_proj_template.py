@@ -35,7 +35,7 @@ housing = load_housing_data()
 # [5 rows x 10 columns]
 
 
-print("\nhousing.info()\n",housing.info())
+# print("\nhousing.info()\n",housing.info())
 # RangeIndex: 20640 entries, 0 to 20639
 # Data columns (total 10 columns):
 #  #   Column              Non-Null Count  Dtype
@@ -129,7 +129,7 @@ strat_train_set, strat_test_set = train_test_split(
     housing, train_size=2000, test_size=0.2,
     stratify=housing["income_cat"], random_state=42)
 
-print("\nstrat_train_set.info():\n", strat_train_set.info())
+#c print("\nstrat_train_set.info():\n", strat_train_set.info())
 # <class 'pandas.core.frame.DataFrame'>
 # Index: 2000 entries, 6906 to 12504
 # Data columns (total 11 columns):
@@ -149,7 +149,7 @@ print("\nstrat_train_set.info():\n", strat_train_set.info())
 # dtypes: category(1), float64(9), object(1)
 # memory usage: 174.0+ KB
 
-print("\nstrat_test_set.info():\n", strat_test_set.info())
+#c print("\nstrat_test_set.info():\n", strat_test_set.info())
 # <class 'pandas.core.frame.DataFrame'>
 # Index: 4128 entries, 16524 to 10768
 # Data columns (total 11 columns):
@@ -176,7 +176,7 @@ strat_train_ratio = strat_train_set["income_cat"].value_counts() / len(strat_tra
 strat_test_ratio = strat_test_set["income_cat"].value_counts() / len(strat_test_set)
 
 # Print the result to verify that the stratified sampling is done
-print(strat_train_ratio)
+# print(strat_train_ratio)
 # income_cat
 # 3    0.350594
 # 2    0.318859
@@ -185,7 +185,7 @@ print(strat_train_ratio)
 # 1    0.039789
 # Name: count, dtype: float64
 
-print(strat_test_ratio)
+# print(strat_test_ratio)
 # income_cat
 # 3    0.350533
 # 2    0.318798
@@ -193,9 +193,6 @@ print(strat_test_ratio)
 # 5    0.114341
 # 1    0.039971
 # Name: count, dtype: float64
-
-print("Stop code while debugging here.")
-print("here!")
 
 # You won’t use the income_cat column again, so you might as well drop it,
 # reverting the data back to its original state:
@@ -824,41 +821,41 @@ from sklearn.model_selection import cross_validate
 # --------------------------30
 # Random Forest with Cross-Validation
 
-from sklearn.ensemble import RandomForestRegressor
+#c from sklearn.ensemble import RandomForestRegressor
 
 # Using "cross_validate()". (Best)
 
-forest_reg = make_pipeline(preprocessing,
-                            RandomForestRegressor(random_state=42))
+#c forest_reg = make_pipeline(preprocessing,
+#c                             RandomForestRegressor(random_state=42))
 
-forest_cv = cross_validate(forest_reg, housing, housing_labels,
-                               scoring="neg_root_mean_squared_error", cv=5,
-                               return_train_score=True)
+#c forest_cv = cross_validate(forest_reg, housing, housing_labels,
+#c                                scoring="neg_root_mean_squared_error", cv=5,
+#c                                return_train_score=True)
 
 # Validation and training scores
-forest_cv_valid_scores = -forest_cv["test_score"]
-forest_cv_train_scores = -forest_cv["train_score"]
+#c forest_cv_valid_scores = -forest_cv["test_score"]
+#c forest_cv_train_scores = -forest_cv["train_score"]
 
-print("\nValidation scores (RMSE):\n", forest_cv_valid_scores)
+#c print("\nValidation scores (RMSE):\n", forest_cv_valid_scores)
 # Validation scores (RMSE):
 #  [47084.127283   46407.88148756 47113.69767434 47971.2931094
 #  47203.91945207]
 
-print("\nTraining scores (RMSE):\n", forest_cv_train_scores)
+#c print("\nTraining scores (RMSE):\n", forest_cv_train_scores)
 # Train scores (RMSE):
 #  [17801.40568169 17848.52928243 17788.07476118 17770.88262586
 #  17671.97085742]
 
 # Compute mean and standard deviation of RMSE values
-forest_cv_valid_score_mean = np.mean(forest_cv_valid_scores)
-forest_cv_valid_score_std = np.std(forest_cv_valid_scores)
-forest_cv_train_score_mean = np.mean(forest_cv_train_scores)
-forest_cv_train_score_std = np.std(forest_cv_train_scores)
+#c forest_cv_valid_score_mean = np.mean(forest_cv_valid_scores)
+#c forest_cv_valid_score_std = np.std(forest_cv_valid_scores)
+#c forest_cv_train_score_mean = np.mean(forest_cv_train_scores)
+#c forest_cv_train_score_std = np.std(forest_cv_train_scores)
 
-print(f"Mean RMSE valid: {round(forest_cv_valid_score_mean, 4)}")
-print(f"Mean RMSE train: {round(forest_cv_train_score_mean, 4)}")
-print(f"Standard Deviation of RMSE valid: {round(forest_cv_valid_score_std, 4)}")
-print(f"Standard Deviation of RMSE train: {round(forest_cv_train_score_std, 4)}")
+#c print(f"Mean RMSE valid: {round(forest_cv_valid_score_mean, 4)}")
+#c print(f"Mean RMSE train: {round(forest_cv_train_score_mean, 4)}")
+#c print(f"Standard Deviation of RMSE valid: {round(forest_cv_valid_score_std, 4)}")
+#c print(f"Standard Deviation of RMSE train: {round(forest_cv_train_score_std, 4)}")
 # Mean RMSE valid: 47156.1838
 # Mean RMSE train: 17776.1726
 # Standard Deviation of RMSE valid: 496.7163
@@ -893,19 +890,17 @@ print(f"Standard Deviation of RMSE train: {round(forest_cv_train_score_std, 4)}"
 # Let's compare this RMSE measured using cross-validation (the
 # "validation error") with the RMSE measured on the training set (the
 # "training error"):
-forest_reg.fit(housing, housing_labels)
-forest_predictions = forest_reg.predict(housing)
-forest_rmse_train = root_mean_squared_error(housing_labels, forest_predictions)
+#c forest_reg.fit(housing, housing_labels)
+#c forest_predictions = forest_reg.predict(housing)
+#c forest_rmse_train = root_mean_squared_error(housing_labels, forest_predictions)
 
-print(forest_rmse_train)
+#c print(forest_rmse_train)
 # 17521.565358779884
 # The training error is much lower than the mean validation error, which usually
 # means that the model has overfit the training set. Another possible
 # explanation may be that there's a mismatch between the training data and
 # the validation data, but it's not the case here, since both came from the
 # same dataset that we shuffled and split in two parts.
-
-
 
 
 # --------------------------30
@@ -924,7 +919,8 @@ from sklearn.svm import SVR
 
 svm_reg = make_pipeline(preprocessing, SVR(kernel="rbf"))
 
-housing_svm = housing
+# DONE: Create a training dataset composed of only 5000 instances or less but
+# ensuring that is stratified.
 
 svm_cv = cross_validate(svm_reg, housing, housing_labels,
                         scoring="neg_root_mean_squared_error", cv=3,
@@ -934,11 +930,11 @@ svm_cv = cross_validate(svm_reg, housing, housing_labels,
 svm_cv_valid_scores = -svm_cv["test_score"]
 svm_cv_train_scores = -svm_cv["train_score"]
 
-print("\nValidation scores (RMSE):\n", svm_cv_valid_scores)
+print("\nValidation scores (RMSE):\n", svm_cv_valid_scores.round(4))
+# [111004.3185 123842.5436 121918.2488]
 
-
-print("\nTraining scores (RMSE):\n", svm_cv_train_scores)
-
+print("\nTraining scores (RMSE):\n", svm_cv_train_scores.round(4))
+# [122059.9159 116629.976  118174.5277]
 
 # Compute mean and standard deviation of RMSE values
 svm_cv_valid_score_mean = np.mean(svm_cv_valid_scores)
@@ -950,10 +946,12 @@ print(f"Mean RMSE valid: {round(svm_cv_valid_score_mean, 4)}")
 print(f"Mean RMSE train: {round(svm_cv_train_score_mean, 4)}")
 print(f"Standard Deviation of RMSE valid: {round(svm_cv_valid_score_std, 4)}")
 print(f"Standard Deviation of RMSE train: {round(svm_cv_train_score_std, 4)}")
+# Mean RMSE valid: 118921.7036
+# Mean RMSE train: 118954.8066
+# Standard Deviation of RMSE valid: 5653.2862
+# Standard Deviation of RMSE train: 2284.3946
 
-
-
-print("Stop code while debugging,")
+print("Stop code here while debugging.")
 print("here!")
 
 # ############################################################################80
@@ -970,29 +968,29 @@ forest_pipe = Pipeline([
 # --------------------------------------------------------60
 # Grid Search
 
-from sklearn.model_selection import GridSearchCV
+#c from sklearn.model_selection import GridSearchCV
 
-forest_param_grid = [
-    {"preprocessing__geo__n_clusters": [5, 8, 10],
-     "random_forest__max_features": [4, 6, 8]},
-    {"preprocessing__geo__n_clusters": [10, 15],
-     "random_forest__max_features": [6, 8, 10]},
-]
+#c forest_param_grid = [
+#c     {"preprocessing__geo__n_clusters": [5, 8, 10],
+#c      "random_forest__max_features": [4, 6, 8]},
+#c     {"preprocessing__geo__n_clusters": [10, 15],
+#c      "random_forest__max_features": [6, 8, 10]},
+#c ]
 
-forest_grid_srch = GridSearchCV(forest_pipe, forest_param_grid, cv=3,
-                           scoring="neg_root_mean_squared_error",
-                                return_train_score=True)
+#c forest_grid_srch = GridSearchCV(forest_pipe, forest_param_grid, cv=3,
+#c                            scoring="neg_root_mean_squared_error",
+#c                                 return_train_score=True)
 
 # Warning: This line may take some few minutes to run:
-forest_grid_srch.fit(housing, housing_labels)
+#c forest_grid_srch.fit(housing, housing_labels)
 
 # The best hyperparameter combination found:
-print(forest_grid_srch.best_params_)
+#c print(forest_grid_srch.best_params_)
 # {'preprocessing__geo__n_clusters': 15, 'random_forest__max_features': 6}
-print(forest_grid_srch.best_score_)
+#c print(forest_grid_srch.best_score_)
 # -43617.70350797693
 
-print(forest_grid_srch.best_estimator_)
+#c print(forest_grid_srch.best_estimator_)
 # Pipeline(steps=[('preprocessing',
 #    ColumnTransformer(remainder=Pipeline(steps=[('simpleimputer',
 #                               SimpleImputer(strategy='median')),
@@ -1019,27 +1017,27 @@ print(forest_grid_srch.best_estimator_)
 
 # Look at the score of each hyperparameter combination tested during
 # the grid search:
-forest_grid_cv_val_scores = pd.DataFrame(forest_grid_srch.cv_results_)
-forest_grid_cv_val_scores.sort_values(by="mean_test_score", ascending=False,
-                                      inplace=True)
+#c forest_grid_cv_val_scores = pd.DataFrame(forest_grid_srch.cv_results_)
+#c forest_grid_cv_val_scores.sort_values(by="mean_test_score", ascending=False,
+#c                                       inplace=True)
 # extra code – these few lines of code just make the DataFrame look nicer
-forest_grid_cv_val_scores = forest_grid_cv_val_scores[["param_preprocessing__geo__n_clusters",
-                 "param_random_forest__max_features",
+#c forest_grid_cv_val_scores = forest_grid_cv_val_scores[["param_preprocessing__geo__n_clusters",
+#c                  "param_random_forest__max_features",
                  # "split0_test_score", "split1_test_score", "split2_test_score",
-                 "mean_test_score", "mean_train_score"
+#c                  "mean_test_score", "mean_train_score"
                  # , "std_test_score", "std_train_score"
-                 ]]
+#c                  ]]
 
 # Rename the columns so it is clearer what they are about:
-score_cols = [ #"split0", "split1", "split2",
-                "mean_test_rmse" , "mean_train_rmse"
+#c score_cols = [ #"split0", "split1", "split2",
+#c                 "mean_test_rmse" , "mean_train_rmse"
                 #, "std_test_rmse", "std_train_rmse"
-             ]
-forest_grid_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
-forest_grid_cv_val_scores[score_cols] = \
-  -forest_grid_cv_val_scores[score_cols].round().astype(np.int64)
+#c              ]
+#c forest_grid_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
+#c forest_grid_cv_val_scores[score_cols] = \
+#c   -forest_grid_cv_val_scores[score_cols].round().astype(np.int64)
 
-print(forest_grid_cv_val_scores.head())
+#c print(forest_grid_cv_val_scores.head())
 #     n_clusters  max_features  mean_test_rmse  mean_train_rmse
 # 12          15             6           43618            16455
 # 13          15             8           44178            16649
@@ -1056,14 +1054,6 @@ print(forest_grid_cv_val_scores.head())
 
 
 # --------------------------------------------------------60
-# Randomized Search with "RandomizedSearchCV()" (Best option)
-
-# The grid search approach is fine when you are exploring relatively few
-# combinations, like in the previous example, but "RandomizedSearchCV()" is
-# often preferable, especially when the hyperparameter search space is
-# large.
-
-# --------------------------30
 # Summary of probability distributions that may be used for the random search
 
 # Bonus section: how to choose the sampling distribution for a
@@ -1091,49 +1081,49 @@ print(forest_grid_cv_val_scores.head())
 #
 # extra code – plots a few distributions you can use in randomized search
 
-from scipy.stats import randint, uniform, geom, expon
+#c from scipy.stats import randint, uniform, geom, expon
 
-xs1 = np.arange(0, 7 + 1)
-randint_distrib = randint(0, 7 + 1).pmf(xs1)
+#c xs1 = np.arange(0, 7 + 1)
+#c randint_distrib = randint(0, 7 + 1).pmf(xs1)
 
-xs2 = np.linspace(0, 7, 500)
-uniform_distrib = uniform(0, 7).pdf(xs2)
+#c xs2 = np.linspace(0, 7, 500)
+#c uniform_distrib = uniform(0, 7).pdf(xs2)
 
-xs3 = np.arange(0, 7 + 1)
-geom_distrib = geom(0.5).pmf(xs3)
+#c xs3 = np.arange(0, 7 + 1)
+#c geom_distrib = geom(0.5).pmf(xs3)
 
-xs4 = np.linspace(0, 7, 500)
-expon_distrib = expon(scale=1).pdf(xs4)
+#c xs4 = np.linspace(0, 7, 500)
+#c expon_distrib = expon(scale=1).pdf(xs4)
 
-plt.figure(figsize=(12, 7))
+#c plt.figure(figsize=(12, 7))
 
-plt.subplot(2, 2, 1)
-plt.bar(xs1, randint_distrib, label="scipy.randint(0, 7 + 1)")
-plt.ylabel("Probability")
-plt.legend()
-plt.axis([-1, 8, 0, 0.2])
+#c plt.subplot(2, 2, 1)
+#c plt.bar(xs1, randint_distrib, label="scipy.randint(0, 7 + 1)")
+#c plt.ylabel("Probability")
+#c plt.legend()
+#c plt.axis([-1, 8, 0, 0.2])
 
-plt.subplot(2, 2, 2)
-plt.fill_between(xs2, uniform_distrib, label="scipy.uniform(0, 7)")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([-1, 8, 0, 0.2])
+#c plt.subplot(2, 2, 2)
+#c plt.fill_between(xs2, uniform_distrib, label="scipy.uniform(0, 7)")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([-1, 8, 0, 0.2])
 
-plt.subplot(2, 2, 3)
-plt.bar(xs3, geom_distrib, label="scipy.geom(0.5)")
-plt.xlabel("Hyperparameter value")
-plt.ylabel("Probability")
-plt.legend()
-plt.axis([0, 7, 0, 1])
+#c plt.subplot(2, 2, 3)
+#c plt.bar(xs3, geom_distrib, label="scipy.geom(0.5)")
+#c plt.xlabel("Hyperparameter value")
+#c plt.ylabel("Probability")
+#c plt.legend()
+#c plt.axis([0, 7, 0, 1])
 
-plt.subplot(2, 2, 4)
-plt.fill_between(xs4, expon_distrib, label="scipy.expon(scale=1)")
-plt.xlabel("Hyperparameter value")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([0, 7, 0, 1])
+#c plt.subplot(2, 2, 4)
+#c plt.fill_between(xs4, expon_distrib, label="scipy.expon(scale=1)")
+#c plt.xlabel("Hyperparameter value")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([0, 7, 0, 1])
 
-save_fig("probability_functions_for_random_search")
+#c save_fig("probability_functions_for_random_search")
 # plt.show()
 
 
@@ -1146,55 +1136,61 @@ save_fig("probability_functions_for_random_search")
 
 # extra code – shows the difference between expon and loguniform
 
-from scipy.stats import loguniform
+#c from scipy.stats import loguniform
 
-xs1 = np.linspace(0, 7, 500)
-expon_distrib = expon(scale=1).pdf(xs1)
+#c xs1 = np.linspace(0, 7, 500)
+#c expon_distrib = expon(scale=1).pdf(xs1)
 
-log_xs2 = np.linspace(-5, 3, 500)
-log_expon_distrib = np.exp(log_xs2 - np.exp(log_xs2))
+#c log_xs2 = np.linspace(-5, 3, 500)
+#c log_expon_distrib = np.exp(log_xs2 - np.exp(log_xs2))
 
-xs3 = np.linspace(0.001, 1000, 500)
-loguniform_distrib = loguniform(0.001, 1000).pdf(xs3)
+#c xs3 = np.linspace(0.001, 1000, 500)
+#c loguniform_distrib = loguniform(0.001, 1000).pdf(xs3)
 
-log_xs4 = np.linspace(np.log(0.001), np.log(1000), 500)
-log_loguniform_distrib = uniform(np.log(0.001), np.log(1000)).pdf(log_xs4)
+#c log_xs4 = np.linspace(np.log(0.001), np.log(1000), 500)
+#c log_loguniform_distrib = uniform(np.log(0.001), np.log(1000)).pdf(log_xs4)
 
-plt.figure(figsize=(12, 7))
+#c plt.figure(figsize=(12, 7))
 
-plt.subplot(2, 2, 1)
-plt.fill_between(xs1, expon_distrib,
-                 label="scipy.expon(scale=1)")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([0, 7, 0, 1])
+#c plt.subplot(2, 2, 1)
+#c plt.fill_between(xs1, expon_distrib,
+#c                  label="scipy.expon(scale=1)")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([0, 7, 0, 1])
 
-plt.subplot(2, 2, 2)
-plt.fill_between(log_xs2, log_expon_distrib,
-                 label="log(X) with X ~ expon")
-plt.legend()
-plt.axis([-5, 3, 0, 1])
+#c plt.subplot(2, 2, 2)
+#c plt.fill_between(log_xs2, log_expon_distrib,
+#c                  label="log(X) with X ~ expon")
+#c plt.legend()
+#c plt.axis([-5, 3, 0, 1])
 
-plt.subplot(2, 2, 3)
-plt.fill_between(xs3, loguniform_distrib,
-                 label="scipy.loguniform(0.001, 1000)")
-plt.xlabel("Hyperparameter value")
-plt.ylabel("PDF")
-plt.legend()
-plt.axis([0.001, 1000, 0, 0.005])
+#c plt.subplot(2, 2, 3)
+#c plt.fill_between(xs3, loguniform_distrib,
+#c                  label="scipy.loguniform(0.001, 1000)")
+#c plt.xlabel("Hyperparameter value")
+#c plt.ylabel("PDF")
+#c plt.legend()
+#c plt.axis([0.001, 1000, 0, 0.005])
 
-plt.subplot(2, 2, 4)
-plt.fill_between(log_xs4, log_loguniform_distrib,
-                 label="log(X) with X ~ loguniform")
-plt.xlabel("Log of hyperparameter value")
-plt.legend()
-plt.axis([-8, 1, 0, 0.2])
+#c plt.subplot(2, 2, 4)
+#c plt.fill_between(log_xs4, log_loguniform_distrib,
+#c                  label="log(X) with X ~ loguniform")
+#c plt.xlabel("Log of hyperparameter value")
+#c plt.legend()
+#c plt.axis([-8, 1, 0, 0.2])
 
-save_fig("probability_functions_exp_loguniform_for_random_search")
+#c save_fig("probability_functions_exp_loguniform_for_random_search")
 # plt.show()
 
+# --------------------------------------------------------60
+# Randomized Search with "RandomizedSearchCV()" (Best option)
 
-# --------------------------30
+# The grid search approach is fine when you are exploring relatively few
+# combinations, like in the previous example, but "RandomizedSearchCV()" is
+# often preferable, especially when the hyperparameter search space is
+# large.
+
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
 
@@ -1279,56 +1275,56 @@ print(forest_rand_cv_val_scores.head())
 
 # (April 2025) The module "enable_halving_search_cv" is required to run the
 # # "HalvingRandomSearchCV()" class.
-from sklearn.experimental import enable_halving_search_cv
 
-from sklearn.model_selection import HalvingRandomSearchCV
-from scipy.stats import randint
+#c from sklearn.experimental import enable_halving_search_cv
+#c from sklearn.model_selection import HalvingRandomSearchCV
+#c from scipy.stats import randint
 
-forest_param_distr = {"preprocessing__geo__n_clusters": randint(low=3, high=50),
-                      "random_forest__max_features": randint(low=2, high=10)}
+#c forest_param_distr = {"preprocessing__geo__n_clusters": randint(low=3, high=50),
+#c                       "random_forest__max_features": randint(low=2, high=10)}
 
-forest_halvrand_srch = HalvingRandomSearchCV(forest_pipe,
-                                             param_distributions=forest_param_distr,
-                                             cv=3,
-                                             scoring="neg_root_mean_squared_error",
-                                             return_train_score=True,
-                                             random_state=42)
+#c forest_halvrand_srch = HalvingRandomSearchCV(forest_pipe,
+#c                                              param_distributions=forest_param_distr,
+#c                                              cv=3,
+#c                                              scoring="neg_root_mean_squared_error",
+#c                                              return_train_score=True,
+#c                                              random_state=42)
 
 # Warning: This line may take some few minutes to run:
-forest_halvrand_srch.fit(housing, housing_labels)
+#c forest_halvrand_srch.fit(housing, housing_labels)
 
 # The best hyperparameter combination found:
-print(forest_halvrand_srch.best_params_)
+#c print(forest_halvrand_srch.best_params_)
 
-print(forest_halvrand_srch.best_score_)
+#c print(forest_halvrand_srch.best_score_)
 
 
-print(forest_halvrand_srch.best_estimator_)
+#c print(forest_halvrand_srch.best_estimator_)
 
 
 # Look at the score of each hyperparameter combination tested during
 # the grid search:
-forest_halv_cv_val_scores = pd.DataFrame(forest_halvrand_srch.cv_results_)
-forest_halv_cv_val_scores.sort_values(by="mean_test_score", ascending=False,
-                                      inplace=True)
+#c forest_halv_cv_val_scores = pd.DataFrame(forest_halvrand_srch.cv_results_)
+#c forest_halv_cv_val_scores.sort_values(by="mean_test_score", ascending=False,
+#c                                       inplace=True)
 # extra code – these few lines of code just make the DataFrame look nicer
-forest_halv_cv_val_scores = forest_halv_cv_val_scores[["param_preprocessing__geo__n_clusters",
-                 "param_random_forest__max_features",
+#c forest_halv_cv_val_scores = forest_halv_cv_val_scores[["param_preprocessing__geo__n_clusters",
+#c                  "param_random_forest__max_features",
                  # "split0_test_score", "split1_test_score", "split2_test_score",
-                 "mean_test_score", "mean_train_score"
+#c                  "mean_test_score", "mean_train_score"
                  # , "std_test_score", "std_train_score"
-                 ]]
+#c                  ]]
 
 # Rename the columns so it is clearer what they are about:
-score_cols = [ #"split0", "split1", "split2",
-                "mean_test_rmse" , "mean_train_rmse"
+#c score_cols = [ #"split0", "split1", "split2",
+#c                 "mean_test_rmse" , "mean_train_rmse"
                 #, "std_test_rmse", "std_train_rmse"
-             ]
-forest_halv_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
-forest_halv_cv_val_scores[score_cols] = \
-    -forest_halv_cv_val_scores[score_cols].round().astype(np.int64)
+#c              ]
+#c forest_halv_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
+#c forest_halv_cv_val_scores[score_cols] = \
+#c     -forest_halv_cv_val_scores[score_cols].round().astype(np.int64)
 
-print(forest_halv_cv_val_scores.head())
+#c print(forest_halv_cv_val_scores.head())
 
 # ----------------------------------------------------------------------------80
 # Analyzing the Best Models and Their Errors
@@ -1577,7 +1573,7 @@ joblib.dump(final_model, "my_california_housing_model.pkl")
 
 # ############################################################################80
 
-print("Stop code while debugging here")
+print("Stop code here while debugging.")
 print("here!")
 print("\nEnd of code!")
 
