@@ -66,7 +66,8 @@ print("\nhousing.info()\n",housing.info())
 # max     -114.310000     41.950000  ...      15.000100       500001.000000
 # [8 rows x 9 columns]
 
-# --------------------------30
+# ----------------------------------------------------------------------------80
+# Plotting setup
 
 # The following cell creates the
 # images/end_to_end_project folder (if it doesn't already exist), and it
@@ -118,8 +119,55 @@ plt.show()"""
 
 from sklearn.model_selection import train_test_split
 
+# For most of the ML models use this stratified split.
+#c strat_train_set, strat_test_set = train_test_split(
+#c     housing, test_size=0.2, stratify=housing["income_cat"], random_state=42)
+
+# For Support Vector Machine (svm) use this split. It create a smaller training
+# datasets becaust svm takes a lot of time to be trained.
 strat_train_set, strat_test_set = train_test_split(
-    housing, test_size=0.2, stratify=housing["income_cat"], random_state=42)
+    housing, train_size=2000, test_size=0.2,
+    stratify=housing["income_cat"], random_state=42)
+
+print("\nstrat_train_set.info():\n", strat_train_set.info())
+# <class 'pandas.core.frame.DataFrame'>
+# Index: 2000 entries, 6906 to 12504
+# Data columns (total 11 columns):
+#  #   Column              Non-Null Count  Dtype
+# ---  ------              --------------  -----
+#  0   longitude           2000 non-null   float64
+#  1   latitude            2000 non-null   float64
+#  2   housing_median_age  2000 non-null   float64
+#  3   total_rooms         2000 non-null   float64
+#  4   total_bedrooms      1978 non-null   float64
+#  5   population          2000 non-null   float64
+#  6   households          2000 non-null   float64
+#  7   median_income       2000 non-null   float64
+#  8   median_house_value  2000 non-null   float64
+#  9   ocean_proximity     2000 non-null   object
+#  10  income_cat          2000 non-null   category
+# dtypes: category(1), float64(9), object(1)
+# memory usage: 174.0+ KB
+
+print("\nstrat_test_set.info():\n", strat_test_set.info())
+# <class 'pandas.core.frame.DataFrame'>
+# Index: 4128 entries, 16524 to 10768
+# Data columns (total 11 columns):
+#  #   Column              Non-Null Count  Dtype
+# ---  ------              --------------  -----
+#  0   longitude           4128 non-null   float64
+#  1   latitude            4128 non-null   float64
+#  2   housing_median_age  4128 non-null   float64
+#  3   total_rooms         4128 non-null   float64
+#  4   total_bedrooms      4091 non-null   float64
+#  5   population          4128 non-null   float64
+#  6   households          4128 non-null   float64
+#  7   median_income       4128 non-null   float64
+#  8   median_house_value  4128 non-null   float64
+#  9   ocean_proximity     4128 non-null   object
+#  10  income_cat          4128 non-null   category
+# dtypes: category(1), float64(9), object(1)
+# memory usage: 359.0+ KB
 
 # the income category proportions in the training set:
 strat_train_ratio = strat_train_set["income_cat"].value_counts() / len(strat_train_set)
@@ -128,7 +176,7 @@ strat_train_ratio = strat_train_set["income_cat"].value_counts() / len(strat_tra
 strat_test_ratio = strat_test_set["income_cat"].value_counts() / len(strat_test_set)
 
 # Print the result to verify that the stratified sampling is done
-# print(strat_train_ratio)
+print(strat_train_ratio)
 # income_cat
 # 3    0.350594
 # 2    0.318859
@@ -137,7 +185,7 @@ strat_test_ratio = strat_test_set["income_cat"].value_counts() / len(strat_test_
 # 1    0.039789
 # Name: count, dtype: float64
 
-# print(strat_test_ratio)
+print(strat_test_ratio)
 # income_cat
 # 3    0.350533
 # 2    0.318798
@@ -145,6 +193,9 @@ strat_test_ratio = strat_test_set["income_cat"].value_counts() / len(strat_test_
 # 5    0.114341
 # 1    0.039971
 # Name: count, dtype: float64
+
+print("Stop code while debugging here.")
+print("here!")
 
 # You won’t use the income_cat column again, so you might as well drop it,
 # reverting the data back to its original state:
@@ -278,14 +329,14 @@ housing_labels = strat_train_set["median_house_value"].copy()
 # to find out if it gets into a more bell-shape distribution after the
 # transformation.
 # Figure 2–17 -->
-fig, axs = plt.subplots(1, 2, figsize=(8, 3), sharey=True)
-housing["population"].hist(ax=axs[0], bins=50)
-housing["population"].apply(np.log).hist(ax=axs[1], bins=50)
-axs[0].set_xlabel("Population")
-axs[1].set_xlabel("Log of population")
-axs[0].set_ylabel("Number of districts")
-save_fig("long_tail_population")
-plt.show()
+#c fig, axs = plt.subplots(1, 2, figsize=(8, 3), sharey=True)
+#c housing["population"].hist(ax=axs[0], bins=50)
+#c housing["population"].apply(np.log).hist(ax=axs[1], bins=50)
+#c axs[0].set_xlabel("Population")
+#c axs[1].set_xlabel("Log of population")
+#c axs[0].set_ylabel("Number of districts")
+#c save_fig("long_tail_population")
+# plt.show()
 # These plots are primarily -histograms-. So the y-axis label “Number of
 # districts” highlights that the histogram is counting the recurrence of
 # events or number of times that the population attribute has certain
@@ -338,16 +389,17 @@ plt.show()
 # What if we replace each value with its percentile?
 
 # extra code – just shows that we get a uniform distribution
-percentiles = [np.percentile(housing["median_income"], p)
-               for p in range(1, 100)]
-flattened_median_income = pd.cut(housing["median_income"],
-                                 bins=[-np.inf] + percentiles + [np.inf],
-                                 labels=range(1, 100 + 1))
+#c percentiles = [np.percentile(housing["median_income"], p)
+#c                for p in range(1, 100)]
+#c flattened_median_income = pd.cut(housing["median_income"],
+#c                                  bins=[-np.inf] + percentiles + [np.inf],
+#c                                  labels=range(1, 100 + 1))
+"""
 flattened_median_income.hist(bins=50)
 plt.xlabel("Median income percentile")
 plt.ylabel("Number of districts")
 save_fig("bucketizing_median_income")
-plt.show()
+plt.show()"""
 # Note: incomes below the 1st percentile are labeled 1, and incomes above the
 # 99th percentile are labeled 100. This is why the distribution below ranges
 # from 1 to 100 (not 0 to 100).
@@ -355,9 +407,9 @@ plt.show()
 # --------------------------30
 # RBF to transform multimodal distributions
 
-from sklearn.metrics.pairwise import rbf_kernel
+#c from sklearn.metrics.pairwise import rbf_kernel
 
-age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
+#c age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
 
 # Figure 2–18. It is a histogram.
 
@@ -370,30 +422,30 @@ age_simil_35 = rbf_kernel(housing[["housing_median_age"]], [[35]], gamma=0.1)
 # values.
 # # - The result (`age_simil_35`) is an array of similarity scores.
 
-ages = np.linspace(housing["housing_median_age"].min(),
-                   housing["housing_median_age"].max(),
-                   500).reshape(-1, 1)
-gamma1 = 0.1
-gamma2 = 0.03
-rbf1 = rbf_kernel(ages, [[35]], gamma=gamma1)
-rbf2 = rbf_kernel(ages, [[35]], gamma=gamma2)
+#c ages = np.linspace(housing["housing_median_age"].min(),
+#c                    housing["housing_median_age"].max(),
+#c                    500).reshape(-1, 1)
+#c gamma1 = 0.1
+#c gamma2 = 0.03
+#c rbf1 = rbf_kernel(ages, [[35]], gamma=gamma1)
+#c rbf2 = rbf_kernel(ages, [[35]], gamma=gamma2)
 
-fig, ax1 = plt.subplots()
+#c fig, ax1 = plt.subplots()
 
-ax1.set_xlabel("Housing median age")
-ax1.set_ylabel("Number of districts")
-ax1.hist(housing["housing_median_age"], bins=50)
+#c ax1.set_xlabel("Housing median age")
+#c ax1.set_ylabel("Number of districts")
+#c ax1.hist(housing["housing_median_age"], bins=50)
 
-ax2 = ax1.twinx()  # create a twin axis that shares the same x-axis
-color = "blue"
-ax2.plot(ages, rbf1, color=color, label="gamma = 0.10")
-ax2.plot(ages, rbf2, color=color, label="gamma = 0.03", linestyle="--")
-ax2.tick_params(axis='y', labelcolor=color)
-ax2.set_ylabel("Age similarity", color=color)
+#c ax2 = ax1.twinx()  # create a twin axis that shares the same x-axis
+#c color = "blue"
+#c ax2.plot(ages, rbf1, color=color, label="gamma = 0.10")
+#c ax2.plot(ages, rbf2, color=color, label="gamma = 0.03", linestyle="--")
+#c ax2.tick_params(axis='y', labelcolor=color)
+#c ax2.set_ylabel("Age similarity", color=color)
 
-plt.legend(loc="upper left")
-save_fig("RBF_age_similarity")
-plt.show()
+#c plt.legend(loc="upper left")
+#c save_fig("RBF_age_similarity")
+# plt.show()
 
 # --------------------------30
 # Custom Transformers
@@ -468,29 +520,29 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
 """
 # <---
 
-# Fig. 2-29
-cluster_simil = ClusterSimilarity(n_clusters=10, gamma=1., random_state=42)
-similarities = cluster_simil.fit_transform(housing[["latitude", "longitude"]],
-                                           sample_weight=housing_labels)
+# ---> Fig. 2-29
+#c cluster_simil = ClusterSimilarity(n_clusters=10, gamma=1., random_state=42)
+#c similarities = cluster_simil.fit_transform(housing[["latitude", "longitude"]],
+#c                                            sample_weight=housing_labels)
 
-housing_renamed = housing.rename(columns={
-    "latitude": "Latitude", "longitude": "Longitude",
-    "population": "Population",
-    "median_house_value": "Median house value (ᴜsᴅ)"})
-housing_renamed["Max cluster similarity"] = similarities.max(axis=1)
+#c housing_renamed = housing.rename(columns={
+#c     "latitude": "Latitude", "longitude": "Longitude",
+#c     "population": "Population",
+#c     "median_house_value": "Median house value (ᴜsᴅ)"})
+#c housing_renamed["Max cluster similarity"] = similarities.max(axis=1)
 
-housing_renamed.plot(kind="scatter", x="Longitude", y="Latitude", grid=True,
-                     s=housing_renamed["Population"] / 100, label="Population",
-                     c="Max cluster similarity",
-                     cmap="jet", colorbar=True,
-                     legend=True, sharex=False, figsize=(10, 7))
-plt.plot(cluster_simil.kmeans_.cluster_centers_[:, 1],
-         cluster_simil.kmeans_.cluster_centers_[:, 0],
-         linestyle="", color="black", marker="X", markersize=20,
-         label="Cluster centers")
-plt.legend(loc="upper right")
-save_fig("district_cluster_plot")
-plt.show()
+#c housing_renamed.plot(kind="scatter", x="Longitude", y="Latitude", grid=True,
+#c                      s=housing_renamed["Population"] / 100, label="Population",
+#c                      c="Max cluster similarity",
+#c                      cmap="jet", colorbar=True,
+#c                      legend=True, sharex=False, figsize=(10, 7))
+#c plt.plot(cluster_simil.kmeans_.cluster_centers_[:, 1],
+#c          cluster_simil.kmeans_.cluster_centers_[:, 0],
+#c          linestyle="", color="black", marker="X", markersize=20,
+#c          label="Cluster centers")
+#c plt.legend(loc="upper right")
+#c save_fig("district_cluster_plot")
+# plt.show() # <---
 
 # ------------------------------------------------------------------70
 # Pipelines
@@ -536,6 +588,9 @@ def monkey_patch_get_signature_names_out():
 monkey_patch_get_signature_names_out()
 
 
+# --------------------------30
+# The main functions and pipeline
+
 from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
@@ -549,8 +604,6 @@ cat_pipeline = make_pipeline(
     SimpleImputer(strategy="most_frequent"),
     OneHotEncoder(handle_unknown="ignore"))
 
-# --------------------------30
-# The main functions and pipeline
 def column_ratio(x):
     return x[:, [0]] / x[:, [1]]
 
@@ -583,11 +636,11 @@ preprocessing = ColumnTransformer([
     remainder=default_num_pipeline)  # one column remaining: housing_median_age
 
 # Test the pipeline above
-housing_prepared = preprocessing.fit_transform(housing)
-print(housing_prepared.shape)
+#c housing_prepared = preprocessing.fit_transform(housing)
+# print(housing_prepared.shape)
 # (16512, 24)
 
-print(preprocessing.get_feature_names_out())
+# print(preprocessing.get_feature_names_out())
 # ['bedrooms__ratio' 'rooms_per_house__ratio' 'people_per_house__ratio'
 #  'log__total_bedrooms' 'log__total_rooms' 'log__population'
 #  'log__households' 'log__median_income' 'geo__Cluster 0 similarity'
@@ -607,29 +660,7 @@ print(preprocessing.get_feature_names_out())
 # ----------------------------------------------------------------------------80
 # Train and Evaluate on the Training Set
 
-# --------------------------30
-# Linear regression model
-
-from sklearn.linear_model import LinearRegression
-
-lin_reg = make_pipeline(preprocessing, LinearRegression())
-lin_reg.fit(housing, housing_labels)
-
-# Let's try the full preprocessing pipeline on a few training instances:
-housing_predictions = lin_reg.predict(housing)
-print(housing_predictions[:5].round(-2))  # -2 = rounded to the nearest hundred
-# [242800. 375900. 127500.  99400. 324600.]
-
-# Compare against the actual values:
-print(housing_labels.iloc[:5].values)
-# [458300. 483800. 101700.  96100. 361800.]
-
-# Computes the error ratios discussed in the book
-error_ratios = housing_predictions[:5].round(-2) / housing_labels.iloc[:5].values - 1
-print(", ".join([f"{100 * ratio:.1f}%" for ratio in error_ratios]))
-# -47.0%, -22.3%, 25.4%, 3.4%, -10.3%
-
-# Compute the RMSE
+# For computing the RMSE of models
 # Warning: In recent versions of Scikit-Learn, you must use
 # `root_mean_squared_error(labels, predictions)` to compute the RMSE,
 # instead of `mean_squared_error(labels, predictions, squared=False)`. The
@@ -643,35 +674,57 @@ except ImportError:
     def root_mean_squared_error(labels, predictions):
         return mean_squared_error(labels, predictions, squared=False)
 
-lin_rmse = root_mean_squared_error(housing_labels, housing_predictions)
-print(round(lin_rmse, 4))
+# --------------------------30
+# Linear regression model
+
+#c from sklearn.linear_model import LinearRegression
+
+#c lin_reg = make_pipeline(preprocessing, LinearRegression())
+#c lin_reg.fit(housing, housing_labels)
+
+# Let's try the full preprocessing pipeline on a few training instances:
+#c housing_predictions = lin_reg.predict(housing)
+#c print(housing_predictions[:5].round(-2))  # -2 = rounded to the nearest hundred
+# [242800. 375900. 127500.  99400. 324600.]
+
+# Compare against the actual values:
+#c print(housing_labels.iloc[:5].values)
+# [458300. 483800. 101700.  96100. 361800.]
+
+# Computes the error ratios discussed in the book
+#c error_ratios = housing_predictions[:5].round(-2) / housing_labels.iloc[:5].values - 1
+#c print(", ".join([f"{100 * ratio:.1f}%" for ratio in error_ratios]))
+# -47.0%, -22.3%, 25.4%, 3.4%, -10.3%
+
+#c lin_rmse = root_mean_squared_error(housing_labels, housing_predictions)
+#c print(round(lin_rmse, 4))
 # 68647.9569
 
 # --------------------------30
 # Decision Tree
 
-from sklearn.tree import DecisionTreeRegressor
-tree_reg = make_pipeline(preprocessing, DecisionTreeRegressor(random_state=42))
-tree_reg.fit(housing, housing_labels)
+#c from sklearn.tree import DecisionTreeRegressor
+#c tree_reg = make_pipeline(preprocessing, DecisionTreeRegressor(random_state=42))
+#c tree_reg.fit(housing, housing_labels)
 
-tree_predictions = tree_reg.predict(housing)
+#c tree_predictions = tree_reg.predict(housing)
 # Print the predictions for the first 5 districts
-print(tree_predictions[:5].round(-2))
+#c print(tree_predictions[:5].round(-2))
 # [458300. 483800. 101700.  96100. 361800.]
 
 # Compare the predictions against the actual values
-print(housing_labels.iloc[:5].values)
+#c print(housing_labels.iloc[:5].values)
 # [458300. 483800. 101700.  96100. 361800.]
 
 # Compute the RMSE
-tree_rmse = root_mean_squared_error(housing_labels, tree_predictions)
-print(tree_rmse)
+#c tree_rmse = root_mean_squared_error(housing_labels, tree_predictions)
+#c print(tree_rmse)
 # 0.0
 
 # ----------------------------------------------------------------------------80
 # Better Evaluation Using Cross-Validation
 
-from sklearn.model_selection import cross_val_score
+#c from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import cross_validate
 
 # Note:
@@ -690,7 +743,7 @@ from sklearn.model_selection import cross_validate
 # --------------------------30
 # Linear regression with Cross-Validation
 
-# Using "cross_validate()". (Best)
+# Using "cross_validate()".
 
 # Note. The `cross_validate` function from `scikit-learn` returns a
 # dictionary, not a numeric value. So, it cannot be put a negative sign
@@ -700,36 +753,36 @@ from sklearn.model_selection import cross_validate
 # The `cross_validate` function returns a dictionary containing keys like:
 #   - `test_score` (cross-validation scores).
 #   - `fit_time`, `score_time` (time metrics).
-lin_reg_cv =  cross_validate(lin_reg, housing, housing_labels,
-                             scoring="neg_root_mean_squared_error", cv=10,
-                             return_train_score=True)
+#c lin_reg_cv =  cross_validate(lin_reg, housing, housing_labels,
+#c                              scoring="neg_root_mean_squared_error", cv=10,
+#c                              return_train_score=True)
 
 # Access negative validation and training scores
-lin_reg_cv_val_scores   = -lin_reg_cv["test_score"]
-lin_reg_cv_train_scores = -lin_reg_cv["train_score"]
+#c lin_reg_cv_val_scores   = -lin_reg_cv["test_score"]
+#c lin_reg_cv_train_scores = -lin_reg_cv["train_score"]
 
-print("\nValidation scores (RMSE):\n", lin_reg_cv_val_scores)
+#c print("\nValidation scores (RMSE):\n", lin_reg_cv_val_scores)
 # Validation scores (RMSE):
 #  [69629.27198277 68386.63041132 65659.76107851 80685.25483204
 #  68585.89530719 68809.28761851 67695.97974629 71179.43136955
 #  67989.5220715  69858.19782376]
 
-print("\nTrain scores (RMSE):\n", lin_reg_cv_train_scores)
+#c print("\nTrain scores (RMSE):\n", lin_reg_cv_train_scores)
 # Train scores (RMSE):
 #  [68564.51827873 68739.26961825 69021.65268125 68134.12536066
 #  68702.84570954 68641.30094392 68620.92441724 68442.93161763
 #  68759.50173313 68549.47253429]
 
 # Compute mean and standard deviation of RMSE values
-lin_cv_val_score_mean = np.mean(lin_reg_cv_val_scores)
-lin_cv_val_score_std = np.std(lin_reg_cv_val_scores)
-lin_cv_train_score_mean = np.mean(lin_reg_cv_train_scores)
-lin_cv_train_score_std = np.std(lin_reg_cv_train_scores)
+#c lin_cv_val_score_mean = np.mean(lin_reg_cv_val_scores)
+#c lin_cv_val_score_std = np.std(lin_reg_cv_val_scores)
+#c lin_cv_train_score_mean = np.mean(lin_reg_cv_train_scores)
+#c lin_cv_train_score_std = np.std(lin_reg_cv_train_scores)
 
-print(f"Mean RMSE valid: {round(lin_cv_val_score_mean, 4)}")
-print(f"Mean RMSE train: {round(lin_cv_train_score_mean, 4)}")
-print(f"Standard Deviation of RMSE valid: {round(lin_cv_val_score_std, 4)}")
-print(f"Standard Deviation of RMSE train: {round(lin_cv_train_score_std, 4)}")
+#c print(f"Mean RMSE valid: {round(lin_cv_val_score_mean, 4)}")
+#c print(f"Mean RMSE train: {round(lin_cv_train_score_mean, 4)}")
+#c print(f"Standard Deviation of RMSE valid: {round(lin_cv_val_score_std, 4)}")
+#c print(f"Standard Deviation of RMSE train: {round(lin_cv_train_score_std, 4)}")
 # Mean RMSE valid: 69847.9232
 # Mean RMSE train: 68617.6543
 # Standard Deviation of RMSE valid: 3869.1169
@@ -738,9 +791,9 @@ print(f"Standard Deviation of RMSE train: {round(lin_cv_train_score_std, 4)}")
 
 # Using "cross_val_score()". (Optional but 'cross_validate()' is better)
 
-lin_rmse_cv_scores = -cross_val_score(lin_reg, housing, housing_labels,
-                               scoring="neg_root_mean_squared_error", cv=10)
-print(pd.Series(lin_rmse_cv_scores).describe(),"\n")
+#c lin_rmse_cv_scores = -cross_val_score(lin_reg, housing, housing_labels,
+#c                                scoring="neg_root_mean_squared_error", cv=10)
+#c print(pd.Series(lin_rmse_cv_scores).describe(),"\n")
 # count       10.000000
 # mean     69847.923224 <---
 # std       4078.407329 <---
@@ -753,10 +806,11 @@ print(pd.Series(lin_rmse_cv_scores).describe(),"\n")
 
 # --------------------------30
 # Decision Tree with Cross-Validation
-tree_rmse_cv = -cross_val_score(tree_reg, housing, housing_labels,
-                                scoring="neg_root_mean_squared_error", cv=10)
 
-print(pd.Series(tree_rmse_cv).describe(),"\n")
+#c tree_rmse_cv = -cross_val_score(tree_reg, housing, housing_labels,
+#c                                 scoring="neg_root_mean_squared_error", cv=10)
+
+#c print(pd.Series(tree_rmse_cv).describe(),"\n")
 # count       10.000000
 # mean     66366.983603 <---
 # std       1976.844743 <---
@@ -790,7 +844,7 @@ print("\nValidation scores (RMSE):\n", forest_cv_valid_scores)
 #  [47084.127283   46407.88148756 47113.69767434 47971.2931094
 #  47203.91945207]
 
-print("\nTrain scores (RMSE):\n", forest_cv_train_scores)
+print("\nTraining scores (RMSE):\n", forest_cv_train_scores)
 # Train scores (RMSE):
 #  [17801.40568169 17848.52928243 17788.07476118 17770.88262586
 #  17671.97085742]
@@ -814,9 +868,9 @@ print(f"Standard Deviation of RMSE train: {round(forest_cv_train_score_std, 4)}"
 # Using "cross_val_score()". (Optional but 'cross_validate()' is better)
 
 # Warning: the following cell may take a few minutes to run:
-forest_rmse_cv_scores = -cross_val_score(forest_reg, housing, housing_labels,
-                                   scoring="neg_root_mean_squared_error", cv=5)
-print(pd.Series(forest_rmse_cv_scores).describe(),"\n")
+#c forest_rmse_cv_scores = -cross_val_score(forest_reg, housing, housing_labels,
+#c                                    scoring="neg_root_mean_squared_error", cv=5)
+#c print(pd.Series(forest_rmse_cv_scores).describe(),"\n")
 # count        5.000000
 # mean     47156.183801 <---
 # std        555.345713 <---
@@ -850,6 +904,57 @@ print(forest_rmse_train)
 # explanation may be that there's a mismatch between the training data and
 # the validation data, but it's not the case here, since both came from the
 # same dataset that we shuffled and split in two parts.
+
+
+
+
+# --------------------------30
+#  Support Vector Machine with Cross-Validation
+
+# Support vector machine regressor (sklearn.svm.SVR) with various
+# hyperparameters, such as kernel="linear" (with various values for the C
+# hyperparameter) or kernel="rbf" (with various values for the C and gamma
+# hyperparameters). Note that support vector machines don’t scale well to
+# large datasets, so you should probably train your model on just the first
+# 5,000 instances of the training set and use only 3-fold cross-validation,
+# or else it will take hours. How does the best SVR predictor
+# perform?
+
+from sklearn.svm import SVR
+
+svm_reg = make_pipeline(preprocessing, SVR(kernel="rbf"))
+
+housing_svm = housing
+
+svm_cv = cross_validate(svm_reg, housing, housing_labels,
+                        scoring="neg_root_mean_squared_error", cv=3,
+                        return_train_score=True)
+
+# Validation and training scores
+svm_cv_valid_scores = -svm_cv["test_score"]
+svm_cv_train_scores = -svm_cv["train_score"]
+
+print("\nValidation scores (RMSE):\n", svm_cv_valid_scores)
+
+
+print("\nTraining scores (RMSE):\n", svm_cv_train_scores)
+
+
+# Compute mean and standard deviation of RMSE values
+svm_cv_valid_score_mean = np.mean(svm_cv_valid_scores)
+svm_cv_valid_score_std = np.std(svm_cv_valid_scores)
+svm_cv_train_score_mean = np.mean(svm_cv_train_scores)
+svm_cv_train_score_std = np.std(svm_cv_train_scores)
+
+print(f"Mean RMSE valid: {round(svm_cv_valid_score_mean, 4)}")
+print(f"Mean RMSE train: {round(svm_cv_train_score_mean, 4)}")
+print(f"Standard Deviation of RMSE valid: {round(svm_cv_valid_score_std, 4)}")
+print(f"Standard Deviation of RMSE train: {round(svm_cv_train_score_std, 4)}")
+
+
+
+print("Stop code while debugging,")
+print("here!")
 
 # ############################################################################80
 # Hyperparameters fine-tunning ("Fine-Tune Your Model")
@@ -1472,5 +1577,7 @@ joblib.dump(final_model, "my_california_housing_model.pkl")
 
 # ############################################################################80
 
+print("Stop code while debugging here")
+print("here!")
 print("\nEnd of code!")
 
