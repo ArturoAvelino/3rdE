@@ -722,7 +722,7 @@ except ImportError:
 # Better Evaluation Using Cross-Validation
 
 #c from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import cross_validate
+#c from sklearn.model_selection import cross_validate
 
 # Note:
 # The `cross_val_score()` function itself does not directly provide
@@ -915,44 +915,42 @@ from sklearn.model_selection import cross_validate
 # or else it will take hours. How does the best SVR predictor
 # perform?
 
-from sklearn.svm import SVR
+#c from sklearn.svm import SVR
 
-svm_reg = make_pipeline(preprocessing, SVR(kernel="rbf"))
+#c svm_reg = make_pipeline(preprocessing, SVR(kernel="rbf"))
 
 # DONE: Create a training dataset composed of only 5000 instances or less but
 # ensuring that is stratified.
 
-svm_cv = cross_validate(svm_reg, housing, housing_labels,
-                        scoring="neg_root_mean_squared_error", cv=3,
-                        return_train_score=True)
+#c svm_cv = cross_validate(svm_reg, housing, housing_labels,
+#c                         scoring="neg_root_mean_squared_error", cv=3,
+#c                         return_train_score=True)
 
 # Validation and training scores
-svm_cv_valid_scores = -svm_cv["test_score"]
-svm_cv_train_scores = -svm_cv["train_score"]
+#c svm_cv_valid_scores = -svm_cv["test_score"]
+#c svm_cv_train_scores = -svm_cv["train_score"]
 
-print("\nValidation scores (RMSE):\n", svm_cv_valid_scores.round(4))
+#c print("\nValidation scores (RMSE):\n", svm_cv_valid_scores.round(4))
 # [111004.3185 123842.5436 121918.2488]
 
-print("\nTraining scores (RMSE):\n", svm_cv_train_scores.round(4))
+#c print("\nTraining scores (RMSE):\n", svm_cv_train_scores.round(4))
 # [122059.9159 116629.976  118174.5277]
 
 # Compute mean and standard deviation of RMSE values
-svm_cv_valid_score_mean = np.mean(svm_cv_valid_scores)
-svm_cv_valid_score_std = np.std(svm_cv_valid_scores)
-svm_cv_train_score_mean = np.mean(svm_cv_train_scores)
-svm_cv_train_score_std = np.std(svm_cv_train_scores)
+#c svm_cv_valid_score_mean = np.mean(svm_cv_valid_scores)
+#c svm_cv_valid_score_std = np.std(svm_cv_valid_scores)
+#c svm_cv_train_score_mean = np.mean(svm_cv_train_scores)
+#c svm_cv_train_score_std = np.std(svm_cv_train_scores)
 
-print(f"Mean RMSE valid: {round(svm_cv_valid_score_mean, 4)}")
-print(f"Mean RMSE train: {round(svm_cv_train_score_mean, 4)}")
-print(f"Standard Deviation of RMSE valid: {round(svm_cv_valid_score_std, 4)}")
-print(f"Standard Deviation of RMSE train: {round(svm_cv_train_score_std, 4)}")
+#c print(f"Mean RMSE valid: {round(svm_cv_valid_score_mean, 4)}")
+#c print(f"Mean RMSE train: {round(svm_cv_train_score_mean, 4)}")
+#c print(f"Standard Deviation of RMSE valid: {round(svm_cv_valid_score_std, 4)}")
+#c print(f"Standard Deviation of RMSE train: {round(svm_cv_train_score_std, 4)}")
 # Mean RMSE valid: 118921.7036
 # Mean RMSE train: 118954.8066
 # Standard Deviation of RMSE valid: 5653.2862
 # Standard Deviation of RMSE train: 2284.3946
 
-print("Stop code here while debugging.")
-print("here!")
 
 # ############################################################################80
 # Hyperparameters fine-tunning ("Fine-Tune Your Model")
@@ -960,10 +958,13 @@ print("here!")
 # Let’s assume that you now have a shortlist of promising models. You now
 # need to fine-tune them.
 
-forest_pipe = Pipeline([
-    ("preprocessing", preprocessing),
-    ("random_forest", RandomForestRegressor(random_state=42)),
-])
+# ============================================================================80
+# Random forest
+
+# forest_pipe = Pipeline([
+#     ("preprocessing", preprocessing),
+#     ("random_forest", RandomForestRegressor(random_state=42)),
+# ])
 
 # --------------------------------------------------------60
 # Grid Search
@@ -1191,6 +1192,7 @@ forest_pipe = Pipeline([
 # often preferable, especially when the hyperparameter search space is
 # large.
 
+# """
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
 
@@ -1254,8 +1256,8 @@ forest_rand_cv_val_scores = forest_rand_cv_val_scores[["param_preprocessing__geo
 
 # Rename the columns so it is clearer what they are about:
 score_cols = [ #"split0", "split1", "split2",
-                "mean_test_rmse" , "mean_train_rmse"
-                #, "std_test_rmse", "std_train_rmse"
+                "mean_valid_rmse" , "mean_train_rmse"
+                #, "std_valid_rmse", "std_train_rmse"
              ]
 forest_rand_cv_val_scores.columns = ["n_clusters", "max_features"] + score_cols
 forest_rand_cv_val_scores[score_cols] = \
@@ -1268,7 +1270,7 @@ print(forest_rand_cv_val_scores.head())
 # 0          41            16           42736            16161
 # 5          42             4           42953            16104
 # 2          23             8           43044            16263
-
+# """
 
 # --------------------------------------------------------60
 # Randomized Search with "HalvingRandomSearchCV()". (Experimental) (It didn't work)
@@ -1325,6 +1327,100 @@ print(forest_rand_cv_val_scores.head())
 #c     -forest_halv_cv_val_scores[score_cols].round().astype(np.int64)
 
 #c print(forest_halv_cv_val_scores.head())
+
+# ============================================================================80
+# Support Vector Machine with "RandomizedSearchCV()"
+
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.svm import SVR
+from scipy.stats import randint
+
+svm_pipe = Pipeline([
+    ("preprocessing", preprocessing),
+    ("supportvm", SVR(kernel="rbf")),
+])
+
+svm_param_distr = {"supportvm__C": randint(low=1, high=1000),
+                   "preprocessing__geo__n_clusters": randint(low=3, high=50)}
+
+svm_rand_srch = RandomizedSearchCV(svm_pipe,
+                                   param_distributions=svm_param_distr,
+                                   n_iter=10, cv=3,
+                                   scoring="neg_root_mean_squared_error",
+                                   return_train_score=True,
+                                   random_state=42)
+
+# Warning: This line may take some few minutes to run:
+svm_rand_srch.fit(housing, housing_labels)
+
+# The best hyperparameter combination found:
+print(svm_rand_srch.best_params_)
+# {'preprocessing__geo__n_clusters': 38, 'supportvm__C': 872}
+
+print(svm_rand_srch.best_score_)
+# # -99369.84702369223
+
+print(svm_rand_srch.best_estimator_)
+# Pipeline(steps=[('preprocessing',
+#      ColumnTransformer(remainder=Pipeline(steps=[('simpleimputer',
+#                                   SimpleImputer(strategy='median')),
+#                                  ('standardscaler',
+#                                   StandardScaler())]),
+#        transformers=[('bedrooms',
+#           Pipeline(steps=[('simpleimputer',
+#                            SimpleImputer(strategy='median')),
+#                           ('functiontransformer',
+#                            FunctionTransformer(feature_names_out=
+#                                 <function ratio_name at 0x1500e31...
+#            'households',
+#            'median_income']),
+#          ('geo',
+#           ClusterSimilarity(n_clusters=38,
+#                             random_state=42),
+#           ['latitude', 'longitude']),
+#          ('cat',
+#           Pipeline(steps=[('simpleimputer',
+#                            SimpleImputer(strategy='most_frequent')),
+#                           ('onehotencoder',
+#                            OneHotEncoder(handle_unknown='ignore'))]),
+#           <sklearn.compose._column_transformer.make_column_selector
+#               object at 0x150294220>)])),
+#     ('supportvm', SVR(C=872))])
+
+
+# Look at the score of each hyperparameter combination tested during
+# the grid search:
+svm_rand_cv_val_scores = pd.DataFrame(svm_rand_srch.cv_results_)
+svm_rand_cv_val_scores.sort_values(by="mean_test_score", ascending=False,
+                                      inplace=True)
+# extra code – these few lines of code just make the DataFrame look nicer
+svm_rand_cv_val_scores = svm_rand_cv_val_scores[["param_preprocessing__geo__n_clusters",
+                 "param_supportvm__C",
+                 # "split0_test_score", "split1_test_score", "split2_test_score",
+                 "mean_test_score", "mean_train_score"
+                 # , "std_test_score", "std_train_score"
+                 ]]
+
+# Rename the columns so it is clearer what they are about:
+score_cols = [ #"split0", "split1", "split2",
+                "mean_valid_rmse" , "mean_train_rmse"
+                #, "std_test_rmse", "std_train_rmse"
+             ]
+svm_rand_cv_val_scores.columns = ["n_clusters", "C_svm"] + score_cols
+svm_rand_cv_val_scores[score_cols] = \
+    -svm_rand_cv_val_scores[score_cols].round().astype(np.int64)
+
+print(svm_rand_cv_val_scores.head())
+#    n_clusters  C_svm  mean_valid_rmse  mean_train_rmse
+# 7          38    872            99370            99098
+# 3          23    615           103427           103282
+# 5          13    459           106495           106381
+# 0          41    436           107789           107641
+# 6          26    373           108778           108681
+
+print("Stop code here while debugging.")
+print("here!")
+
 
 # ----------------------------------------------------------------------------80
 # Analyzing the Best Models and Their Errors
