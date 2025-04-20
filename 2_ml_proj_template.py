@@ -108,13 +108,13 @@ import numpy as np
 housing["income_cat"] = pd.cut(housing["median_income"],
                                bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
                                labels=[1, 2, 3, 4, 5])
-"""
+
 # Plotting
-housing["income_cat"].value_counts().sort_index().plot.bar(rot=0, grid=True)
-plt.xlabel("Income category")
-plt.ylabel("Number of districts")
-save_fig("housing_income_cat_bar_plot")  # extra code
-plt.show()"""
+#c housing["income_cat"].value_counts().sort_index().plot.bar(rot=0, grid=True)
+#c plt.xlabel("Income category")
+#c plt.ylabel("Number of districts")
+#c save_fig("housing_income_cat_bar_plot")  # extra code
+#c plt.show()
 
 
 from sklearn.model_selection import train_test_split
@@ -207,18 +207,18 @@ for set_ in (strat_train_set, strat_test_set):
 # --------------------------------------------------------60
 # # Discover and Visualize the Data to Gain Insights
 
-"""
+
 # Visualizing Geographical Data
-#c housing.plot(kind="scatter", x="longitude", y="latitude", grid=True, alpha=0.2)
-#c save_fig("better_visualization_plot")  # extra code
-#c plt.show()
-#c
-#c housing.plot(kind="scatter", x="longitude", y="latitude", grid=True,
-#c              s=housing["population"] / 100, label="population",
-#c              c="median_house_value", cmap="jet", colorbar=True,
-#c              legend=True, sharex=False, figsize=(10, 7))
-#c save_fig("housing_prices_scatterplot")  # extra code
-#c plt.show()"""
+#pl housing.plot(kind="scatter", x="longitude", y="latitude", grid=True, alpha=0.2)
+#pl save_fig("better_visualization_plot")  # extra code
+#pl plt.show()
+
+#pl housing.plot(kind="scatter", x="longitude", y="latitude", grid=True,
+#pl              s=housing["population"] / 100, label="population",
+#pl              c="median_house_value", cmap="jet", colorbar=True,
+#pl              legend=True, sharex=False, figsize=(10, 7))
+#pl save_fig("housing_prices_scatterplot")  # extra code
+#pl plt.show()
 
 # --------------------------30
 # # Looking for Correlations
@@ -391,12 +391,12 @@ housing_labels = strat_train_set["median_house_value"].copy()
 #c flattened_median_income = pd.cut(housing["median_income"],
 #c                                  bins=[-np.inf] + percentiles + [np.inf],
 #c                                  labels=range(1, 100 + 1))
-"""
-flattened_median_income.hist(bins=50)
-plt.xlabel("Median income percentile")
-plt.ylabel("Number of districts")
-save_fig("bucketizing_median_income")
-plt.show()"""
+
+#pl flattened_median_income.hist(bins=50)
+#pl plt.xlabel("Median income percentile")
+#pl plt.ylabel("Number of districts")
+#pl save_fig("bucketizing_median_income")
+#pl plt.show()
 # Note: incomes below the 1st percentile are labeled 1, and incomes above the
 # 99th percentile are labeled 100. This is why the distribution below ranges
 # from 1 to 100 (not 0 to 100).
@@ -492,29 +492,28 @@ class ClusterSimilarity(BaseEstimator, TransformerMixin):
 # <---
 
 # ---> Original version by Aurélien Géron. It works well, except when trying
-# to use it for hyperparameter tunning using "HalvingRandomSearchCV()".
-"""
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.cluster import KMeans
-from sklearn.metrics.pairwise import rbf_kernel
-class ClusterSimilarity(BaseEstimator, TransformerMixin):
-    def __init__(self, n_clusters=10, gamma=1.0, random_state=None):
-        self.n_clusters = n_clusters
-        self.gamma = gamma
-        self.random_state = random_state
+# to use it for hyperparameter tuning using "HalvingRandomSearchCV()".
 
-    def fit(self, x, y=None, sample_weight=None):
-        self.kmeans_ = KMeans(self.n_clusters, n_init=10,
-                              random_state=self.random_state)
-        self.kmeans_.fit(x, sample_weight=sample_weight)
-        return self  # always return self!
-
-    def transform(self, x):
-        return rbf_kernel(x, self.kmeans_.cluster_centers_, gamma=self.gamma)
-
-    def get_feature_names_out(self, names=None):
-        return [f"Cluster {i} similarity" for i in range(self.n_clusters)]
-"""
+#old from sklearn.base import BaseEstimator, TransformerMixin
+#old from sklearn.cluster import KMeans
+#old from sklearn.metrics.pairwise import rbf_kernel
+#old class ClusterSimilarity(BaseEstimator, TransformerMixin):
+#old     def __init__(self, n_clusters=10, gamma=1.0, random_state=None):
+#old         self.n_clusters = n_clusters
+#old         self.gamma = gamma
+#old         self.random_state = random_state
+#old
+#old     def fit(self, x, y=None, sample_weight=None):
+#old         self.kmeans_ = KMeans(self.n_clusters, n_init=10,
+#old                               random_state=self.random_state)
+#old         self.kmeans_.fit(x, sample_weight=sample_weight)
+#old         return self  # always return self!
+#old
+#old     def transform(self, x):
+#old         return rbf_kernel(x, self.kmeans_.cluster_centers_, gamma=self.gamma)
+#old
+#old     def get_feature_names_out(self, names=None):
+#old         return [f"Cluster {i} similarity" for i in range(self.n_clusters)]
 # <---
 
 # ---> Fig. 2-29
@@ -584,7 +583,6 @@ def monkey_patch_get_signature_names_out():
 
 monkey_patch_get_signature_names_out()
 
-
 # --------------------------30
 # The main functions and pipeline
 
@@ -595,6 +593,7 @@ from sklearn.compose import make_column_selector
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import FunctionTransformer
+from sklearn.feature_selection import SelectFromModel
 
 
 cat_pipeline = make_pipeline(
@@ -637,18 +636,18 @@ preprocessing = ColumnTransformer([
 # print(housing_prepared.shape)
 # (16512, 24)
 
-# print(preprocessing.get_feature_names_out())
-# ['bedrooms__ratio' 'rooms_per_house__ratio' 'people_per_house__ratio'
-#  'log__total_bedrooms' 'log__total_rooms' 'log__population'
-#  'log__households' 'log__median_income' 'geo__Cluster 0 similarity'
-#  'geo__Cluster 1 similarity' 'geo__Cluster 2 similarity'
-#  'geo__Cluster 3 similarity' 'geo__Cluster 4 similarity'
-#  'geo__Cluster 5 similarity' 'geo__Cluster 6 similarity'
-#  'geo__Cluster 7 similarity' 'geo__Cluster 8 similarity'
-#  'geo__Cluster 9 similarity' 'cat__ocean_proximity_<1H OCEAN'
-#  'cat__ocean_proximity_INLAND' 'cat__ocean_proximity_ISLAND'
-#  'cat__ocean_proximity_NEAR BAY' 'cat__ocean_proximity_NEAR OCEAN'
-#  'remainder__housing_median_age']
+#pr print(preprocessing.get_feature_names_out())
+#out ['bedrooms__ratio' 'rooms_per_house__ratio' 'people_per_house__ratio'
+#out  'log__total_bedrooms' 'log__total_rooms' 'log__population'
+#out  'log__households' 'log__median_income' 'geo__Cluster 0 similarity'
+#out  'geo__Cluster 1 similarity' 'geo__Cluster 2 similarity'
+#out  'geo__Cluster 3 similarity' 'geo__Cluster 4 similarity'
+#out  'geo__Cluster 5 similarity' 'geo__Cluster 6 similarity'
+#out  'geo__Cluster 7 similarity' 'geo__Cluster 8 similarity'
+#out  'geo__Cluster 9 similarity' 'cat__ocean_proximity_<1H OCEAN'
+#out  'cat__ocean_proximity_INLAND' 'cat__ocean_proximity_ISLAND'
+#out  'cat__ocean_proximity_NEAR BAY' 'cat__ocean_proximity_NEAR OCEAN'
+#out  'remainder__housing_median_age']
 
 # ############################################################################80
 
@@ -961,10 +960,12 @@ except ImportError:
 # ============================================================================80
 # Random forest
 
-# forest_pipe = Pipeline([
-#     ("preprocessing", preprocessing),
-#     ("random_forest", RandomForestRegressor(random_state=42)),
-# ])
+from sklearn.ensemble import RandomForestRegressor
+
+forest_pipe = Pipeline([
+    ("preprocessing", preprocessing),
+    ("random_forest", RandomForestRegressor(random_state=42)),
+])
 
 # --------------------------------------------------------60
 # Grid Search
@@ -1192,7 +1193,7 @@ except ImportError:
 # often preferable, especially when the hyperparameter search space is
 # large.
 
-# """
+
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
 
@@ -1264,13 +1265,13 @@ forest_rand_cv_val_scores[score_cols] = \
     -forest_rand_cv_val_scores[score_cols].round().astype(np.int64)
 
 print(forest_rand_cv_val_scores.head())
-#    n_clusters  max_features  mean_test_rmse  mean_train_rmse
+#    n_clusters  max_features  mean_valid_rmse  mean_train_rmse
 # 1          45             9           42111            15908
 # 8          32             7           42396            16023
 # 0          41            16           42736            16161
 # 5          42             4           42953            16104
 # 2          23             8           43044            16263
-# """
+
 
 # --------------------------------------------------------60
 # Randomized Search with "HalvingRandomSearchCV()". (Experimental) (It didn't work)
@@ -1333,94 +1334,100 @@ print(forest_rand_cv_val_scores.head())
 
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.svm import SVR
-from scipy.stats import randint
+from scipy.stats import expon, loguniform, randint
 
-svm_pipe = Pipeline([
+svr_pipe = Pipeline([
     ("preprocessing", preprocessing),
-    ("supportvm", SVR(kernel="rbf")),
+    ("svr", SVR()),
 ])
 
-svm_param_distr = {"supportvm__C": randint(low=1, high=1000),
-                   "preprocessing__geo__n_clusters": randint(low=3, high=50)}
+svr_param_distr = {
+        'svr__kernel': ['linear', 'rbf'],
+        'svr__C': loguniform(20, 200_000),
+        'svr__gamma': expon(scale=1.0),
+        "preprocessing__geo__n_clusters": randint(low=3, high=50)
+    }
 
-svm_rand_srch = RandomizedSearchCV(svm_pipe,
-                                   param_distributions=svm_param_distr,
+svr_rand_srch = RandomizedSearchCV(svr_pipe,
+                                   param_distributions=svr_param_distr,
                                    n_iter=10, cv=3,
                                    scoring="neg_root_mean_squared_error",
                                    return_train_score=True,
                                    random_state=42)
 
 # Warning: This line may take some few minutes to run:
-svm_rand_srch.fit(housing, housing_labels)
+svr_rand_srch.fit(housing, housing_labels)
 
 # The best hyperparameter combination found:
-print(svm_rand_srch.best_params_)
-# {'preprocessing__geo__n_clusters': 38, 'supportvm__C': 872}
+print(svr_rand_srch.best_params_)
+# {'preprocessing__geo__n_clusters': 30,
+# 'svr__C': np.float64(157055.10989448498),
+# 'svr__gamma': np.float64(0.26497040005002437),
+# 'svr__kernel': 'rbf'}
+#tmp {'preprocessing__geo__n_clusters': 38, 'supportvm__C': 872}
 
-print(svm_rand_srch.best_score_)
-# # -99369.84702369223
+print(svr_rand_srch.best_score_)
+# -60956.471760103675
 
-print(svm_rand_srch.best_estimator_)
-# Pipeline(steps=[('preprocessing',
-#      ColumnTransformer(remainder=Pipeline(steps=[('simpleimputer',
-#                                   SimpleImputer(strategy='median')),
-#                                  ('standardscaler',
-#                                   StandardScaler())]),
-#        transformers=[('bedrooms',
-#           Pipeline(steps=[('simpleimputer',
-#                            SimpleImputer(strategy='median')),
-#                           ('functiontransformer',
-#                            FunctionTransformer(feature_names_out=
-#                                 <function ratio_name at 0x1500e31...
-#            'households',
-#            'median_income']),
-#          ('geo',
-#           ClusterSimilarity(n_clusters=38,
-#                             random_state=42),
-#           ['latitude', 'longitude']),
-#          ('cat',
-#           Pipeline(steps=[('simpleimputer',
-#                            SimpleImputer(strategy='most_frequent')),
-#                           ('onehotencoder',
-#                            OneHotEncoder(handle_unknown='ignore'))]),
-#           <sklearn.compose._column_transformer.make_column_selector
-#               object at 0x150294220>)])),
-#     ('supportvm', SVR(C=872))])
+print(svr_rand_srch.best_estimator_)
+#out Pipeline(steps=[('preprocessing',
+#out    ColumnTransformer(remainder=Pipeline(steps=[('simpleimputer',
+#out                                   SimpleImputer(strategy='median')),
+#out                                  ('standardscaler',
+#out                                   StandardScaler())]),
+#out        transformers=[('bedrooms',
+#out                       Pipeline(steps=[('simpleimputer',
+#out                                        SimpleImputer(strategy='median')),
+#out                                       ('functiontransformer',
+#out                                        FunctionTransformer(feature_names_out=
+#out                                           <function ratio_name at 0x1492641...
+#out                                         random_state=42),
+#out                       ['latitude', 'longitude']),
+#out                      ('cat',
+#out                       Pipeline(steps=[('simpleimputer',
+#out                                        SimpleImputer(strategy='most_frequent')),
+#out                                       ('onehotencoder',
+#out                                        OneHotEncoder(handle_unknown='ignore'))]),
+#out                       <sklearn.compose._column_transformer.make_column_selector
+#out                       object at 0x14988c970>)])),
+#out   ('svr',
+#out    SVR(C=np.float64(157055.10989448498),
+#out        gamma=np.float64(0.26497040005002437)))])
 
 
 # Look at the score of each hyperparameter combination tested during
 # the grid search:
-svm_rand_cv_val_scores = pd.DataFrame(svm_rand_srch.cv_results_)
+svm_rand_cv_val_scores = pd.DataFrame(svr_rand_srch.cv_results_)
 svm_rand_cv_val_scores.sort_values(by="mean_test_score", ascending=False,
                                       inplace=True)
 # extra code – these few lines of code just make the DataFrame look nicer
-svm_rand_cv_val_scores = svm_rand_cv_val_scores[["param_preprocessing__geo__n_clusters",
-                 "param_supportvm__C",
-                 # "split0_test_score", "split1_test_score", "split2_test_score",
-                 "mean_test_score", "mean_train_score"
-                 # , "std_test_score", "std_train_score"
-                 ]]
+svm_rand_cv_val_scores = svm_rand_cv_val_scores[[
+        "param_preprocessing__geo__n_clusters",
+        "param_svr__C",
+        # "split0_test_score", "split1_test_score", "split2_test_score",
+        "mean_test_score", "mean_train_score"
+        # , "std_test_score", "std_train_score"
+    ]]
 
 # Rename the columns so it is clearer what they are about:
 score_cols = [ #"split0", "split1", "split2",
                 "mean_valid_rmse" , "mean_train_rmse"
-                #, "std_test_rmse", "std_train_rmse"
+                #, "std_valid_rmse", "std_train_rmse"
              ]
 svm_rand_cv_val_scores.columns = ["n_clusters", "C_svm"] + score_cols
 svm_rand_cv_val_scores[score_cols] = \
     -svm_rand_cv_val_scores[score_cols].round().astype(np.int64)
 
 print(svm_rand_cv_val_scores.head())
-#    n_clusters  C_svm  mean_valid_rmse  mean_train_rmse
-# 7          38    872            99370            99098
-# 3          23    615           103427           103282
-# 5          13    459           106495           106381
-# 0          41    436           107789           107641
-# 6          26    373           108778           108681
+#    n_clusters          C_svm  mean_valid_rmse  mean_train_rmse
+# 7          30  157055.109894            60956            36000
+# 0          41   30704.493884            65698            57676
+# 9           5   55054.347859            70831            69906
+# 4          32     141.379499            83031            82797
+# 2          13   58308.863783            85188            58926
 
 print("Stop code here while debugging.")
 print("here!")
-
 
 # ----------------------------------------------------------------------------80
 # Analyzing the Best Models and Their Errors
@@ -1671,5 +1678,6 @@ joblib.dump(final_model, "my_california_housing_model.pkl")
 
 print("Stop code here while debugging.")
 print("here!")
+
 print("\nEnd of code!")
 
