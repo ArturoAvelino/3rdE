@@ -1,13 +1,4 @@
-#c def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-#c     print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-#c if __name__ == '__main__':
-#c     print_hi('PyCharm')
-
-# ############################################################################80
+# My main template for end-to-end ml projects based on Ch2.
 
 from pathlib import Path
 import pandas as pd
@@ -1426,9 +1417,6 @@ print(svm_rand_cv_val_scores.head())
 # 4          32     141.379499            83031            82797
 # 2          13   58308.863783            85188            58926
 
-print("Stop code here while debugging.")
-print("here!")
-
 # ----------------------------------------------------------------------------80
 # Analyzing the Best Models and Their Errors
 
@@ -1546,7 +1534,7 @@ print(f"95% confidence interval for RMSE: [{rmse_lower:.2f}, {rmse_upper:.2f}]")
 # Save the final model:
 import joblib
 
-joblib.dump(final_model, "my_california_housing_model.pkl")
+joblib.dump(final_model, "trained_models/housing_randomforest.pkl")
 
 # ----------------------------------------------------------------------------80
 # Now you can deploy this model to production. For example, the following
@@ -1666,7 +1654,7 @@ joblib.dump(final_model, "my_california_housing_model.pkl")
 #c import joblib
 
 
-#c final_model_reloaded = joblib.load("my_california_housing_model.pkl")
+final_model_reloaded = joblib.load("trained_models/housing_randomforest.pkl")
 
 #c new_data = housing.iloc[:5]  # pretend these are new districts
 #c predictions = final_model_reloaded.predict(new_data)
