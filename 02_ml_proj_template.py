@@ -68,7 +68,7 @@ import matplotlib.pyplot as plt
 
 
 # extra code – code to save the figures as high-res PNGs for the book
-IMAGES_PATH = Path() / "images" / "end_to_end_project"
+IMAGES_PATH = Path() / "images" / "02_end_to_end_project"
 IMAGES_PATH.mkdir(parents=True, exist_ok=True)
 
 def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
