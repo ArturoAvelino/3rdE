@@ -33,8 +33,9 @@ print(X[:5])
 # --------------------------30
 # Create a 3D scatter plot of RGB colors.
 
-"""
 import matplotlib.pyplot as plt
+
+"""
 from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 
 # Create a 3D scatter plot
@@ -103,7 +104,6 @@ print(X_with_clusters[:5])    # Show first 5 rows as example
 print("Stop code here while debugging.")
 print("here!")
 
-
 # Creates a segmented_img array containing the nearest cluster center for
 # each pixel (i.e., the mean color of each pixel's cluster). It is,
 # replace the RGB numbers of each pixel for the average RGB number (the
@@ -119,9 +119,6 @@ segmented_img = segmented_img.reshape(image_np.shape)
 #pr print(segmented_img.shape)
 #out (1774, 1774, 3)
 
-print("Stop code here while debugging.")
-print("here!")
-
 plt.figure(figsize=(10, 10))
 plt.imshow(segmented_img / 255)
 plt.axis('off')
@@ -129,8 +126,6 @@ plt.title(f"Segmented image in {num_clusters} clusters")
 save_fig(f"segmented image in {num_clusters} clusters_test", tight_layout=False)
 #pl plt.show()
 #"""
-
-
 
 
 #TODO: Replace one of the clusters of colors found by k-means by another color, just to play and to gain control in changing the colors. The actual goal will be to remove the background color from the images I'm going to work on.
