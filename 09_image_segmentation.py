@@ -1,27 +1,8 @@
+
 # Image segmentation using clustering / k-means and DBSCAN
 
-# Define settings for the output figures that will be generated
-from pathlib import Path
-
-IMAGES_PATH = Path() / "images" / "09_unsupervised_learning"
-IMAGES_PATH.mkdir(parents=True, exist_ok=True)
-
-
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
-    path = IMAGES_PATH / f"{fig_id}.{fig_extension}"
-    if tight_layout:
-        plt.tight_layout()
-    plt.savefig(path, format=fig_extension, dpi=resolution)
-
-
+from figure_saving_utils import IMAGES_PATH, save_fig
 import matplotlib.pyplot as plt
-
-# Define the default font sizes to make the figures prettier
-plt.rc('font', size=14)
-plt.rc('axes', labelsize=14, titlesize=14)
-plt.rc('legend', fontsize=14)
-plt.rc('xtick', labelsize=10)
-plt.rc('ytick', labelsize=10)
 
 # ########################################################60
 # Image segmentation using k.means
@@ -31,6 +12,8 @@ import urllib.request
 homl3_root = "https://github.com/ageron/handson-ml3/raw/main/"
 filename = "ladybug.png"
 filepath = IMAGES_PATH / filename
+
+# Download the image if it doesn't already exist:
 if not filepath.is_file():
     print("Downloading", filename)
     url = f"{homl3_root}/images/unsupervised_learning/{filename}"
@@ -56,7 +39,7 @@ kmeans = KMeans(n_clusters=8, random_state=42).fit(X)
 #IDEA: I think it could be interesting to create the 3D or 2D scatter plot of RBG color numbers to visualize the distribution of the colors and distinguish by eye some the number of clusters, their shapes and how far or close they are between each other.
 
 # Creates a segmented_img array containing the nearest cluster center for
-# each pixel (i.e., the mean color of each pixel’s cluster). It is,
+# each pixel (i.e., the mean color of each pixel's cluster). It is,
 # replace the RGB numbers of each pixel for the average RGB number (the
 # center of its corresponding cluster) for that pixel.
 segmented_img = kmeans.cluster_centers_[kmeans.labels_]
@@ -88,7 +71,7 @@ for idx, n_clusters in enumerate(n_colors):
     plt.title(f"{n_clusters} colors")
     plt.axis('off')
 
-# save_fig('image_segmentation_plot', tight_layout=False)
+save_fig('image_segmentation_plot', tight_layout=False)
 #pl plt.show()
 
 # ########################################################60
