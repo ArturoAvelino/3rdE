@@ -34,7 +34,8 @@ X = image_np.reshape(-1, 3)
 # --------------------------30
 # Cluster the RGB colors using k-means, for one given number of clusters.
 
-kmeans = KMeans(n_clusters=8, random_state=42).fit(X)
+num_clusters = 8
+kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X)
 
 #IDEA: I think it could be interesting to create the 3D or 2D scatter plot of RBG color numbers to visualize the distribution of the colors and distinguish by eye some the number of clusters, their shapes and how far or close they are between each other.
 
@@ -46,6 +47,14 @@ segmented_img = kmeans.cluster_centers_[kmeans.labels_]
 
 # Reshape this array to the original image shape.
 segmented_img = segmented_img.reshape(image_np.shape)
+
+plt.figure(figsize=(10, 10))
+plt.imshow(segmented_img / 255)
+plt.axis('off')
+plt.title(f"Segmented Image in {num_clusters} clusters")
+save_fig(f"segmented Image in {num_clusters} clusters",
+         tight_layout=False)
+#pl plt.show()
 
 # --------------------------30
 # Try different number of clusters and plot the resulting images.
@@ -76,7 +85,3 @@ save_fig('image_segmentation_plot', tight_layout=False)
 
 # ########################################################60
 
-print("Stop code here while debugging.")
-print("here!")
-
-print("\nEnd of code!")
