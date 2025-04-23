@@ -20,7 +20,20 @@ image_np = np.asarray(Image.open(filepath))
 # is a 2D array with one row per pixel, and three columns for the RGB values.
 X = image_np.reshape(-1, 3)
 
+#pr print(X.shape)
+#out (3147076, 3)
+
+print(X[:5])
+#out [[  2  93 177]
+#out  [  2  95 179]
+#out  [  2  95 179]
+#out  [  2  93 177]
+#out  [  2  93 177]]
+
+# --------------------------30
 # Create a 3D scatter plot of RGB colors.
+
+"""
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 
@@ -52,17 +65,15 @@ ax.set_zlim([0, 255])
 
 save_fig(f"3D_scatter_plot_test", tight_layout=False)
 #pl plt.show() # It opens an interactive 3D window.
+"""
 
-print("Stop code here while debugging.")
-print("here!")
-
-# --------------------------30
+# --------------------------------------------------------60
 #"""
 # Cluster the RGB colors using k-means, for one given number of clusters.
 num_clusters = 4
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X)
 
-print(kmeans.cluster_centers_)
+#pr print(kmeans.cluster_centers_)
 #out [[  6.7428771  111.41620266 199.67297223] <-- light blue
 #out  [ 11.57404477  75.91582813 135.40045584] <-- the "shadows"
 #out  [ 15.39406447  26.70399306  43.90020637] <-- the "black color"
@@ -76,19 +87,36 @@ print(kmeans.cluster_centers_)
 #pr print(kmeans.labels_.shape)
 #out (3147076,)
 
+# Add to "X" a 4th column containing the cluster index for each pixel.
+X_with_clusters = np.column_stack((X, kmeans.labels_))
+
+print(X_with_clusters.shape)  # Should show (3147076, 4)
+#out (3147076, 4)
+
+print(X_with_clusters[:5])    # Show first 5 rows as example
+#out [[  2  93 177   3]
+#out  [  2  95 179   3]
+#out  [  2  95 179   3]
+#out  [  2  93 177   3]
+#out  [  2  93 177   3]]
+
+print("Stop code here while debugging.")
+print("here!")
+
+
 # Creates a segmented_img array containing the nearest cluster center for
 # each pixel (i.e., the mean color of each pixel's cluster). It is,
 # replace the RGB numbers of each pixel for the average RGB number (the
 # center of its corresponding cluster) for that pixel.
 segmented_img = kmeans.cluster_centers_[kmeans.labels_]
 
-print(segmented_img.shape)
+#pr print(segmented_img.shape)
 #out (3147076, 3)
 
 # Reshape this array to the original image shape.
 segmented_img = segmented_img.reshape(image_np.shape)
 
-print(segmented_img.shape)
+#pr print(segmented_img.shape)
 #out (1774, 1774, 3)
 
 print("Stop code here while debugging.")
