@@ -2,9 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 
-def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10)):
+def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10),
+                            xyz_limits=[0,255]):
     """
-    Create a 3D scatter plot of RGB values.
+    Create a 3D scatter plot of RGB values
     
     Parameters:
     -----------
@@ -32,7 +33,7 @@ def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10)):
     scatter = ax.scatter(X_sample[:, 0],  # Red channel
                         X_sample[:, 1],  # Green channel
                         X_sample[:, 2],  # Blue channel
-                        c=X_sample/255,   # Color points according to their RGB values
+                        # c=X_sample/255, # Color points according to their RGB values
                         marker='.')
 
     # Set labels and title
@@ -42,9 +43,9 @@ def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10)):
     ax.set_title('3D Scatter Plot of RGB Values')
 
     # Set axis limits
-    ax.set_xlim([0, 255])
-    ax.set_ylim([0, 255])
-    ax.set_zlim([0, 255])
+    ax.set_xlim(xyz_limits)
+    ax.set_ylim(xyz_limits)
+    ax.set_zlim(xyz_limits)
     
     return fig, ax
 

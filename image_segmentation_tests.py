@@ -7,13 +7,18 @@ from utils.figure_saving_utils import IMAGES_PATH, save_fig
 filename = "image_test_1.png"
 filepath = IMAGES_PATH / filename
 
+from utils.rgb_scatter_plotter import create_rgb_scatter_plot
+# from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
+import matplotlib.pyplot as plt
+
+
 from PIL import Image
 import numpy as np
 from sklearn.cluster import KMeans
 
 # Upload the image:
 image_np = np.asarray(Image.open(filepath))
-#pr print(image_np.shape)
+# print(image_np.shape)
 #out (1774, 1774, 3)
 
 # print(image_np[:1])
@@ -37,7 +42,7 @@ image_np = np.asarray(Image.open(filepath))
 # - The resulting shape will be (1774*1774, 3) = (3147076, 3)
 X = image_np.reshape(-1, 3)
 
-#pr print(X.shape)
+# print(X.shape)
 #out (3147076, 3)
 
 # print(X[:5])
@@ -50,27 +55,64 @@ X = image_np.reshape(-1, 3)
 # --------------------------30
 # Create a 3D scatter plot of RGB colors.
 
-from utils.rgb_scatter_plotter import create_rgb_scatter_plot
-# from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
-import matplotlib.pyplot as plt
-
 # For basic RGB scatter plot
-fig, ax = create_rgb_scatter_plot(X)
-save_fig("3D_scatter_plot_data", tight_layout=False)
+# fig, ax = create_rgb_scatter_plot(X)
+# save_fig("3D_scatter_plot_data", tight_layout=False)
+# plt.show()
+
+# --------------------------------------------------------60
+# Feature scaling the RBG values.
+
+# --------------------------30
+# Min-max scaling.
+
+# from sklearn.preprocessing import MinMaxScaler
+
+# X_scale = MinMaxScaler(feature_range=(-1,1)).fit_transform(X)
+
+# print(X_scale.shape)
+#out (3147076, 3)
+
+# print(X_scale[:5])
+#out [[-0.98312236 -0.24696356  0.42040816]
+#out  [-0.98312236 -0.23076923  0.43673469]
+#out  [-0.98312236 -0.23076923  0.43673469]
+#out  [-0.98312236 -0.24696356  0.42040816]
+#out  [-0.98312236 -0.24696356  0.42040816]]
+
+# --------------------------30
+# Standardization scaling
+
+from sklearn.preprocessing import StandardScaler
+
+X_scale = StandardScaler().fit_transform(X)
+
+# print(X_scale.shape)
+#out (3147076, 3)
+
+# print(X_scale[:5])
+#out [[-0.3886278  -0.63483976 -0.40989422]
+#out  [-0.3886278  -0.49507547 -0.32828273]
+#out  [-0.3886278  -0.49507547 -0.32828273]
+#out  [-0.3886278  -0.63483976 -0.40989422]
+#out  [-0.3886278  -0.63483976 -0.40989422]]
+
+# --------------------------30
+# 3D scatter plot of scaled RGB colors.
+
+# fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[-1,1])
+# save_fig("3D_scatter_data_scaled_minmax", tight_layout=False)
+
+fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[-7,7])
+save_fig("3D_scatter_data_scaled_std", tight_layout=False)
 plt.show()
 
 print("Stop code here while debugging.")
 print("here!")
 
-# --------------------------------------------------------60
-# Feature scaling the RBG values. Min-max scaling.
-
-from sklearn.preprocessing import MinMaxScaler
-
-X_scale = MinMaxScaler(feature_range=(-1,1)).fit_transform(X)
 
 # --------------------------------------------------------60
-# Feature scaling the RBG values. Standard scaling.
+# Feature scaling the RBG values.
 
 # --------------------------------------------------------60
 #"""
