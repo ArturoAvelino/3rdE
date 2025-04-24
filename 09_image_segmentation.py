@@ -1,7 +1,7 @@
 
 # Image segmentation using clustering / k-means and DBSCAN
 
-from figure_saving_utils import IMAGES_PATH, save_fig
+from utils.figure_saving_utils import IMAGES_PATH, save_fig
 import matplotlib.pyplot as plt
 
 # ########################################################60

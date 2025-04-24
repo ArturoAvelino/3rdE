@@ -2,7 +2,7 @@
 
 # k-means
 
-from figure_saving_utils import IMAGES_PATH, save_fig
+from utils.figure_saving_utils import IMAGES_PATH, save_fig
 
 filename = "image_test_1.png"
 filepath = IMAGES_PATH / filename
@@ -50,7 +50,7 @@ X = image_np.reshape(-1, 3)
 # --------------------------30
 # Create a 3D scatter plot of RGB colors.
 
-from rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot
+from utils.rgb_scatter_plotter import create_rgb_scatter_plot
 # from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 import matplotlib.pyplot as plt
 
@@ -71,8 +71,6 @@ X_scale = MinMaxScaler(feature_range=(-1,1)).fit_transform(X)
 
 # --------------------------------------------------------60
 # Feature scaling the RBG values. Standard scaling.
-
-from sklearn.preprocessing import StandardScaler
 
 # --------------------------------------------------------60
 #"""
@@ -101,7 +99,6 @@ kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 # of the data points in the scatter plot.
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 # Add to "X" a 4th column containing the cluster index for each pixel.
 X_with_clusters = np.column_stack((X, kmeans.labels_))
