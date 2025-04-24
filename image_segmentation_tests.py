@@ -16,8 +16,25 @@ image_np = np.asarray(Image.open(filepath))
 #pr print(image_np.shape)
 #out (1774, 1774, 3)
 
+# print(image_np[:1])
+#out [[[  2  93 177]
+#out   [  2  95 179]
+#out   [  2  95 179]
+#out   ...
+#out   [  1  94 176]
+#out   [  1  90 172]
+#out   [  1  90 172]]]
+
+# Save the array data to a text file
+#c with open('array_values_1.txt', 'w') as f:
+#c     f.write(str(image_np[:1]))
+
 # Reshape the array to get a list of the RGB colors. The X variable
 # is a 2D array with one row per pixel, and three columns for the RGB values.
+# The "X" variable only contains the RGB values.
+# - The `-1` tells numpy to automatically calculate the first dimension
+# - The `3` preserves the RGB channels in the second dimension
+# - The resulting shape will be (1774*1774, 3) = (3147076, 3)
 X = image_np.reshape(-1, 3)
 
 #pr print(X.shape)
@@ -101,8 +118,52 @@ print(X_with_clusters[:5])    # Show first 5 rows as example
 #out  [  2  93 177   3]
 #out  [  2  93 177   3]]
 
+# --------------------------30
+# Create a 3D scatter plot of the `X_with_clusters` array, using the first
+# 3 values of each row as the x,y,z values, and the 4th value for the color
+# of the data points in the scatter plot.
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Create a 3D scatter plot
+fig = plt.figure(figsize=(10, 10))
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot a subset of points to avoid overcrowding (every 1000th point)
+sample_indices = np.arange(0, len(X_with_clusters), 1000)
+X_sample = X_with_clusters[sample_indices]
+
+# Create the scatter plot
+scatter = ax.scatter(X_sample[:, 0],    # x-coordinate (Red channel)
+                    X_sample[:, 1],    # y-coordinate (Green channel)
+                    X_sample[:, 2],    # z-coordinate (Blue channel)
+                    c=X_sample[:, 3],  # color based on cluster labels
+                    cmap='viridis',    # color map
+                    marker='.')
+
+# Set labels
+ax.set_xlabel('Red')
+ax.set_ylabel('Green')
+ax.set_zlabel('Blue')
+ax.set_title('3D Scatter Plot of RGB Values with Cluster Colors')
+
+# Set axis limits
+ax.set_xlim([0, 255])
+ax.set_ylim([0, 255])
+ax.set_zlim([0, 255])
+
+# Add a color bar
+plt.colorbar(scatter, label='Cluster')
+
+# Save the figure
+save_fig("3D_scatter_plot_with_clusters", tight_layout=False)
+plt.show()  # Uncomment this line if you want to display the plot interactively
+
 print("Stop code here while debugging.")
 print("here!")
+
+# --------------------------30
 
 # Creates a segmented_img array containing the nearest cluster center for
 # each pixel (i.e., the mean color of each pixel's cluster). It is,
@@ -126,7 +187,6 @@ plt.title(f"Segmented image in {num_clusters} clusters")
 save_fig(f"segmented image in {num_clusters} clusters_test", tight_layout=False)
 #pl plt.show()
 #"""
-
 
 #TODO: Replace one of the clusters of colors found by k-means by another color, just to play and to gain control in changing the colors. The actual goal will be to remove the background color from the images I'm going to work on.
 
