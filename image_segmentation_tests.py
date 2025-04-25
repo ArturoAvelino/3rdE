@@ -7,7 +7,7 @@ from utils.figure_saving_utils import IMAGES_PATH, save_fig
 filename = "image_test_1.png"
 filepath = IMAGES_PATH / filename
 
-from utils.rgb_scatter_plotter import create_rgb_scatter_plot
+from utils.rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot
 import matplotlib.pyplot as plt
 
 
@@ -91,7 +91,7 @@ X_scale = rgb_min_max_scaler.fit_transform(X)
 #out  [-0.98312236 -0.24696356  0.42040816]]
 
 # 3D scatter plot of scaled RGB colors.
-# fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[-1,1])
+# fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[0,1])
 # save_fig("3D_scatter_data_scaled_minmax", tight_layout=False)
 # plt.show()
 
@@ -124,7 +124,7 @@ X_scale = rgb_min_max_scaler.fit_transform(X)
 num_clusters = 4
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 
-print(kmeans.cluster_centers_)
+# print(kmeans.cluster_centers_)
 # Using minmax (0,1) scaled data as input
 #out [[0.02849851 0.45114902 0.80280148]
 #out  [0.04873553 0.30753323 0.54082359]
@@ -144,17 +144,14 @@ print(kmeans.cluster_centers_)
 #out  [  1.89296706  98.62630945 184.93387298]] <-- light blue
 
 # --------------------------30
-# Unscale the `kmeans.cluster_centers_` values
+# Unscale the `kmeans.cluster_centers_` values to the original RGB scale
 kmeans_centers_unscaled = rgb_min_max_scaler.inverse_transform(kmeans.cluster_centers_)
 
-print(kmeans_centers_unscaled)
+# print(kmeans_centers_unscaled)
 #out [[  6.75414749 111.4338081  199.68636363]
 #out  [ 11.55032022  75.96070846 135.5017801 ]
 #out  [ 15.45405794  26.77372311  43.97008044]
 #out  [  1.89103352  98.63780482 184.95536129]]
-
-print("Stop code here while debugging.")
-print("here!")
 
 # --------------------------30
 # "kmeans.labels_" contains the index of the cluster each pixel belongs to. For
@@ -185,38 +182,9 @@ print(X_with_clusters[:5])    # Show first 5 rows as example
 
 # --------------------------30
 # Create a 3D scatter plot of the `X_with_clusters` array.
-fig = plt.figure(figsize=(10, 10))
-ax = fig.add_subplot(111, projection='3d')
-
-# Plot a subset of points to avoid overcrowding (every 1000th point)
-sample_indices = np.arange(0, len(X_with_clusters), 1000)
-X_sample = X_with_clusters[sample_indices]
-
-# Create the scatter plot
-scatter = ax.scatter(X_sample[:, 0],    # x-coordinate (Red channel)
-                    X_sample[:, 1],    # y-coordinate (Green channel)
-                    X_sample[:, 2],    # z-coordinate (Blue channel)
-                    c=X_sample[:, 3],  # color based on cluster labels
-                    cmap='viridis',    # color map
-                    marker='.')
-
-# Set labels
-ax.set_xlabel('Red')
-ax.set_ylabel('Green')
-ax.set_zlabel('Blue')
-ax.set_title('3D Scatter Plot of RGB Values with Cluster Colors')
-
-# Set axis limits
-ax.set_xlim([0, 255])
-ax.set_ylim([0, 255])
-ax.set_zlim([0, 255])
-
-# Add a color bar
-plt.colorbar(scatter, label='Cluster')
-
-# Save the figure
+fig, ax = create_cluster_scatter_plot(X_with_clusters)
 save_fig("3D_scatter_plot_with_clusters", tight_layout=False)
-plt.show()  # Uncomment this line if you want to display the plot interactively
+plt.show()
 
 print("Stop code here while debugging.")
 print("here!")
