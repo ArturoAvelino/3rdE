@@ -49,7 +49,8 @@ def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10),
     
     return fig, ax
 
-def create_cluster_scatter_plot(X_with_clusters, sample_step=1000, figsize=(10, 10)):
+def create_cluster_scatter_plot(X_with_clusters, sample_step=1000,
+                                figsize=(10, 10), xyz_limits=[0,255]):
     """
     Create a 3D scatter plot of RGB values colored by cluster.
     
@@ -91,9 +92,9 @@ def create_cluster_scatter_plot(X_with_clusters, sample_step=1000, figsize=(10, 
     ax.set_title('3D Scatter Plot of RGB Values with Cluster Colors')
 
     # Set axis limits
-    ax.set_xlim([0, 255])
-    ax.set_ylim([0, 255])
-    ax.set_zlim([0, 255])
+    ax.set_xlim(xyz_limits)
+    ax.set_ylim(xyz_limits)
+    ax.set_zlim(xyz_limits)
 
     # Add a color bar
     plt.colorbar(scatter, label='Cluster')

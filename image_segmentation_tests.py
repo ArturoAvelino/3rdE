@@ -8,7 +8,6 @@ filename = "image_test_1.png"
 filepath = IMAGES_PATH / filename
 
 from utils.rgb_scatter_plotter import create_rgb_scatter_plot
-# from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 import matplotlib.pyplot as plt
 
 
@@ -30,12 +29,13 @@ image_np = np.asarray(Image.open(filepath))
 #out   [  1  90 172]
 #out   [  1  90 172]]]
 
-# Save the array data to a text file
-#c with open('array_values_1.txt', 'w') as f:
-#c     f.write(str(image_np[:1]))
+# (Optional) Save the array data to a text file
+# with open('array_values_1.txt', 'w') as f:
+#     f.write(str(image_np[:1]))
 
-# Reshape the array to get a list of the RGB colors. The X variable
-# is a 2D array with one row per pixel, and three columns for the RGB values.
+# Reshape the array to subtract and get a list of the RGB colors. The X
+# variable is a 2D array with one row per pixel, and three columns for the
+# RGB values.
 # The "X" variable only contains the RGB values.
 # - The `-1` tells numpy to automatically calculate the first dimension
 # - The `3` preserves the RGB channels in the second dimension
@@ -55,37 +55,52 @@ X = image_np.reshape(-1, 3)
 # --------------------------30
 # Create a 3D scatter plot of RGB colors.
 
-# For basic RGB scatter plot
+# Scatter plot of the raw RGB data
 # fig, ax = create_rgb_scatter_plot(X)
-# save_fig("3D_scatter_plot_data", tight_layout=False)
+# save_fig("3D_scatter_plot_data_row", tight_layout=False)
 # plt.show()
 
 # --------------------------------------------------------60
 # Feature scaling the RBG values.
 
 # --------------------------30
-# Min-max scaling.
+# Min-max scaling
 
-# from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 
-# X_scale = MinMaxScaler(feature_range=(-1,1)).fit_transform(X)
+rgb_min_max_scaler = MinMaxScaler(feature_range=(0,1))
+
+X_scale = rgb_min_max_scaler.fit_transform(X)
 
 # print(X_scale.shape)
 #out (3147076, 3)
 
 # print(X_scale[:5])
+# Minmax to (0,1)
+#out [[0.00843882 0.37651822 0.71020408]
+#out  [0.00843882 0.38461538 0.71836735]
+#out  [0.00843882 0.38461538 0.71836735]
+#out  [0.00843882 0.37651822 0.71020408]
+#out  [0.00843882 0.37651822 0.71020408]]
+
+# Minmax to (-1,1)
 #out [[-0.98312236 -0.24696356  0.42040816]
 #out  [-0.98312236 -0.23076923  0.43673469]
 #out  [-0.98312236 -0.23076923  0.43673469]
 #out  [-0.98312236 -0.24696356  0.42040816]
 #out  [-0.98312236 -0.24696356  0.42040816]]
 
+# 3D scatter plot of scaled RGB colors.
+# fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[-1,1])
+# save_fig("3D_scatter_data_scaled_minmax", tight_layout=False)
+# plt.show()
+
 # --------------------------30
 # Standardization scaling
 
-from sklearn.preprocessing import StandardScaler
+#c from sklearn.preprocessing import StandardScaler
 
-X_scale = StandardScaler().fit_transform(X)
+#c X_scale = StandardScaler().fit_transform(X)
 
 # print(X_scale.shape)
 #out (3147076, 3)
@@ -97,36 +112,51 @@ X_scale = StandardScaler().fit_transform(X)
 #out  [-0.3886278  -0.63483976 -0.40989422]
 #out  [-0.3886278  -0.63483976 -0.40989422]]
 
-# --------------------------30
 # 3D scatter plot of scaled RGB colors.
-
-# fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[-1,1])
-# save_fig("3D_scatter_data_scaled_minmax", tight_layout=False)
-
-fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[-7,7])
-save_fig("3D_scatter_data_scaled_std", tight_layout=False)
-plt.show()
-
-print("Stop code here while debugging.")
-print("here!")
-
+# fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[-7,7])
+# save_fig("3D_scatter_data_scaled_std", tight_layout=False)
+# plt.show()
 
 # --------------------------------------------------------60
-# Feature scaling the RBG values.
 
-# --------------------------------------------------------60
-#"""
 # Cluster the RGB colors using k-means, for one given number of clusters.
 
 num_clusters = 4
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 
-#pr print(kmeans.cluster_centers_)
+print(kmeans.cluster_centers_)
+# Using minmax (0,1) scaled data as input
+#out [[0.02849851 0.45114902 0.80280148]
+#out  [0.04873553 0.30753323 0.54082359]
+#out  [0.065207   0.10839564 0.16722482]
+#out  [0.00797904 0.39934334 0.74267494]]
+
+# Using the standardized data as input
+#out [[ 0.35528753  0.65323557  0.50628813]
+#out  [-0.40808366 -0.29847904 -0.14710305]
+#out  [10.04393369 -0.80567403 -3.04937622]
+#out  [ 1.11338711 -4.98331563 -5.42917336]]
+
+# Using the raw (i.e., unscaled) data as input
 #out [[  6.7428771  111.41620266 199.67297223] <-- light blue
 #out  [ 11.57404477  75.91582813 135.40045584] <-- the "shadows"
 #out  [ 15.39406447  26.70399306  43.90020637] <-- the "black color"
 #out  [  1.89296706  98.62630945 184.93387298]] <-- light blue
 
+# --------------------------30
+# Unscale the `kmeans.cluster_centers_` values
+kmeans_centers_unscaled = rgb_min_max_scaler.inverse_transform(kmeans.cluster_centers_)
+
+print(kmeans_centers_unscaled)
+#out [[  6.75414749 111.4338081  199.68636363]
+#out  [ 11.55032022  75.96070846 135.5017801 ]
+#out  [ 15.45405794  26.77372311  43.97008044]
+#out  [  1.89103352  98.63780482 184.95536129]]
+
+print("Stop code here while debugging.")
+print("here!")
+
+# --------------------------30
 # "kmeans.labels_" contains the index of the cluster each pixel belongs to. For
 # a number of clusters equal to 4, it is a 1774x1 array of integers from 0 to 3.
 #pr print(len(kmeans.labels_))
@@ -136,11 +166,9 @@ kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 #out (3147076,)
 
 # --------------------------30
-# Create a 3D scatter plot of the `X_with_clusters` array, using the first
+# Create a `X_with_clusters` array, using the first
 # 3 values of each row as the x,y,z values, and the 4th value for the color
 # of the data points in the scatter plot.
-
-import matplotlib.pyplot as plt
 
 # Add to "X" a 4th column containing the cluster index for each pixel.
 X_with_clusters = np.column_stack((X, kmeans.labels_))
@@ -155,7 +183,8 @@ print(X_with_clusters[:5])    # Show first 5 rows as example
 #out  [  2  93 177   3]
 #out  [  2  93 177   3]]
 
-# Create a 3D scatter plot
+# --------------------------30
+# Create a 3D scatter plot of the `X_with_clusters` array.
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(111, projection='3d')
 
@@ -195,7 +224,7 @@ print("here!")
 # --------------------------30
 
 # Creates a segmented_img array containing the nearest cluster center for
-# each pixel (i.e., the mean color of each pixel's cluster). It is,
+# each pixel (i.e., the mean color of each pixel'sa cluster). It is,
 # replace the RGB numbers of each pixel for the average RGB number (the
 # center of its corresponding cluster) for that pixel.
 segmented_img = kmeans.cluster_centers_[kmeans.labels_]
@@ -215,7 +244,6 @@ plt.axis('off')
 plt.title(f"Segmented image in {num_clusters} clusters")
 save_fig(f"segmented image in {num_clusters} clusters_test", tight_layout=False)
 #pl plt.show()
-#"""
 
 #TODO: Replace one of the clusters of colors found by k-means by another color, just to play and to gain control in changing the colors. The actual goal will be to remove the background color from the images I'm going to work on.
 
@@ -248,8 +276,5 @@ save_fig(f"segmented image in multiple clusters_test",
 #pl plt.show()
 
 # ########################################################60
-
-print("Stop code here while debugging.")
-print("here!")
 
 print("\nEnd of code!")
