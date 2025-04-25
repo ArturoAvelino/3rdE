@@ -213,24 +213,23 @@ X_with_clusters = np.column_stack((X, kmeans.labels_))
 # replace the RGB numbers of each pixel for the average RGB number (the
 # center of its corresponding cluster) for that pixel.
 #old segmented_img = kmeans.cluster_centers_[kmeans.labels_]
-
 segmented_img = kmeans_centers_unscaled[kmeans.labels_]
 
-print(segmented_img.shape)
+# print(segmented_img.shape)
 #out (3147076, 3)
 
-print("segmented_img[:2]:\n")
-print(segmented_img[:2])
+# print("segmented_img[:2]:\n")
+# print(segmented_img[:2])
 #out [[  1.89103352  98.63780482 184.95536129]
 #out  [  1.89103352  98.63780482 184.95536129]]
 
 # Reshape this array to the original image shape.
 segmented_img = segmented_img.reshape(image_np.shape)
 
-print(segmented_img.shape)
+# print(segmented_img.shape)
 #out (1774, 1774, 3)
 
-print("segmented_img reshaped:\n")
+# print("segmented_img reshaped:\n")
 # print(segmented_img[:2])
 #out [[[  1.89103352  98.63780482 184.95536129]
 #out   [  1.89103352  98.63780482 184.95536129]
@@ -251,6 +250,8 @@ save_fig(f"image_{num_clusters}_clusters", tight_layout=False)
 
 # --------------------------30
 # Try different number of clusters and plot the resulting images.
+
+# Watch out. This clustering is done using the *unscaled* RGB data.
 
 segmented_imgs = []
 n_colors = (10, 8, 6, 4, 2)
@@ -273,16 +274,12 @@ for idx, n_clusters in enumerate(n_colors):
     plt.title(f"{n_clusters} colors")
     plt.axis('off')
 
-save_fig(f"segmented image in multiple clusters_test",
-         tight_layout=False)
+save_fig("image_multiple_clusters", tight_layout=False)
 #pl plt.show()
 
 # ========================================================60
 # Remove the background colors
 
-#TODO: Replace one of the clusters of colors found by k-means by another color, just to play and to gain control in changing the colors. The actual goal will be to remove the background color from the images I'm going to work on.
-
-# --------------------------30
 # Create a new array where the RGB values (first three columns) are set to
 # 255 when the cluster value (fourth column) is not 2.
 
@@ -310,7 +307,7 @@ plt.imshow(modified_image / 255)
 plt.axis('off')
 plt.title("Image with background color removed")
 save_fig("image_no_background", tight_layout=False)
-plt.show()
+# plt.show()
 
 # ########################################################60
 
