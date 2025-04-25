@@ -242,9 +242,6 @@ print("segmented_img reshaped:\n")
 #out  [[  1.89103352  98.63780482 184.95536129]
 #out   [  1.89103352  98.63780482 184.95536129]
 
-print("Stop code here while debugging.")
-print("here!")
-
 plt.figure(figsize=(10, 10))
 plt.imshow(segmented_img / 255)
 plt.axis('off')
