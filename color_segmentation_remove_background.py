@@ -26,10 +26,6 @@ image_np = np.asarray(Image.open(filepath))
 #out   [  1  90 172]
 #out   [  1  90 172]]]
 
-# (Optional) Save the array data to a text file
-# with open('array_values_1.txt', 'w') as f:
-#     f.write(str(image_np[:1]))
-
 # --------------------------30
 # Plot the original image to check that it is correctly processed by the code
 # and also to easily compare with the other processed images that this code
@@ -299,6 +295,18 @@ modified_array[mask, 0:3] = 255
 
 # Reshape to image dimensions (excluding the cluster column)
 modified_image = modified_array[:, 0:3].reshape(image_np.shape)
+
+print(modified_image[:1])
+#out [[[255 255 255]
+#out   [255 255 255]
+#out   [255 255 255]
+#out   ...
+#out   [255 255 255]
+#out   [255 255 255]
+#out   [255 255 255]]]
+
+print("Stop code here while debugging.")
+print("here!")
 
 # Plot the modified image.
 plt.figure(figsize=(10, 10))
