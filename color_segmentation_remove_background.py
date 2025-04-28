@@ -1,7 +1,5 @@
 # Color segmentation to remove the background color
 
-# k-means
-
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
 
 filename = "image_original.png"
@@ -9,7 +7,6 @@ filepath = IMAGES_PATH / filename
 
 from utils.rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot
 import matplotlib.pyplot as plt
-
 
 from PIL import Image
 import numpy as np
@@ -180,9 +177,7 @@ kmeans_centers_unscaled = rgb_min_max_scaler.inverse_transform(kmeans.cluster_ce
 # print(kmeans.labels_[:5])
 #out [3 3 3 3 3]
 
-# --------------------------------------------------------60
-# Inspect how well the clustering has been done
-
+# --------------------------30
 # Create a `X_with_clusters` array, using the first
 # 3 values of each row as the x,y,z values, and the 4th value for the color
 # of the data points in the scatter plot.
@@ -200,7 +195,10 @@ X_with_clusters = np.column_stack((X, kmeans.labels_))
 #out  [  2  93 177   3]
 #out  [  2  93 177   3]]
 
-# --------------------------30
+# --------------------------------------------------------60
+# Inspect how well the clustering has been done
+
+"""
 # Create a 3D scatter plot of the `X_with_clusters` array.
 fig, ax = create_cluster_scatter_plot(X_with_clusters)
 save_fig("3D_scatter_plot_with_clusters", tight_layout=False)
@@ -247,7 +245,7 @@ plt.axis('off')
 plt.title(f"Segmented image in {num_clusters} clusters")
 save_fig(f"image_{num_clusters}_clusters", tight_layout=False)
 #pl plt.show()
-
+"""
 # --------------------------30
 # Try different number of clusters and plot the resulting images.
 
@@ -302,11 +300,13 @@ modified_array[mask, 0:3] = 255
 # Reshape to image dimensions (excluding the cluster column)
 modified_image = modified_array[:, 0:3].reshape(image_np.shape)
 
+# Plot the modified image.
 plt.figure(figsize=(10, 10))
 plt.imshow(modified_image / 255)
 plt.axis('off')
+save_fig("image_no_background_for_input_", tight_layout=False)
 plt.title("Image with background color removed")
-save_fig("image_no_background", tight_layout=False)
+save_fig("image_no_background_with_margins", tight_layout=False)
 # plt.show()
 
 # ########################################################60
