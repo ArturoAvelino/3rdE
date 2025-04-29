@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 from PIL import Image
 import numpy as np
-from sklearn.cluster import KMeans
 
 # Upload the image:
 image_np = np.asarray(Image.open(filepath))
@@ -110,12 +109,19 @@ filtered_image = reshaped_image[mask]
 # print(filtered_image.shape)
 #out (119471, 6)
 
-print(filtered_image[:5])
+# print(filtered_image[:5])
 #out [[ 254.  254.  254.  255.  417. 1546.]
 #out  [  85.  114.  144.  255.  417. 1547.]
 #out  [  66.   95.  128.  255.  417. 1548.]
 #out  [  66.   93.  125.  255.  417. 1549.]
 #out  [  70.   96.  127.  255.  417. 1550.]]
+
+# print(filtered_image[:5, 4:6])
+#out [[ 417. 1546.]
+#out  [ 417. 1547.]
+#out  [ 417. 1548.]
+#out  [ 417. 1549.]
+#out  [ 417. 1550.]]
 
 # --------------------------30
 # Tmp: not really needed, but I'll keep it for now.
@@ -133,6 +139,49 @@ image_with_coords = filtered_image.reshape(new_height, 1, 6)
 
 # print(image_with_coords[:1])
 #out [[[ 254.  254.  254.  255.  417. 1546.]]]
+
+# ========================================================60
+# Feature scaling
+
+#TODO: feature scaling
+
+# ========================================================60
+# Clustering / k-means for instance segmentation
+
+from sklearn.cluster import KMeans
+
+num_clusters = 24
+kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(filtered_image[:, 4:6])
+
+# print(kmeans.cluster_centers_[:5])
+#out [[1258.92688828  859.49274143]
+#out  [2218.29268038 2374.686123  ]
+#out  [1541.96963902 1863.79954578]
+#out  [2352.22126984 1594.66507937]
+#out  [ 456.05953533 1523.28896418]]
+
+# Add a 7th column containing the cluster index for each pixel.
+X_with_clusters = np.column_stack((filtered_image, kmeans.labels_))
+
+# print(X_with_clusters.shape)
+#out (119471, 7)
+
+# print(X_with_clusters[:5])
+#out [[ 254.  254.  254.  255.  417. 1546.    4.]
+#out  [  85.  114.  144.  255.  417. 1547.    4.]
+#out  [  66.   95.  128.  255.  417. 1548.    4.]
+#out  [  66.   93.  125.  255.  417. 1549.    4.]
+#out  [  70.   96.  127.  255.  417. 1550.    4.]]
+
+# --------------------------------------------------------60
+# Inspect how well the clustering has been done
+
+from utils.rgb_scatter_plotter import create_cluster_scatter_plot
+
+# Create a 3D scatter plot of the `X_with_clusters` array.
+fig, ax = create_cluster_scatter_plot(X_with_clusters)
+save_fig("3D_plot_with_clusters_", tight_layout=False)
+plt.show()
 
 # ########################################################60
 
