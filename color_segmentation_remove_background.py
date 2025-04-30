@@ -305,9 +305,6 @@ print(modified_image[:1])
 #out   [255 255 255]
 #out   [255 255 255]]]
 
-print("Stop code here while debugging.")
-print("here!")
-
 # Plot the modified image.
 plt.figure(figsize=(10, 10))
 plt.imshow(modified_image / 255)
@@ -318,5 +315,3 @@ save_fig("image_no_background_with_margins", tight_layout=False)
 # plt.show()
 
 # ########################################################60
-
-print("\nEnd of code!")

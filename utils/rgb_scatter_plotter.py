@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 
+
 def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10),
                             xyz_limits=[0,255]):
     """
@@ -48,6 +49,7 @@ def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10),
     ax.set_zlim(xyz_limits)
     
     return fig, ax
+
 
 def create_cluster_scatter_plot(X_with_clusters, sample_step=1000,
                                 figsize=(10, 10), xyz_limits=[0,255]):
@@ -100,3 +102,4 @@ def create_cluster_scatter_plot(X_with_clusters, sample_step=1000,
     plt.colorbar(scatter, label='Cluster')
     
     return fig, ax
+

@@ -125,7 +125,7 @@ filtered_image = reshaped_image[mask]
 
 # --------------------------30
 # Tmp: not really needed, but I'll keep it for now.
-
+""" 
 # Reshape back to original dimensions
 new_height = filtered_image.shape[0]  # Number of remaining pixels
 
@@ -139,6 +139,7 @@ image_with_coords = filtered_image.reshape(new_height, 1, 6)
 
 # print(image_with_coords[:1])
 #out [[[ 254.  254.  254.  255.  417. 1546.]]]
+"""
 
 # ========================================================60
 # Feature scaling
@@ -174,14 +175,26 @@ X_with_clusters = np.column_stack((filtered_image, kmeans.labels_))
 #out  [  70.   96.  127.  255.  417. 1550.    4.]]
 
 # --------------------------------------------------------60
-# Inspect how well the clustering has been done
+# Inspect how well the clustering has been done.
 
-from utils.rgb_scatter_plotter import create_cluster_scatter_plot
+# from utils.rgb_scatter_plotter import create_cluster_scatter_plot
 
-# Create a 3D scatter plot of the `X_with_clusters` array.
-fig, ax = create_cluster_scatter_plot(X_with_clusters)
-save_fig("3D_plot_with_clusters_", tight_layout=False)
+plt.figure(figsize=(10, 10))
+plt.scatter(X_with_clusters[:, 4], X_with_clusters[:, 5],
+           c=X_with_clusters[:, 6],
+           cmap='tab20',  # Using tab20 colormap for better distinction between clusters
+           alpha=0.6)      # Some transparency to better see overlapping points
+plt.colorbar(label='Cluster')
+plt.xlabel('X coordinate')
+plt.ylabel('Y coordinate')
+plt.title('2D Scatter Plot of Pixel Positions Colored by Cluster')
+save_fig("2D_x-y_plot_with_clusters_", tight_layout=True)
 plt.show()
+
+# ========================================================60
+# Clustering by simply choosing pixels that are together.
+
+
 
 # ########################################################60
 
