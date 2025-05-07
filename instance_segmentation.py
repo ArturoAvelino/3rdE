@@ -125,21 +125,20 @@ filtered_image = reshaped_image[mask]
 
 # --------------------------30
 # Tmp: not really needed, but I'll keep it for now.
-""" 
-# Reshape back to original dimensions
-new_height = filtered_image.shape[0]  # Number of remaining pixels
 
-# print(new_height)
-# 119471
-
-image_with_coords = filtered_image.reshape(new_height, 1, 6)
-
-# print(image_with_coords.shape)
-#out (119471, 1, 6)
-
-# print(image_with_coords[:1])
-#out [[[ 254.  254.  254.  255.  417. 1546.]]]
-"""
+#may # Reshape back to original dimensions
+#may new_height = filtered_image.shape[0]  # Number of remaining pixels
+#may
+#may # print(new_height)
+#may # 119471
+#may
+#may image_with_coords = filtered_image.reshape(new_height, 1, 6)
+#may
+#may # print(image_with_coords.shape)
+#may #out (119471, 1, 6)
+#may
+#may # print(image_with_coords[:1])
+#may #out [[[ 254.  254.  254.  255.  417. 1546.]]]
 
 # ========================================================60
 # Feature scaling
@@ -149,6 +148,7 @@ image_with_coords = filtered_image.reshape(new_height, 1, 6)
 # ========================================================60
 # Clustering / k-means for instance segmentation
 
+"""
 from sklearn.cluster import KMeans
 
 num_clusters = 24
@@ -189,7 +189,8 @@ plt.xlabel('X coordinate')
 plt.ylabel('Y coordinate')
 plt.title('2D Scatter Plot of Pixel Positions Colored by Cluster')
 save_fig("2D_x-y_plot_with_clusters_", tight_layout=True)
-plt.show()
+# plt.show()
+"""
 
 # ========================================================60
 # Clustering by simply choosing pixels that are together.
