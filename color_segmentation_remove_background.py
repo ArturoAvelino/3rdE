@@ -210,7 +210,7 @@ X_with_clusters = np.column_stack((X, kmeans.labels_))
 # print(X_with_clusters.shape)  # Should show (3147076, 4)
 #out (3147076, 4)
 
-print(X_with_clusters[:5])    # Show first 5 rows as example
+# print(X_with_clusters[:5])    # Show first 5 rows as example
 #out [[ 65 114 170   7]
 #out  [ 65 114 170   7]
 #out  [ 65 114 170   7]
@@ -315,12 +315,18 @@ modified_array = X_with_clusters.copy()
 
 # Create a mask for rows where the cluster value (4th column) is
 # not in [0,5,6,7]
-mask = ~np.isin(modified_array[:, 3], [0, 2, 5, 6, 7])
+mask = np.isin(modified_array[:, 3], [0, 5, 6, 7])
 
 # Set RGB values to 255 where mask is True
 modified_array[mask, 0:3] = 255
 
-# print(modified_array[:5])
+print(modified_array[:5])
+#out [[255 255 255   7]
+#out  [255 255 255   7]
+#out  [255 255 255   7]
+#out  [255 255 255   0]
+#out  [255 255 255   0]]
+
 #out [[255 255 255   3]
 #out  [255 255 255   3]
 #out  [255 255 255   3]
@@ -330,7 +336,7 @@ modified_array[mask, 0:3] = 255
 # Reshape to image dimensions (excluding the cluster column)
 modified_image = modified_array[:, 0:3].reshape(image_np.shape)
 
-print(modified_image[:1])
+# print(modified_image[:1])
 #out [[[255 255 255]
 #out   [255 255 255]
 #out   [255 255 255]
