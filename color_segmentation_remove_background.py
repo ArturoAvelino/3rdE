@@ -14,12 +14,12 @@ from sklearn.cluster import KMeans
 
 # Upload the image:
 image_np = np.asarray(Image.open(filepath))
-print(image_np.shape)
+# print(image_np.shape)
 #out (4000, 6000, 3)
 
 #out (1774, 1774, 3)
 
-print(image_np[:1])
+# print(image_np[:1])
 #out [[[ 65 114 170]
 #out   [ 65 114 170]
 #out   [ 65 114 170]
@@ -41,11 +41,11 @@ print(image_np[:1])
 # and also to easily compare with the other processed images that this code
 # produces.
 
-plt.figure(figsize=(10, 10))
-plt.imshow(image_np / 255)
-plt.axis('off')
-plt.title("Original image - No clustering")
-save_fig("image_original_no_clustering", tight_layout=False)
+#pl plt.figure(figsize=(10, 10))
+#pl plt.imshow(image_np / 255)
+#pl plt.axis('off')
+#pl plt.title("Original image - No clustering")
+#pl save_fig("image_original_no_clustering", tight_layout=False)
 # plt.show()
 
 # --------------------------30
@@ -57,11 +57,11 @@ save_fig("image_original_no_clustering", tight_layout=False)
 # - The resulting shape will be (1774*1774, 3) = (3147076, 3)
 X = image_np.reshape(-1, 3)
 
-print(X.shape)
+# print(X.shape)
 #out (24000000, 3)
 #out (3147076, 3)
 
-print(X[:5])
+# print(X[:5])
 #out [[ 65 114 170]
 #out  [ 65 114 170]
 #out  [ 65 114 170]
@@ -78,14 +78,9 @@ print(X[:5])
 # Create a 3D scatter plot of RGB colors.
 
 # Scatter plot of the raw RGB data
-fig, ax = create_rgb_scatter_plot(X)
-save_fig("3D_scatter_plot_data_row", tight_layout=False)
+#pl fig, ax = create_rgb_scatter_plot(X)
+#pl save_fig("3D_scatter_plot_data_row", tight_layout=False)
 # plt.show()
-
-
-print("Stop code here while debugging.")
-print("here!")
-
 
 # --------------------------------------------------------60
 # Feature scaling the RBG values.
@@ -147,7 +142,7 @@ X_scale = rgb_min_max_scaler.fit_transform(X)
 # ========================================================60
 # Cluster the RGB colors using k-means, for one given number of clusters.
 
-num_clusters = 4
+num_clusters = 8
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 
 # print(kmeans.cluster_centers_)
@@ -177,7 +172,16 @@ kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 # Unscale the `kmeans.cluster_centers_` values to the original RGB scale
 kmeans_centers_unscaled = rgb_min_max_scaler.inverse_transform(kmeans.cluster_centers_)
 
-# print(kmeans_centers_unscaled)
+print(kmeans_centers_unscaled)
+#out [[ 60.86127456 109.16141944 168.75799048] <-- background
+#out  [ 58.24198597  39.89705676  28.39216306] <-- the remnant objects
+#out  [140.44971345 160.88558402 186.45077415]
+#out  [182.16711332 168.24180356 135.87643133]
+#out  [ 97.40386402  91.53477224  84.95587137]
+#out  [ 96.72037753 131.84463604 178.24937052] <-- background
+#out  [ 71.85859285 120.19097818 179.50990308] <-- background
+#out  [ 65.23514756 114.59190419 175.08313752]] <-- background
+
 #out [[  6.75414749 111.4338081  199.68636363]
 #out  [ 11.55032022  75.96070846 135.5017801 ]
 #out  [ 15.45405794  26.77372311  43.97008044]
@@ -206,7 +210,13 @@ X_with_clusters = np.column_stack((X, kmeans.labels_))
 # print(X_with_clusters.shape)  # Should show (3147076, 4)
 #out (3147076, 4)
 
-# print(X_with_clusters[:5])    # Show first 5 rows as example
+print(X_with_clusters[:5])    # Show first 5 rows as example
+#out [[ 65 114 170   7]
+#out  [ 65 114 170   7]
+#out  [ 65 114 170   7]
+#out  [ 64 113 169   0]
+#out  [ 64 113 169   0]]
+
 #out [[  2  93 177   3]
 #out  [  2  95 179   3]
 #out  [  2  95 179   3]
@@ -220,14 +230,13 @@ X_with_clusters = np.column_stack((X, kmeans.labels_))
 # Create a 3D scatter plot of the `X_with_clusters` array.
 fig, ax = create_cluster_scatter_plot(X_with_clusters)
 save_fig("3D_scatter_plot_with_clusters", tight_layout=False)
-plt.show()
+# plt.show()
 
 # --------------------------30
-# Creates a segmented_img array containing the nearest cluster center for
-# each pixel (i.e., the mean color of each pixel's cluster) as its RGB value,
-# it is, replace the RGB numbers of each pixel for the average RGB number (the
-# center of its corresponding cluster) for that pixel.
-#old segmented_img = kmeans.cluster_centers_[kmeans.labels_]
+# Creates a segmented_img array with the nearest cluster center for each
+# pixel (mean color of its cluster) as its RGB value. Replace each pixel’s
+# RGB numbers with the average RGB number (cluster center) for that
+# pixel.
 segmented_img = kmeans_centers_unscaled[kmeans.labels_]
 
 # print(segmented_img.shape)
@@ -257,13 +266,15 @@ segmented_img = segmented_img.reshape(image_np.shape)
 #out   [  1.89103352  98.63780482 184.95536129]
 
 # Plot the clustered image.
-plt.figure(figsize=(10, 10))
-plt.imshow(segmented_img / 255)
-plt.axis('off')
-plt.title(f"Segmented image in {num_clusters} clusters")
-save_fig(f"image_{num_clusters}_clusters", tight_layout=False)
+#pl plt.figure(figsize=(10, 10))
+#pl plt.imshow(segmented_img / 255)
+#pl plt.axis('off')
+#pl plt.title(f"Segmented image in {num_clusters} clusters")
+#pl save_fig(f"image_{num_clusters}_clusters", tight_layout=False)
 #pl plt.show()
 """
+
+
 # --------------------------30
 # Try different number of clusters and plot the resulting images.
 
@@ -302,8 +313,9 @@ save_fig(f"image_{num_clusters}_clusters", tight_layout=False)
 # Create a copy of X_with_clusters to avoid modifying the original array
 modified_array = X_with_clusters.copy()
 
-# Create a mask for rows where the cluster value (4th column) is not 2
-mask = modified_array[:, 3] != 2
+# Create a mask for rows where the cluster value (4th column) is
+# not in [0,5,6,7]
+mask = ~np.isin(modified_array[:, 3], [0, 2, 5, 6, 7])
 
 # Set RGB values to 255 where mask is True
 modified_array[mask, 0:3] = 255
@@ -335,5 +347,8 @@ save_fig("image_no_background_for_input_", tight_layout=False)
 plt.title("Image with background color removed")
 save_fig("image_no_background_with_margins", tight_layout=False)
 # plt.show()
+
+print("Stop code here while debugging.")
+print("here!")
 
 # ########################################################60
