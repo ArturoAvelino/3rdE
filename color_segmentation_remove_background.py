@@ -2,7 +2,7 @@
 
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
 
-filename = "image_original.png"
+filename = "BM12_A_r9c4.jpg"
 filepath = IMAGES_PATH / filename
 
 from utils.rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot

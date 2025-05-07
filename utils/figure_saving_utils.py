@@ -2,12 +2,15 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-IMAGES_PATH = Path() / "images" / "09_unsupervised_learning"
+IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna"
+IMAGES_PATH_OUTPUT = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "outputs"
+
 IMAGES_PATH.mkdir(parents=True, exist_ok=True)
+IMAGES_PATH_OUTPUT.mkdir(parents=True, exist_ok=True)
 
 
 def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
-    path = IMAGES_PATH / f"{fig_id}.{fig_extension}"
+    path = IMAGES_PATH_OUTPUT / f"{fig_id}.{fig_extension}"
     if tight_layout:
         plt.tight_layout()
     plt.savefig(path, format=fig_extension, dpi=resolution)
