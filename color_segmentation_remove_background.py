@@ -14,10 +14,20 @@ from sklearn.cluster import KMeans
 
 # Upload the image:
 image_np = np.asarray(Image.open(filepath))
-# print(image_np.shape)
+print(image_np.shape)
+#out (4000, 6000, 3)
+
 #out (1774, 1774, 3)
 
-# print(image_np[:1])
+print(image_np[:1])
+#out [[[ 65 114 170]
+#out   [ 65 114 170]
+#out   [ 65 114 170]
+#out   ...
+#out   [ 70 115 170]
+#out   [ 68 113 170]
+#out   [ 69 114 171]]]
+
 #out [[[  2  93 177]
 #out   [  2  95 179]
 #out   [  2  95 179]
@@ -31,11 +41,11 @@ image_np = np.asarray(Image.open(filepath))
 # and also to easily compare with the other processed images that this code
 # produces.
 
-#pl plt.figure(figsize=(10, 10))
-#pl plt.imshow(image_np / 255)
-#pl plt.axis('off')
-#pl plt.title("Original image - No clustering")
-#pl save_fig("image_original_no_clustering", tight_layout=False)
+plt.figure(figsize=(10, 10))
+plt.imshow(image_np / 255)
+plt.axis('off')
+plt.title("Original image - No clustering")
+save_fig("image_original_no_clustering", tight_layout=False)
 # plt.show()
 
 # --------------------------30
@@ -47,10 +57,17 @@ image_np = np.asarray(Image.open(filepath))
 # - The resulting shape will be (1774*1774, 3) = (3147076, 3)
 X = image_np.reshape(-1, 3)
 
-# print(X.shape)
+print(X.shape)
+#out (24000000, 3)
 #out (3147076, 3)
 
-# print(X[:5])
+print(X[:5])
+#out [[ 65 114 170]
+#out  [ 65 114 170]
+#out  [ 65 114 170]
+#out  [ 64 113 169]
+#out  [ 64 113 169]]
+
 #out [[  2  93 177]
 #out  [  2  95 179]
 #out  [  2  95 179]
@@ -61,9 +78,14 @@ X = image_np.reshape(-1, 3)
 # Create a 3D scatter plot of RGB colors.
 
 # Scatter plot of the raw RGB data
-# fig, ax = create_rgb_scatter_plot(X)
-# save_fig("3D_scatter_plot_data_row", tight_layout=False)
+fig, ax = create_rgb_scatter_plot(X)
+save_fig("3D_scatter_plot_data_row", tight_layout=False)
 # plt.show()
+
+
+print("Stop code here while debugging.")
+print("here!")
+
 
 # --------------------------------------------------------60
 # Feature scaling the RBG values.

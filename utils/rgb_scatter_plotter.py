@@ -34,7 +34,7 @@ def create_rgb_scatter_plot(X, sample_step=1000, figsize=(10, 10),
     scatter = ax.scatter(X_sample[:, 0],  # Red channel
                         X_sample[:, 1],  # Green channel
                         X_sample[:, 2],  # Blue channel
-                        # c=X_sample/255, # Color points according to their RGB values
+                        c=X_sample/255, # Color points according to their RGB values
                         marker='.')
 
     # Set labels and title
