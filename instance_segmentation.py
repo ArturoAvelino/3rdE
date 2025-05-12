@@ -96,6 +96,12 @@ filtered_image = reshaped_image[mask]
 
 # ========================================================60
 
+# Clustering by grouping pixels that are together or closer to each other
+
+# Optimized solution using a spatial indexing approach with scipy's KDTree,
+# which is much more efficient for nearest neighbor searches.
+# Ignore groups with less than a given amount of pixels.
+
 import numpy as np
 from scipy.spatial import KDTree
 from collections import deque
@@ -178,7 +184,11 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
 # Run the segmentation
 segmented_image = segment_image_kdtree(filtered_image,
                                        max_distance=5.0,
-                                       min_pixels=400)
+                                       min_pixels=500)
+
+# print(segmented_image[:10])
+
+# print(segmented_image[-10:])
 
 # Visualize the results
 plt.figure(figsize=(12, 12))
