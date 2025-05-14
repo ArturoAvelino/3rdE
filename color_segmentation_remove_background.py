@@ -313,9 +313,9 @@ segmented_img = segmented_img.reshape(image_np.shape)
 # Create a copy of X_with_clusters to avoid modifying the original array
 modified_array = X_with_clusters.copy()
 
-# Create a mask for rows where the cluster value (4th column) is
+# Create a mask for rows where the cluster value is
 # not in [0,5,6,7]
-mask = np.isin(modified_array[:, 3], [0, 5, 6, 7])
+mask = np.isin(modified_array[:, 3], [0, 1, 5, 6, 7])
 
 # Set RGB values to 255 where mask is True
 modified_array[mask, 0:3] = 255
