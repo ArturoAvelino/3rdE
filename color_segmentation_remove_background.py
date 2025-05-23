@@ -4,7 +4,7 @@
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
 
 filename = "capt0044.jpg"
-filepath = IMAGES_PATH / filename
+filepath = IMAGES_PATH /filename
 
 from utils.rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot
 import matplotlib.pyplot as plt
@@ -47,10 +47,10 @@ X = image_np.reshape(-1, 3)
 # --------------------------30
 # Create a 3D scatter plot of RGB colors of the original image.
 
-# Scatter plot of the raw RGB data
+# Scatter 3D plot of the raw RGB data
 fig, ax = create_rgb_scatter_plot(X)
 save_fig("3D_scatter_plot_data_row", tight_layout=False)
-plt.show()
+# plt.show()
 
 # --------------------------------------------------------60
 # Feature scaling the RBG values.
@@ -88,15 +88,6 @@ kmeans_centers_unscaled = rgb_min_max_scaler.inverse_transform(kmeans.cluster_ce
 
 
 # --------------------------30
-# "kmeans.labels_" contains the index of the cluster each pixel belongs to. For
-# a number of clusters equal to 4, it is a 1774x1 array of integers from 0 to 3.
-# print(len(kmeans.labels_))
-
-# print(kmeans.labels_.shape)
-
-# print(kmeans.labels_[:5])
-
-# --------------------------30
 # Create a `X_with_clusters` array, using the first
 # 3 values of each row as the x,y,z values, and the 4th value for the color
 # of the data points in the scatter plot.
@@ -114,7 +105,7 @@ X_with_clusters = np.column_stack((X, kmeans.labels_))
 # Create a 3D scatter plot of the `X_with_clusters` array.
 fig, ax = create_cluster_scatter_plot(X_with_clusters)
 save_fig("3D_scatter_plot_with_clusters", tight_layout=False)
-plt.show()
+# plt.show()
 
 # --------------------------30
 # Plot the original image but with clustered colors
@@ -155,9 +146,9 @@ save_fig(f"image_{num_clusters}_clusters", tight_layout=False)
 # Create a copy of X_with_clusters to avoid modifying the original array
 modified_array = X_with_clusters.copy()
 
-# Create a mask for rows where the cluster value is
-# not in [0,5,6,7]
-mask = np.isin(modified_array[:, 3], [0, 1, 5, 6, 7])
+#
+# Create a mask for rows where the cluster value is the ones I want to remove.
+mask = np.isin(modified_array[:, 3], [0, 4])
 
 # Set RGB values to 255 where mask is True
 modified_array[mask, 0:3] = 255
