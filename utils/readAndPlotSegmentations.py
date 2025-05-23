@@ -7,7 +7,6 @@
 # and y axis values of the second pixel, and so on.
 
 # These kind of JSON files look like this:
-
 # {
 #     "images": [
 #         {
@@ -96,13 +95,15 @@ def read_and_plot_segmentations(json_file_path, output_path=None):
     x_range = x_max - x_min
     y_range = y_max - y_min
     plt.xlim(x_min - margin * x_range, x_max + margin * x_range)
-    plt.ylim(y_max + margin * y_range, y_min - margin * y_range)  # Reversed for image coordinates
+    # Reversed for image coordinates:
+    plt.ylim(y_max + margin * y_range, y_min - margin * y_range)
 
     # Customize the plot
     plt.title('Segmentation Coordinates')
     plt.xlabel('X coordinate')
     plt.ylabel('Y coordinate')
-    # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')  # Move legend outside
+    # Move legend outside:
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.grid(True, alpha=0.3)  # Lighter grid
 
     # Make layout tight before saving
