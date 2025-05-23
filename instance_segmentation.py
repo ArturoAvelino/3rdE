@@ -1,4 +1,5 @@
-# Instance segmentation using clustering
+# Instance segmentation  by grouping pixels that are together or closer to
+# each other
 
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
 
@@ -502,7 +503,8 @@ filtered_image = reshaped_image[mask]
 
 #may # --------------------------------------------------------60
 
-# Clustering by grouping pixels that are together or closer to each other
+
+
 
 # Optimized solution using a spatial indexing approach with scipy's KDTree,
 # which is much more efficient for nearest neighbor searches.

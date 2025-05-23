@@ -2,8 +2,8 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna"
-IMAGES_PATH_OUTPUT = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "outputs"
+IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "BM4_E"
+IMAGES_PATH_OUTPUT = IMAGES_PATH / "outputs"
 
 IMAGES_PATH.mkdir(parents=True, exist_ok=True)
 IMAGES_PATH_OUTPUT.mkdir(parents=True, exist_ok=True)
