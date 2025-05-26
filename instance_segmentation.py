@@ -3,8 +3,8 @@
 
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
 
-filename = "image_no_background_for_input.png"
-filepath = IMAGES_PATH / filename
+filename = "image_no_background_for_input_.png"
+filepath = IMAGES_PATH / "outputs" / filename
 
 import matplotlib.pyplot as plt
 
@@ -502,9 +502,6 @@ filtered_image = reshaped_image[mask]
 #may     print(f"Bounding box size: {width:.1f} x {height:.1f} pixels")
 
 #may # --------------------------------------------------------60
-
-
-
 
 # Optimized solution using a spatial indexing approach with scipy's KDTree,
 # which is much more efficient for nearest neighbor searches.
