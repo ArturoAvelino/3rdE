@@ -1,4 +1,4 @@
-from utils.segmentation_image_processor import SegmentationProcessor
+from utils.crop_individual_objects import SegmentationProcessor
 import logging
 from pathlib import Path
 
@@ -13,7 +13,7 @@ def setup_logging():
 
 def main():
     # Setup logging
-    setup_logging()
+    setup_logging()s
     logger = logging.getLogger(__name__)
 
     # Define the path to your JSON file
@@ -25,7 +25,7 @@ def main():
         return
 
     # Create output directory if it doesn't exist
-    output_dir = Path("outputs")
+    output_dir = Path("/Users/aavelino/Downloads/images/Guillaume/2025_05_15/output")
     output_dir.mkdir(exist_ok=True)
 
     logger.info("Starting image processing...")
@@ -35,6 +35,7 @@ def main():
         processor = SegmentationProcessor(
             json_file_path=json_file_path,
             output_dir=output_dir,
+            normalize_coords=False,
             padding=10,
             use_bbox=False
         )
