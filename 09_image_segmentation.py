@@ -26,7 +26,6 @@ from sklearn.cluster import KMeans
 # Upload the image:
 image_np = np.asarray(Image.open(filepath))
 #pr print(image_np.shape)
-#out (533, 800, 3)
 
 # Reshape the array to get a list of the RGB colors
 X = image_np.reshape(-1, 3)
@@ -36,8 +35,6 @@ X = image_np.reshape(-1, 3)
 
 num_clusters = 8
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X)
-
-#IDEA: I think it could be interesting to create the 3D or 2D scatter plot of RBG color numbers to visualize the distribution of the colors and distinguish by eye some the number of clusters, their shapes and how far or close they are between each other.
 
 # Creates a segmented_img array containing the nearest cluster center for
 # each pixel (i.e., the mean color of each pixel's cluster). It is,
@@ -54,7 +51,7 @@ plt.axis('off')
 plt.title(f"Segmented Image in {num_clusters} clusters")
 save_fig(f"segmented Image in {num_clusters} clusters",
          tight_layout=False)
-#pl plt.show()
+plt.show()
 
 # --------------------------30
 # Try different number of clusters and plot the resulting images.
@@ -81,7 +78,7 @@ for idx, n_clusters in enumerate(n_colors):
     plt.axis('off')
 
 save_fig('image_segmentation_plot', tight_layout=False)
-#pl plt.show()
+plt.show()
 
 # ########################################################60
 

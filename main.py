@@ -13,7 +13,7 @@ def setup_logging():
 
 def main():
     # Setup logging
-    setup_logging()s
+    setup_logging()
     logger = logging.getLogger(__name__)
 
     # Define the path to your JSON file
