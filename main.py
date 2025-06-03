@@ -1,4 +1,4 @@
-from utils.crop_individual_objects import SegmentationProcessor
+from utils.crop_individual_objects import CropIndividualObjects
 import logging
 from pathlib import Path
 
@@ -16,6 +16,15 @@ def main():
     setup_logging()
     logger = logging.getLogger(__name__)
 
+    # Create output directory if it doesn't exist
+    output_dir = Path("/Users/aavelino/Downloads/images/Guillaume/2025_05_15/output")
+    output_dir.mkdir(exist_ok=True)
+
+    logger.info("Starting image processing...")
+
+    # --------------------------30
+    # Cropping using the JSON file produced by Guillaume as the reference to crop.
+
     # Define the path to your JSON file
     json_file_path = "/Users/aavelino/Downloads/images/Guillaume/2025_05_15/im44.json"
 
@@ -24,19 +33,13 @@ def main():
         logger.error(f"JSON file not found: {json_file_path}")
         return
 
-    # Create output directory if it doesn't exist
-    output_dir = Path("/Users/aavelino/Downloads/images/Guillaume/2025_05_15/output")
-    output_dir.mkdir(exist_ok=True)
-
-    logger.info("Starting image processing...")
-
     # Create an instance of SegmentationProcessor with custom parameters
     try:
-        processor = SegmentationProcessor(
+        processor = CropIndividualObjects(
             json_file_path=json_file_path,
             output_dir=output_dir,
             normalize_coords=False,
-            padding=10,
+            padding=0,
             use_bbox=False
         )
 

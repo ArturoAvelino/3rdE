@@ -1,4 +1,3 @@
-
 # Image segmentation using clustering / k-means and DBSCAN
 
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
@@ -35,6 +34,7 @@ X = image_np.reshape(-1, 3)
 
 num_clusters = 8
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X)
+
 
 # Creates a segmented_img array containing the nearest cluster center for
 # each pixel (i.e., the mean color of each pixel's cluster). It is,
@@ -79,6 +79,3 @@ for idx, n_clusters in enumerate(n_colors):
 
 save_fig('image_segmentation_plot', tight_layout=False)
 plt.show()
-
-# ########################################################60
-

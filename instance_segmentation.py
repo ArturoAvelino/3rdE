@@ -2,17 +2,22 @@
 # each other
 
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
+from pathlib import Path
 
-filename = "image_no_background_for_input_.png"
-filepath = IMAGES_PATH / "outputs" / filename
+sample_name = "BM4_E"
+image_original = "capt0044.jpg"
+image_no_bkground = "capt0044_no_bkground.png"
+
+path_image_original = IMAGES_PATH / image_original
+path_image_no_bkground = IMAGES_PATH / "outputs" / image_no_bkground
+
 
 import matplotlib.pyplot as plt
-
-from PIL import Image
 import numpy as np
+from PIL import Image
 
 # Upload the image:
-image_np = np.asarray(Image.open(filepath))
+image_np = np.asarray(Image.open(path_image_no_bkground))
 # print(image_np.shape)
 
 # print(image_np[:1])
@@ -29,7 +34,7 @@ save_fig("image_no_background_check", tight_layout=True)
 # plt.show()
 
 # ========================================================60
-# Add the x-y values of the position of each pixel to the 3d image array
+# Add the x-y values of the location of each pixel to the 3d image array
 
 # Get the dimensions of the image
 height, width = image_np.shape[:2]
@@ -66,6 +71,7 @@ image_with_coords[:, :, 5] = y_coords
 # objects.
 
 # Create a boolean mask for rows where the first 3 values are NOT 255
+
 # Reshape the array to 2D (all pixels x 6 features)
 reshaped_image = image_with_coords.reshape(-1, 6)
 
@@ -73,7 +79,7 @@ reshaped_image = image_with_coords.reshape(-1, 6)
 
 # print(reshaped_image[:5])
 
-# Create mask where any of the first 3 values are not 255
+# Create a mask where any of the first 3 values are not 255
 mask = ~np.all(reshaped_image[:, :3] == 255, axis=1)
 
 # print(mask.shape)
@@ -96,7 +102,7 @@ filtered_image = reshaped_image[mask]
 # print(filtered_image[:5, 4:6])
 
 # ========================================================60
-
+# Find all the group of pixels that are connected or close to each other
 
 # Optimized solution using a spatial indexing approach with scipy's KDTree,
 # which is much more efficient for nearest neighbor searches.
@@ -109,8 +115,52 @@ import time
 
 
 def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
-    start_time = time.time()
+    """
+    Performs image segmentation by grouping pixels that are spatially close
+    to each other using KD-tree spatial indexing.
 
+    This function implements a clustering algorithm that groups pixels based
+    on their spatial proximity. It uses a KD-tree data structure for
+    efficient nearest neighbor searches and breadth-first search (BFS) for
+    finding connected components.
+
+    Parameters:
+    -----------
+    filtered_image : numpy.ndarray
+        Input image array of shape (N, 6) where N is the number of pixels and
+        each row contains:
+        - First 4 values: RGB and alpha values
+        - Last 2 values: x and y coordinates of the pixel
+    max_distance : float, optional (default=5.0)
+        Maximum distance between pixels to be considered part of the same group
+    min_pixels : int, optional (default=400)
+        Minimum number of pixels required for a group to be considered valid
+
+    Returns:
+    --------
+    numpy.ndarray
+        Array of shape (N, 7) containing the original pixel data plus a label column.
+        The label column (-1 for invalid groups, ≥0 for valid groups) is
+        appended as the last column.
+
+    Process:
+    --------
+    1. Extracts pixel coordinates and builds a KD-tree for efficient spatial searching
+    2. Uses breadth-first search to find connected components (groups of nearby pixels)
+    3. Labels pixels with their group ID during the BFS process
+    4. Filters out groups that don't meet the minimum pixel count requirement
+    5. Relabels the remaining valid groups with consecutive numbers
+    6. Returns the original pixel data with an additional column for group labels
+
+    Notes:
+    ------
+    - The function prints timing information and statistics about the found groups
+    - Invalid groups (smaller than min_pixels) are labeled as -1 in the output
+    - Valid groups are labeled with consecutive integers starting from 0
+    """
+
+    start_time = time.time()
+    print("Starting segmentation...")
     # Get coordinates
     coords = filtered_image[:, 4:6]
 
@@ -184,8 +234,8 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
 
 
 # Run the segmentation
-max_distance=4.0
-min_pixels=500
+max_distance = 4.0
+min_pixels = 500
 segmented_image = segment_image_kdtree(filtered_image,
                                        max_distance=max_distance,
                                        min_pixels=min_pixels)
@@ -197,7 +247,7 @@ segmented_image = segment_image_kdtree(filtered_image,
 # Visualize the results
 plt.figure(figsize=(12, 12))
 
-# Create scatter plot only for valid groups (labels >= 0)
+# Create a scatter plot only for valid groups (labels >= 0)
 valid_points = segmented_image[segmented_image[:, -1] >= 0]
 plt.scatter(valid_points[:, 4], valid_points[:, 5],  # x and y coordinates
             c=valid_points[:, -1],  # color by label
@@ -219,3 +269,23 @@ for label in unique_labels:
     group_pixels = segmented_image[segmented_image[:, -1] == label]
     print(f"\nGroup {int(label)}:")
     print(f"Number of pixels: {len(group_pixels)}")
+
+# ========================================================60
+
+from utils.bounding_box_metadata_processor import BoxAndCrop
+
+# Example usage
+processor = BoxAndCrop(
+    segmented_image=segmented_image,
+    path_image_original= path_image_original,
+    sample_name="BM4_E",
+    output_dir="/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/outputs/3_crop/"
+)
+
+# Process all groups and save as PNG
+# processor.process_all_groups(image_format='PNG')
+
+# Or process a specific group and save as JPG
+processor.process_group(group_number=1, image_format='JPG')
+
+

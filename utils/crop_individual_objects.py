@@ -4,11 +4,22 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-
-class SegmentationProcessor:
+class CropIndividualObjects:
     def __init__(self, json_file_path, output_dir='output', padding=0,
                  normalize_coords=False, use_bbox=False):
         """
+        The CropIndividualObjects class processes image segmentation annotations
+        from a JSON file, creating individual cropped images and corresponding
+        metadata files for each annotated region.
+
+        Initialize the processor with file paths and options.
+
+        Args:
+            json_file_path (str): Path to the JSON file
+            output_dir (str): Directory for output files
+            padding (int): Padding around segmentation coordinates
+            use_bbox (bool): Whether to use bbox values instead of segmentation
+
         This class processes image segmentation data from a JSON file
         containing annotations with pixel coordinates. For each
         annotation, it crops the corresponding region from the original
@@ -18,14 +29,67 @@ class SegmentationProcessor:
         segments and can use either segmentation or bounding box
         coordinates.
 
-        Initialize the processor with file paths and options.
+        Purpose:
+        --------
+        This class is designed to process image segmentation data, typically used
+        in computer vision and machine learning tasks. It handles both instance
+        segmentation (polygon coordinates) and bounding box annotations,
+        converting them into standardized image crops and coordinate data.
 
-        Args:
-            json_file_path (str): Path to the JSON file
-            output_dir (str): Directory for output files
-            padding (int): Padding around segmentation coordinates
-            use_bbox (bool): Whether to use bbox values instead of segmentation
+        Key Features:
+        ------------
+        - Processes JSON files containing image annotations
+        - Supports both segmentation polygons and bounding box formats
+        - Creates cropped images for each annotated region
+        - Generates standardized metadata files with coordinates
+        - Optional padding around segmented regions
+        - Coordinate normalization option (converts to relative [0,1] range)
+        - Automatic output directory creation
+
+        Input Format:
+        ------------
+        Expects a JSON file with the following structure:
+        {
+            "images": [{
+                "file_name": "image.jpg",
+                "width": int,
+                "height": int
+            }],
+            "annotations": [{
+                "id": int,
+                "category_id": int,
+                "segmentation": [[x1, y1, x2, y2, ...]],
+                "bbox": [x, y, width, height]  # optional
+            }]
+        }
+
+        Output:
+        -------
+        For each annotation, creates:
+        1. A cropped PNG image: "{annotation_id}.png"
+        2. A text file: "{annotation_id}.txt" containing:
+           "{category_id} {center_x} {center_y} {width} {height}"
+           (coordinates are either normalized [0-1] or in pixels)
+
+        Usage:
+        ------
+        processor = CropIndividualObjects(
+            json_file_path="path/to/annotations.json",
+            output_dir="output",          # Output directory (default: 'output')
+            padding=10,                   # Optional padding around regions (default: 0)
+            normalize_coords=True,        # Whether to normalize coordinates (default: False)
+            use_bbox=False               # Use bbox instead of segmentation (default: False)
+        )
+        processor.process_all()
+
+        Requirements:
+        ------------
+        - PIL (Python Imaging Library)
+        - numpy
+        - pathlib
+
         """
+
         self.json_file_path = Path(json_file_path)
         self.output_dir = Path(output_dir)
         self.padding = padding
@@ -143,5 +207,5 @@ class SegmentationProcessor:
             self.process_annotation(annotation)
 
 # Example usage:
-# processor = SegmentationProcessor('path/to/your/file.json', padding=10)
+# processor = CropIndividualObjects('path/to/your/file.json', padding=10)
 # processor.process_all()
