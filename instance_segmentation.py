@@ -22,7 +22,7 @@ from PIL import Image
 # Upload the image:
 image_np = np.asarray(Image.open(path_image_no_bkground))
 
-print(image_np.shape)
+# print(image_np.shape)
 # (2000, 3000, 4)
 
 # print(image_np[:1])
@@ -90,7 +90,7 @@ y_coords_inversed = np.flipud(y_coords)
 #out  [1996 1996 1996 ... 1996 1996 1996]
 #out  [1995 1995 1995 ... 1995 1995 1995]]
 
-print(y_coords_inversed[-5:])
+# print(y_coords_inversed[-5:])
 #out [[4 4 4 ... 4 4 4]
 #out  [3 3 3 ... 3 3 3]
 #out  [2 2 2 ... 2 2 2]
@@ -100,7 +100,7 @@ print(y_coords_inversed[-5:])
 # Create a new array with 6 channels
 image_with_coords = np.zeros((height, width, 6))
 
-print(image_with_coords.shape)
+# print(image_with_coords.shape)
 # (2000, 3000, 6)
 
 # Copy the original RGB values to the first 3 channels and the "alpha" values to
@@ -111,7 +111,8 @@ image_with_coords[:, :, :4] = image_np
 image_with_coords[:, :, 4] = x_coords
 
 # Add y coordinates to the 6th channel
-image_with_coords[:, :, 5] = y_coords_inversed
+image_with_coords[:, :, 5] = y_coords
+#tmp image_with_coords[:, :, 5] = y_coords_inversed
 
 # Now image_with_coords has shape (1774, 1774, 6) where:
 # - channels 0,1,2 contain the RGB values
@@ -121,7 +122,14 @@ image_with_coords[:, :, 5] = y_coords_inversed
 
 # print(image_with_coords.shape)
 
-print(image_with_coords[:1])
+# print(image_with_coords[:1])
+#out [[[2.550e+02 2.550e+02 2.550e+02 2.550e+02 0.000e+00 1.999e+03]
+#out   [2.550e+02 2.550e+02 2.550e+02 2.550e+02 1.000e+00 1.999e+03]
+#out   [2.550e+02 2.550e+02 2.550e+02 2.550e+02 2.000e+00 1.999e+03]
+#out   ...
+#out   [2.550e+02 2.550e+02 2.550e+02 2.550e+02 2.997e+03 1.999e+03]
+#out   [2.550e+02 2.550e+02 2.550e+02 2.550e+02 2.998e+03 1.999e+03]
+#out   [2.550e+02 2.550e+02 2.550e+02 2.550e+02 2.999e+03 1.999e+03]]]
 
 # ========================================================60
 # Drop all the white pixels, so I'm just left with those pixels containing
@@ -149,7 +157,20 @@ filtered_image = reshaped_image[mask]
 
 # print(filtered_image.shape)
 
-print(filtered_image[:5])
+# print(filtered_image[:5])
+# [[ 252.  252.  253.  255. 1574. 1708.]
+#  [ 191.  200.  206.  255. 1575. 1708.]
+#  [ 161.  170.  173.  255. 1576. 1708.]
+#  [ 175.  178.  173.  255. 1577. 1708.]
+#  [ 182.  180.  168.  255. 1578. 1708.]]
+
+# print(filtered_image[-5:])
+# [[ 172.  181.  199.  255. 1907.  159.]
+#  [ 163.  170.  190.  255. 1908.  159.]
+#  [ 163.  169.  188.  255. 1909.  159.]
+#  [ 159.  168.  188.  255. 1910.  159.]
+#  [ 218.  223.  230.  255. 1911.  159.]]
+
 #[[ 254.  254.  254.  255.  417. 1546.]
 # [  85.  114.  144.  255.  417. 1547.]
 # [  66.   95.  128.  255.  417. 1548.]
@@ -312,27 +333,19 @@ print(f"Number of pixels in group {group_id}: {len(segmented_image[segmented_ima
 #out  [2.540e+02 2.540e+02 2.540e+02 ... 8.410e+02 2.005e+03 1.000e+00]
 #out  [2.540e+02 2.540e+02 2.540e+02 ... 8.410e+02 2.006e+03 1.000e+00]]
 
-print(segmented_image[:5])
+# print(segmented_image[:5])
 #out [[ 252.  252.  253.  255.  740. 1574.    0.]
 #out  [ 191.  200.  206.  255.  740. 1575.    0.]
 #out  [ 161.  170.  173.  255.  740. 1576.    0.]
 #out  [ 175.  178.  173.  255.  740. 1577.    0.]
 #out  [ 182.  180.  168.  255.  740. 1578.    0.]]
 
-#out [[240. 244. 248. 255. 740. 946.  -1.]
-#out  [155. 179. 206. 255. 740. 947.  -1.]
-#out  [130. 158. 191. 255. 740. 948.  -1.]
-#out  [135. 161. 190. 255. 740. 949.  -1.]
-#out  [138. 162. 188. 255. 740. 950.  -1.]
-#out  [140. 163. 188. 255. 740. 951.  -1.]
-#out  [142. 164. 189. 255. 740. 952.  -1.]
-#out  [142. 165. 190. 255. 740. 953.  -1.]
-#out  [137. 160. 187. 255. 740. 954.  -1.]
-#out  [131. 156. 186. 255. 740. 955.  -1.]]
-
-
-
-# print(segmented_image[-10:])
+# print(segmented_image[-5:])
+#out [[ 1.720e+02  1.810e+02  1.990e+02  2.550e+02  1.907e+03  1.590e+02 -1.000e+00]
+#out  [ 1.630e+02  1.700e+02  1.900e+02  2.550e+02  1.908e+03  1.590e+02 -1.000e+00]
+#out  [ 1.630e+02  1.690e+02  1.880e+02  2.550e+02  1.909e+03  1.590e+02 -1.000e+00]
+#out  [ 1.590e+02  1.680e+02  1.880e+02  2.550e+02  1.910e+03  1.590e+02 -1.000e+00]
+#out  [ 2.180e+02  2.230e+02  2.300e+02  2.550e+02  1.911e+03  1.590e+02 -1.000e+00]]
 
 # Visualize the results
 plt.figure(figsize=(12, 12))
@@ -348,12 +361,16 @@ plt.scatter(valid_points[:, 4], valid_points[:, 5],  # x and y coordinates
 plt.colorbar(label='Group Label')
 plt.xlabel('X coordinate')
 plt.ylabel('Y coordinate')
+plt.gca().invert_yaxis()  # This makes y-axis increase downward
 plt.title(f'Filtered Pixel Groups (minimum {min_pixels} pixels, distance <= {max_distance} pixels)')
 save_fig("pixel_groups_kdtree_filtered", tight_layout=True)
 
 # Print statistics about the groups
 valid_labels = segmented_image[segmented_image[:, -1] >= 0][:, -1]
 unique_labels = np.unique(valid_labels)
+print(f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {len(valid_labels)} total groups")
+# Found 7 valid groups (with ≥10000 pixels) out of 157785 total groups
+
 print("\nStatistics for valid groups:")
 for label in unique_labels:
     group_pixels = segmented_image[segmented_image[:, -1] == label]

@@ -144,8 +144,8 @@ class BoxAndCrop:
                 "bbox": [{
                     "center_x": center_x,
                     "center_y": center_y,
-                    "width_box": width,
-                    "height_box": height
+                    "box_width": width,
+                    "box_height": height
                 }]
             }]
         }
