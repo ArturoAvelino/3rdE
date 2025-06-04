@@ -77,26 +77,6 @@ y_coords, x_coords = np.meshgrid(np.arange(height), np.arange(width),
 #out  [3 3 3 ... 3 3 3]
 #out  [4 4 4 ... 4 4 4]]
 
-# Invert the y coordinates to match the image coordinates convention
-y_coords_inversed = np.flipud(y_coords)
-
-# print(y_coords_inversed.shape)
-# (2000, 3000)
-
-# print(y_coords_inversed[:5])
-#out [[1999 1999 1999 ... 1999 1999 1999]
-#out  [1998 1998 1998 ... 1998 1998 1998]
-#out  [1997 1997 1997 ... 1997 1997 1997]
-#out  [1996 1996 1996 ... 1996 1996 1996]
-#out  [1995 1995 1995 ... 1995 1995 1995]]
-
-# print(y_coords_inversed[-5:])
-#out [[4 4 4 ... 4 4 4]
-#out  [3 3 3 ... 3 3 3]
-#out  [2 2 2 ... 2 2 2]
-#out  [1 1 1 ... 1 1 1]
-#out  [0 0 0 ... 0 0 0]]
-
 # Create a new array with 6 channels
 image_with_coords = np.zeros((height, width, 6))
 
@@ -112,7 +92,6 @@ image_with_coords[:, :, 4] = x_coords
 
 # Add y coordinates to the 6th channel
 image_with_coords[:, :, 5] = y_coords
-#tmp image_with_coords[:, :, 5] = y_coords_inversed
 
 # Now image_with_coords has shape (1774, 1774, 6) where:
 # - channels 0,1,2 contain the RGB values
@@ -190,7 +169,6 @@ import numpy as np
 from scipy.spatial import KDTree
 from collections import deque
 import time
-
 
 def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
     """
