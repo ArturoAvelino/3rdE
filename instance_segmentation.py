@@ -53,6 +53,11 @@ height, width = image_np.shape[:2]
 # print(f"Image dimensions: {height} x {width}")
 # Image dimensions: 2000 x 3000
 
+# Image proportion (width/height)
+image_proportion = height / width
+print(f"Image proportion: {image_proportion:.2f}")
+# Image proportion: 0.67
+
 # Create meshgrid for y and x coordinates
 y_coords, x_coords = np.meshgrid(np.arange(height), np.arange(width),
                                  indexing='ij')
@@ -326,7 +331,13 @@ print(f"Number of pixels in group {group_id}: {len(segmented_image[segmented_ima
 #out  [ 2.180e+02  2.230e+02  2.300e+02  2.550e+02  1.911e+03  1.590e+02 -1.000e+00]]
 
 # Visualize the results
-plt.figure(figsize=(12, 12))
+
+# Calculate figure size maintaining the image proportion
+width_image = 12  # base width
+# adjust height according to image proportion:
+height_image = width_image * image_proportion
+
+plt.figure(figsize=(width_image, height_image))
 
 # Create a scatter plot only for valid groups (labels >= 0)
 valid_points = segmented_image[segmented_image[:, -1] >= 0]
@@ -343,7 +354,9 @@ plt.gca().invert_yaxis()  # This makes y-axis increase downward
 plt.title(f'Filtered Pixel Groups (minimum {min_pixels} pixels, distance <= {max_distance} pixels)')
 save_fig("pixel_groups_kdtree_filtered", tight_layout=True)
 
+# --------------------------------------------------------60
 # Print statistics about the groups
+
 valid_labels = segmented_image[segmented_image[:, -1] >= 0][:, -1]
 unique_labels = np.unique(valid_labels)
 print(f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {len(valid_labels)} total groups")

@@ -9,8 +9,12 @@ IMAGES_PATH.mkdir(parents=True, exist_ok=True)
 IMAGES_PATH_OUTPUT.mkdir(parents=True, exist_ok=True)
 
 
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
+def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=150):
     path = IMAGES_PATH_OUTPUT / f"{fig_id}.{fig_extension}"
+    # Get current figure
+    fig = plt.gcf()
+    # Set a reasonable figure size (in inches)
+    fig.set_size_inches(10, 7)
     if tight_layout:
         plt.tight_layout()
     plt.savefig(path, format=fig_extension, dpi=resolution)
