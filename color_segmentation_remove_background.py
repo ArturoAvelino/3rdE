@@ -2,8 +2,9 @@
 # remove the background color of each image
 
 from utils.figure_saving_utils import IMAGES_PATH, save_fig
+from pathlib import Path
 
-filename = "capt0044.jpg"
+filename = Path("capt0044.jpg")
 filepath = IMAGES_PATH / filename
 
 from utils.rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot
@@ -76,7 +77,7 @@ plt.show()
 # ========================================================60
 # Cluster the RGB colors using k-means, for one given number of clusters.
 
-num_clusters = 5
+num_clusters = 4
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 
 # print(kmeans.cluster_centers_) # Using minmax (0,1) scaled data as input
@@ -164,7 +165,7 @@ modified_image = modified_array[:, 0:3].reshape(image_np.shape)
 plt.figure(figsize=(10, 10))
 plt.imshow(modified_image / 255)
 plt.axis('off')
-save_fig("image_no_background_for_input_", tight_layout=False)
+save_fig(f"{filename.stem}_no_bkgd", tight_layout=False)
 plt.title("Image with background color removed")
-save_fig("image_no_background_with_margins", tight_layout=False)
+save_fig(f"{filename.stem}_no_bkgd_with_margins", tight_layout=False)
 # plt.show()
