@@ -5,12 +5,15 @@ from utils.figure_saving_utils import IMAGES_PATH, save_fig
 from pathlib import Path
 
 sample_name = "BM4_E"
-image_original = "capt0044.jpg"
-image_no_bkground = "capt0044_no_bkground.png"
 
-path_image_original = IMAGES_PATH / image_original
+image_no_bkground = "capt0044_no_bkgd.png"
 path_image_no_bkground = IMAGES_PATH / "outputs" / image_no_bkground
 
+image_original = "capt0044_no_bkgd.png"
+path_image_original = IMAGES_PATH / "outputs" / image_no_bkground
+
+# image_original = "capt0044.jpg"
+# path_image_original = IMAGES_PATH / image_original
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,35 +21,89 @@ from PIL import Image
 
 # Upload the image:
 image_np = np.asarray(Image.open(path_image_no_bkground))
-# print(image_np.shape)
+
+print(image_np.shape)
+# (2000, 3000, 4)
 
 # print(image_np[:1])
+#out [[[255 255 255 255]
+#out   [255 255 255 255]
+#out   [255 255 255 255]
+#out   ...
+#out   [255 255 255 255]
+#out   [255 255 255 255]
+#out   [255 255 255 255]]]
 
 # --------------------------30
 # Plot the original image to check that it is correctly processed by the code
 # and also to easily compare with the other processed images that this code
 # produces.
 
-plt.figure(figsize=(10, 10))
-plt.imshow(image_np / 255)
-plt.axis('off')
-save_fig("image_no_background_check", tight_layout=True)
-# plt.show()
+# plt.figure(figsize=(10, 10))
+# plt.imshow(image_np / 255)
+# plt.axis('off')
+# save_fig("image_no_background_check", tight_layout=True)
+# # plt.show()
 
 # ========================================================60
 # Add the x-y values of the location of each pixel to the 3d image array
 
 # Get the dimensions of the image
 height, width = image_np.shape[:2]
+# print(f"Image dimensions: {height} x {width}")
+# Image dimensions: 2000 x 3000
 
-# Create meshgrid for x and y coordinates
-x_coords, y_coords = np.meshgrid(np.arange(height), np.arange(width),
+# Create meshgrid for y and x coordinates
+y_coords, x_coords = np.meshgrid(np.arange(height), np.arange(width),
                                  indexing='ij')
+
+# print(x_coords.shape)
+# (2000, 3000)
+
+# print(x_coords[:5])
+#out [[   0    1    2 ... 2997 2998 2999]
+#out  [   0    1    2 ... 2997 2998 2999]
+#out  [   0    1    2 ... 2997 2998 2999]
+#out  [   0    1    2 ... 2997 2998 2999]
+#out  [   0    1    2 ... 2997 2998 2999]]
+
+# print(y_coords.shape)
+# (2000, 3000)
+
+# print(y_coords[:5])
+#out [[0 0 0 ... 0 0 0]
+#out  [1 1 1 ... 1 1 1]
+#out  [2 2 2 ... 2 2 2]
+#out  [3 3 3 ... 3 3 3]
+#out  [4 4 4 ... 4 4 4]]
+
+# Invert the y coordinates to match the image coordinates convention
+y_coords_inversed = np.flipud(y_coords)
+
+# print(y_coords_inversed.shape)
+# (2000, 3000)
+
+# print(y_coords_inversed[:5])
+#out [[1999 1999 1999 ... 1999 1999 1999]
+#out  [1998 1998 1998 ... 1998 1998 1998]
+#out  [1997 1997 1997 ... 1997 1997 1997]
+#out  [1996 1996 1996 ... 1996 1996 1996]
+#out  [1995 1995 1995 ... 1995 1995 1995]]
+
+print(y_coords_inversed[-5:])
+#out [[4 4 4 ... 4 4 4]
+#out  [3 3 3 ... 3 3 3]
+#out  [2 2 2 ... 2 2 2]
+#out  [1 1 1 ... 1 1 1]
+#out  [0 0 0 ... 0 0 0]]
 
 # Create a new array with 6 channels
 image_with_coords = np.zeros((height, width, 6))
 
-# Copy the original RGB values to the first 3 channels and "alpha" values to
+print(image_with_coords.shape)
+# (2000, 3000, 6)
+
+# Copy the original RGB values to the first 3 channels and the "alpha" values to
 # the 4th channel
 image_with_coords[:, :, :4] = image_np
 
@@ -54,7 +111,7 @@ image_with_coords[:, :, :4] = image_np
 image_with_coords[:, :, 4] = x_coords
 
 # Add y coordinates to the 6th channel
-image_with_coords[:, :, 5] = y_coords
+image_with_coords[:, :, 5] = y_coords_inversed
 
 # Now image_with_coords has shape (1774, 1774, 6) where:
 # - channels 0,1,2 contain the RGB values
@@ -64,7 +121,7 @@ image_with_coords[:, :, 5] = y_coords
 
 # print(image_with_coords.shape)
 
-# print(image_with_coords[:1])
+print(image_with_coords[:1])
 
 # ========================================================60
 # Drop all the white pixels, so I'm just left with those pixels containing
@@ -92,7 +149,7 @@ filtered_image = reshaped_image[mask]
 
 # print(filtered_image.shape)
 
-# print(filtered_image[:5])
+print(filtered_image[:5])
 #[[ 254.  254.  254.  255.  417. 1546.]
 # [  85.  114.  144.  255.  417. 1547.]
 # [  66.   95.  128.  255.  417. 1548.]
@@ -235,12 +292,45 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
 
 # Run the segmentation
 max_distance = 4.0
-min_pixels = 500
+min_pixels = 10000
 segmented_image = segment_image_kdtree(filtered_image,
                                        max_distance=max_distance,
                                        min_pixels=min_pixels)
 
-# print(segmented_image[:10])
+# Print all the rows of a given group
+group_id = 1
+
+print(f"Number of pixels in group {group_id}: {len(segmented_image[segmented_image[:, -1] == group_id])}")
+#out Number of pixels in group 1: 12751
+
+# print(segmented_image[segmented_image[:, -1] == group_id])
+#out [[2.390e+02 2.390e+02 2.380e+02 ... 7.400e+02 2.129e+03 1.000e+00]
+#out  [1.520e+02 1.520e+02 1.480e+02 ... 7.400e+02 2.130e+03 1.000e+00]
+#out  [1.280e+02 1.270e+02 1.220e+02 ... 7.400e+02 2.131e+03 1.000e+00]
+#out  ...
+#out  [2.540e+02 2.540e+02 2.540e+02 ... 8.410e+02 2.004e+03 1.000e+00]
+#out  [2.540e+02 2.540e+02 2.540e+02 ... 8.410e+02 2.005e+03 1.000e+00]
+#out  [2.540e+02 2.540e+02 2.540e+02 ... 8.410e+02 2.006e+03 1.000e+00]]
+
+print(segmented_image[:5])
+#out [[ 252.  252.  253.  255.  740. 1574.    0.]
+#out  [ 191.  200.  206.  255.  740. 1575.    0.]
+#out  [ 161.  170.  173.  255.  740. 1576.    0.]
+#out  [ 175.  178.  173.  255.  740. 1577.    0.]
+#out  [ 182.  180.  168.  255.  740. 1578.    0.]]
+
+#out [[240. 244. 248. 255. 740. 946.  -1.]
+#out  [155. 179. 206. 255. 740. 947.  -1.]
+#out  [130. 158. 191. 255. 740. 948.  -1.]
+#out  [135. 161. 190. 255. 740. 949.  -1.]
+#out  [138. 162. 188. 255. 740. 950.  -1.]
+#out  [140. 163. 188. 255. 740. 951.  -1.]
+#out  [142. 164. 189. 255. 740. 952.  -1.]
+#out  [142. 165. 190. 255. 740. 953.  -1.]
+#out  [137. 160. 187. 255. 740. 954.  -1.]
+#out  [131. 156. 186. 255. 740. 955.  -1.]]
+
+
 
 # print(segmented_image[-10:])
 
@@ -283,9 +373,9 @@ processor = BoxAndCrop(
 )
 
 # Process all groups and save as PNG
-# processor.process_all_groups(image_format='PNG')
+processor.process_all_groups(image_format='PNG')
 
-# Or process a specific group and save as JPG
-processor.process_group(group_number=1, image_format='JPG')
+# Or process a specific group
+# processor.process_group(group_number=1, image_format='PNG')
 
 
