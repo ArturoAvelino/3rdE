@@ -5,7 +5,8 @@ from PIL import Image
 import os
 
 class BoxAndCrop:
-    def __init__(self, segmented_image, path_image_original, sample_name, output_dir):
+    def __init__(self, segmented_image, path_image_original, path_image_no_bkgd,
+                 sample_name, output_dir):
         """
         BoxAndCrop is a class designed to process segmented image data
         and extract individual objects by creating bounding boxes around pixel
@@ -33,9 +34,10 @@ class BoxAndCrop:
             * Column 4: x-coordinates
             * Column 5: y-coordinates
             * Column 6: group labels (-1 for background, ≥0 for valid groups)
-        - path_image_original: Path to the original image file
-        - sample_name: Identifier for the sample being processed
-        - output_dir: Directory path where outputs will be saved
+        - path_image_original: Path to the original image file.
+        - path_image_no_bkgd : Path to the image file with background removed.
+        - sample_name: Identifier for the sample being processed.
+        - output_dir: Directory path where outputs will be saved.
 
         Output Structure:
         ----------------
@@ -55,6 +57,7 @@ class BoxAndCrop:
         processor = BoxAndCrop(
             segmented_image=segmented_image,
             path_image_original="path/to/image.jpg",
+            path_image_no_bkgd = "path/to/image_no_background.jpg",
             sample_name="BM4_E",
             output_dir="path/to/output"
         )
@@ -74,9 +77,11 @@ class BoxAndCrop:
 
         self.segmented_image = segmented_image
         self.path_image_original = Path(path_image_original)
+        self.path_image_no_bkgd = Path(path_image_no_bkgd)
         self.sample_name = sample_name
         self.output_dir = Path(output_dir)
         self.image_original = None
+        self.image_no_bkgd  = None
         
         # Create output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -88,6 +93,7 @@ class BoxAndCrop:
         """Load the original image for cropping."""
         try:
             self.image_original = Image.open(self.path_image_original)
+            self.image_no_bkgd  = Image.open(self.path_image_no_bkgd)
         except Exception as e:
             raise Exception(f"Failed to load original image: {e}")
 
@@ -172,16 +178,21 @@ class BoxAndCrop:
             bbox_coords = self.get_bounding_box(group_number)
 
             # Crop the image
-            cropped_image = self.image_original.crop(bbox_coords)
+            cropped_image         = self.image_original.crop(bbox_coords)
+            cropped_image_no_bkgd = self.image_no_bkgd.crop(bbox_coords)
 
             # Generate output filenames
             base_name = self.path_image_original.stem
-            crop_filename = f"{base_name}_{group_number}.{extension}"
+            base_no_bkgd_name = self.path_image_no_bkgd.stem
+            crop_filename         = f"{base_name}_{group_number}.{extension}"
+            crop_no_bkgd_filename = f"{base_no_bkgd_name}_{group_number}.{extension}"
             json_filename = f"{base_name}_{group_number}.json"
 
             # Save cropped image
             crop_path = self.output_dir / crop_filename
+            crop_no_bkgd_path = self.output_dir / crop_no_bkgd_filename
             cropped_image.save(crop_path, format=save_format)
+            cropped_image_no_bkgd.save(crop_no_bkgd_path, format=save_format)
 
             # Create and save JSON metadata
             json_data = self.create_json_metadata(group_number, bbox_coords)

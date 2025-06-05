@@ -377,6 +377,7 @@ from utils.bounding_box_metadata_processor import BoxAndCrop
 processor = BoxAndCrop(
     segmented_image=segmented_image,
     path_image_original= path_image_original,
+    path_image_no_bkgd = path_image_no_bkground,
     sample_name="BM4_E",
     output_dir="/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/3_crops"
 )
