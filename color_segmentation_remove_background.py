@@ -172,7 +172,7 @@ save_fig(f"{filename.stem}_no_bkgd_with_margins")
 # plt.show()
 
 
-# Plot without margins
+# Plot without margins and the same size as the original input image
 def save_image_same_size(image_data, output_path, output_name, extension="png",
                          add_title=None):
     """

@@ -10,8 +10,8 @@ image_no_bkground = "capt0044_no_bkgd.png"
 path_image_no_bkground = IMAGES_PATH / "outputs" / image_no_bkground
 
 # image_original = "capt0044_no_bkgd.png"
-image_original = "capt0044_original.png"
-path_image_original = IMAGES_PATH / "outputs" / image_original
+image_original = "capt0044.jpg"
+path_image_original = IMAGES_PATH / image_original
 
 # image_original = "capt0044.jpg"
 # path_image_original = IMAGES_PATH / image_original
@@ -297,7 +297,7 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
 
 # Run the segmentation
 max_distance = 4.0
-min_pixels = 300
+min_pixels = 5000
 segmented_image = segment_image_kdtree(filtered_image,
                                        max_distance=max_distance,
                                        min_pixels=min_pixels)
