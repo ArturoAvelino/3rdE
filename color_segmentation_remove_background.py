@@ -25,11 +25,11 @@ image_np = np.asarray(Image.open(filepath))
 # and also to easily compare with the other processed images that this code
 # produces.
 
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(10, 6))
 plt.imshow(image_np / 255)
 plt.axis('off')
 plt.title("Original image - No clustering")
-save_fig("image_original_no_clustering", tight_layout=False)
+save_fig("image_original_no_clustering")
 # plt.show()
 
 # --------------------------30
@@ -50,7 +50,7 @@ X = image_np.reshape(-1, 3)
 
 # Scatter 3D plot of the raw RGB data
 fig, ax = create_rgb_scatter_plot(X)
-save_fig("3D_scatter_plot_data_row", tight_layout=False)
+save_fig("3D_scatter_plot_data_row")
 # plt.show()
 
 # --------------------------------------------------------60
@@ -61,7 +61,6 @@ save_fig("3D_scatter_plot_data_row", tight_layout=False)
 from sklearn.preprocessing import MinMaxScaler
 
 rgb_min_max_scaler = MinMaxScaler(feature_range=(0,1))
-
 X_scale = rgb_min_max_scaler.fit_transform(X)
 
 # print(X_scale.shape)
@@ -70,14 +69,14 @@ X_scale = rgb_min_max_scaler.fit_transform(X)
 # Minmax to (0,1)
 
 # 3D scatter plot of scaled RGB colors.
-fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[0,1])
-save_fig("3D_scatter_data_scaled_minmax", tight_layout=False)
-plt.show()
+# fig, ax = create_rgb_scatter_plot(X_scale, xyz_limits=[0,1])
+# save_fig("3D_scatter_data_scaled_minmax")
+# plt.show()
 
 # ========================================================60
 # Cluster the RGB colors using k-means, for one given number of clusters.
 
-num_clusters = 4
+num_clusters = 5
 kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 
 # print(kmeans.cluster_centers_) # Using minmax (0,1) scaled data as input
@@ -86,7 +85,6 @@ kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 kmeans_centers_unscaled = rgb_min_max_scaler.inverse_transform(kmeans.cluster_centers_)
 
 # print(kmeans_centers_unscaled)
-
 
 # --------------------------30
 # Create a `X_with_clusters` array, using the first
@@ -105,7 +103,7 @@ X_with_clusters = np.column_stack((X, kmeans.labels_))
 
 # Create a 3D scatter plot of the `X_with_clusters` array.
 fig, ax = create_cluster_scatter_plot(X_with_clusters)
-save_fig("3D_scatter_plot_with_clusters", tight_layout=False)
+save_fig("3D_scatter_plot_with_clusters")
 # plt.show()
 
 # --------------------------30
@@ -135,7 +133,7 @@ plt.figure(figsize=(10, 10))
 plt.imshow(segmented_img / 255)
 plt.axis('off')
 plt.title(f"Segmented image in {num_clusters} clusters")
-save_fig(f"image_{num_clusters}_clusters", tight_layout=False)
+save_fig(f"image_{num_clusters}_clusters")
 # plt.show()
 
 # ========================================================60
@@ -149,7 +147,7 @@ modified_array = X_with_clusters.copy()
 
 #
 # Create a mask for rows where the cluster value is the ones I want to remove.
-mask = np.isin(modified_array[:, 3], [0, 4])
+mask = np.isin(modified_array[:, 3], [0, 4]) # when "num_clusters = 4"
 
 # Set RGB values to 255 where mask is True
 modified_array[mask, 0:3] = 255
@@ -162,10 +160,10 @@ modified_image = modified_array[:, 0:3].reshape(image_np.shape)
 # print(modified_image[:1])
 
 # Plot the modified image.
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(10, 6))
 plt.imshow(modified_image / 255)
 plt.axis('off')
-save_fig(f"{filename.stem}_no_bkgd", tight_layout=False)
+save_fig(f"{filename.stem}_no_bkgd")
 plt.title("Image with background color removed")
-save_fig(f"{filename.stem}_no_bkgd_with_margins", tight_layout=False)
+save_fig(f"{filename.stem}_no_bkgd_with_margins")
 # plt.show()
