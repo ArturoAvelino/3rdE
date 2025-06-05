@@ -28,7 +28,7 @@ image_np = np.asarray(Image.open(filepath))
 plt.figure(figsize=(10, 6))
 plt.imshow(image_np / 255)
 plt.axis('off')
-save_fig(f"{filename.stem}_original")
+#old save_fig(f"{filename.stem}_original")
 plt.title("Original image - No clustering")
 save_fig(f"{filename.stem}_original_with_margins")
 # plt.show()
@@ -160,11 +160,83 @@ modified_image = modified_array[:, 0:3].reshape(image_np.shape)
 
 # print(modified_image[:1])
 
-# Plot the modified image.
+# --------------------------------------------------------60
+# Plot the image with background color removed
+
+# Plot with margins like the previous output images
 plt.figure(figsize=(10, 6))
 plt.imshow(modified_image / 255)
 plt.axis('off')
-save_fig(f"{filename.stem}_no_bkgd")
 plt.title("Image with background color removed")
 save_fig(f"{filename.stem}_no_bkgd_with_margins")
 # plt.show()
+
+
+# Plot without margins
+def save_image_same_size(image_data, output_path, output_name, extension="png",
+                         add_title=None):
+    """
+    Save an image maintaining the same dimensions as the input image data.
+
+    Parameters:
+    -----------
+    image_data : numpy.ndarray
+        The input image data with shape (height, width, channels)
+    output_path : str or Path
+        Directory path where the image will be saved
+    output_name : str
+        Name of the output file (without extension)
+    extension : str, optional
+        File extension for the output image (default: "png")
+    add_title : str, optional
+        Title to add to the image (default: None)
+        If provided, two versions will be saved: one without margins and one with title
+
+    Returns:
+    --------
+    None
+    """
+    # Get the dimensions of the input image
+    img_height, img_width = image_data.shape[:2]
+
+    # Calculate the figure size in inches to match the aspect ratio
+    dpi = plt.rcParams['figure.dpi']
+    figsize = (img_width / dpi, img_height / dpi)
+
+    # Create the figure with the calculated size
+    plt.figure(figsize=figsize)
+
+    # Display the image without margins
+    plt.imshow(image_data / 255)
+    plt.axis('off')
+
+    # Remove padding/margins
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+    # Ensure the output path exists
+    output_path = Path(output_path)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    # Save with tight layout and the same dimensions as input
+    output_file = output_path / f"{output_name}.{extension}"
+    plt.savefig(output_file,
+                bbox_inches='tight',
+                pad_inches=0,
+                dpi=dpi)
+
+    if add_title:
+        # Add title and save version with margins
+        plt.title(add_title)
+        output_file_with_title = output_path / f"{output_name}_with_margins.{extension}"
+        plt.savefig(output_file_with_title)
+
+    # Close the figure to free memory
+    plt.close()
+
+# Example usage:
+save_image_same_size(
+    image_data=modified_image,
+    output_path=IMAGES_PATH / "outputs",
+    output_name=f"{filename.stem}_no_bkgd",
+    extension="png"
+)
