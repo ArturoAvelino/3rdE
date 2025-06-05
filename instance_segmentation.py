@@ -9,8 +9,9 @@ sample_name = "BM4_E"
 image_no_bkground = "capt0044_no_bkgd.png"
 path_image_no_bkground = IMAGES_PATH / "outputs" / image_no_bkground
 
-image_original = "capt0044_no_bkgd.png"
-path_image_original = IMAGES_PATH / "outputs" / image_no_bkground
+# image_original = "capt0044_no_bkgd.png"
+image_original = "capt0044_original.png"
+path_image_original = IMAGES_PATH / "outputs" / image_original
 
 # image_original = "capt0044.jpg"
 # path_image_original = IMAGES_PATH / image_original
@@ -39,10 +40,10 @@ image_np = np.asarray(Image.open(path_image_no_bkground))
 # and also to easily compare with the other processed images that this code
 # produces.
 
-# plt.figure(figsize=(10, 10))
+# plt.figure(figsize=(9, 6))
 # plt.imshow(image_np / 255)
 # plt.axis('off')
-# save_fig("image_no_background_check", tight_layout=True)
+# save_fig("image_no_background_check")
 # # plt.show()
 
 # ========================================================60
@@ -296,7 +297,7 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
 
 # Run the segmentation
 max_distance = 4.0
-min_pixels = 10000
+min_pixels = 300
 segmented_image = segment_image_kdtree(filtered_image,
                                        max_distance=max_distance,
                                        min_pixels=min_pixels)
@@ -377,7 +378,7 @@ processor = BoxAndCrop(
     segmented_image=segmented_image,
     path_image_original= path_image_original,
     sample_name="BM4_E",
-    output_dir="/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/outputs/3_crop/"
+    output_dir="/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/3_crops"
 )
 
 # Process all groups and save as PNG

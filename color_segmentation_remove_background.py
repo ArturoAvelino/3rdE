@@ -28,8 +28,9 @@ image_np = np.asarray(Image.open(filepath))
 plt.figure(figsize=(10, 6))
 plt.imshow(image_np / 255)
 plt.axis('off')
+save_fig(f"{filename.stem}_original")
 plt.title("Original image - No clustering")
-save_fig("image_original_no_clustering")
+save_fig(f"{filename.stem}_original_with_margins")
 # plt.show()
 
 # --------------------------30
