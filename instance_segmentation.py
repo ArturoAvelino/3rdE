@@ -371,7 +371,7 @@ for label in unique_labels:
 
 # ========================================================60
 
-from utils.bounding_box_metadata_processor import BoxAndCrop
+from utils.bounding_box_write_metadata import BoxAndCrop
 
 # Example usage
 processor = BoxAndCrop(
