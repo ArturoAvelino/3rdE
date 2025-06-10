@@ -77,7 +77,7 @@ class CropIndividualObjects:
             json_file_path="path/to/annotations.json",
             output_dir="output",          # Output directory (default: 'output')
             padding=10,                   # Optional padding around regions (default: 0)
-            normalize_coords=True,        # Whether to normalize coordinates (default: False)
+            normalize_coords=False,        # Whether to normalize coordinates (default: False)
             use_bbox=False               # Use bbox instead of segmentation (default: False)
         )
         processor.process_all()
