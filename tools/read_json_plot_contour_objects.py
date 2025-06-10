@@ -118,6 +118,7 @@ def read_and_plot_segmentations(json_file_path, output_path=None):
                     format=str(output_path.suffix[1:]))  # Convert suffix to string
 
     # plt.show()
+    plt.close()
 
 # Example usage:
 
