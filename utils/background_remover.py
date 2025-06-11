@@ -93,6 +93,7 @@ class ImageSegmentationProcessor:
         self.kmeans = None
         self.cluster_labels = None
         self.cluster_centers = None
+        self.kmeans_init_centers = None
 
         # Load and validate the image
         self._load_image()
@@ -154,9 +155,22 @@ class ImageSegmentationProcessor:
             self for method chaining
         """
         if self.logger:
-            self.logger.info(f"Clustering pixels into {n_clusters} clusters")
+            self.logger.info(f"Clustering RGB colors into {n_clusters} clusters")
 
-        self.kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
+        if n_clusters == 5:
+            self.kmeans_init_centers = np.asarray(
+                [[79.49, 130.62, 189.84],
+                 [131.84, 107.86, 76.36],
+                 [178.59, 173.83, 159.51],
+                 [47.20, 28.64, 18.90],
+                 [114.45, 146.57, 187.97]]
+            )
+            self.kmeans = KMeans(n_clusters=n_clusters,
+                                 init=self.kmeans_init_centers,
+                                 random_state=random_state)
+        else:
+            self.kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
+
         self.cluster_labels = self.kmeans.fit_predict(self.rgb_data)
         self.cluster_centers = self.kmeans.cluster_centers_
 
