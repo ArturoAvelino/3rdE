@@ -140,9 +140,9 @@ class ImageSegmentationProcessor:
             self.logger.info(
                 f"Loaded image: {self.image_path.name} ({self.image.size[0]}x{self.image.size[1]})")
 
-    def cluster_pixels(self,
-                       n_clusters: int = 5,
-                       random_state: int = 42) -> 'ImageSegmentationProcessor':
+    def cluster_rgb_colors(self,
+                           n_clusters: int = 5,
+                           random_state: int = 42) -> 'ImageSegmentationProcessor':
         """
         Perform K-means clustering on the image pixels.
 
@@ -173,11 +173,12 @@ class ImageSegmentationProcessor:
 
         return self
 
+
     def remove_background(self,
                           background_clusters: Union[int, List[int]],
                           output_suffix: str = "_no_bkgd") -> 'ImageSegmentationProcessor':
         """
-        Remove background pixels based on cluster assignment.
+        Remove background pixels by replacing them with white color.
 
         Args:
             background_clusters: Cluster index or list of indices to be treated as background
@@ -188,20 +189,19 @@ class ImageSegmentationProcessor:
 
         Raises:
             ValueError: If background_clusters contains invalid cluster indices
+            RuntimeError: If cluster_pixels() hasn't been called yet
         """
         if self.cluster_labels is None:
             raise RuntimeError(
-                "Must run cluster_pixels before removing background")
+                "Must run 'cluster_pixels()' before removing background")
 
         # Convert single cluster index to list
         if isinstance(background_clusters, int):
             background_clusters = [background_clusters]
 
         # Validate background cluster indices
-        # Use n_clusters parameter instead of n_clusters_ attribute
         n_clusters = len(self.cluster_centers)
         max_cluster = n_clusters - 1
-
         for cluster in background_clusters:
             if cluster < 0 or cluster > max_cluster:
                 raise ValueError(
@@ -216,14 +216,13 @@ class ImageSegmentationProcessor:
         mask = ~np.isin(self.cluster_labels, background_clusters)
         mask = mask.reshape(self.image.size[::-1])
 
-        # Create new image with transparent background
+        # Create new image with white background (255, 255, 255)
         img_array = np.array(self.image)
-        rgba = np.zeros((*img_array.shape[:-1], 4), dtype=np.uint8)
-        rgba[..., :3] = img_array
-        rgba[..., 3] = np.where(mask, 255, 0)
+        new_img = np.full_like(img_array, 255)  # Create white background
+        new_img[mask] = img_array[mask]  # Copy non-background pixels
 
         # Save the image
-        output_image = Image.fromarray(rgba)
+        output_image = Image.fromarray(new_img)
         output_path = self.output_dir / f"{self.image_path.stem}{output_suffix}.png"
         output_image.save(output_path, format='PNG')
 
@@ -232,9 +231,10 @@ class ImageSegmentationProcessor:
 
         return self
 
-    def plot_clusters(self,
-                      sample_step: int = 1000,
-                      save: bool = True) -> 'ImageSegmentationProcessor':
+
+    def plot_rgb_clusters(self,
+                          sample_step: int = 1000,
+                          save: bool = True) -> 'ImageSegmentationProcessor':
         """
         Create a 3D scatter plot of the RGB values colored by cluster.
 
@@ -275,10 +275,68 @@ class ImageSegmentationProcessor:
         plt.colorbar(scatter, label='Cluster')
 
         if save:
-            plot_path = self.output_dir / f"{self.image_path.stem}_clusters_3d.png"
+            plot_path = self.output_dir / f"{self.image_path.stem}_3d_scatter.png"
             plt.savefig(plot_path)
             if self.logger:
                 self.logger.info(f"Saved cluster plot to {plot_path}")
 
         plt.close()
         return self
+
+
+    def plot_rgb_rawdata(self,
+                          sample_step: int = 1000,
+                          save: bool = True) -> 'ImageSegmentationProcessor':
+        """
+        Create a 3D scatter plot of the RGB values colored by cluster.
+
+        Args:
+            sample_step: Step size for sampling points to avoid overcrowding
+            save: Whether to save the plot to a file
+
+        Returns:
+            self for method chaining
+        """
+        if self.cluster_labels is None:
+            raise RuntimeError("Must run cluster_pixels before plotting")
+
+        if self.logger:
+            self.logger.info("Creating 3D scatter plot of RGB clusters")
+
+        # Sample points to avoid overcrowding
+        sample_indices = np.arange(0, len(self.rgb_data), sample_step)
+        rgb_sample = self.rgb_data[sample_indices]
+        labels_sample = self.cluster_labels[sample_indices]
+
+        # Create the plot
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.add_subplot(111, projection='3d')
+
+        scatter = ax.scatter(rgb_sample[:, 0],
+                             rgb_sample[:, 1],
+                             rgb_sample[:, 2],
+                             c=rgb_sample/255,
+                             marker='.')
+
+        ax.set_xlabel('Red')
+        ax.set_ylabel('Green')
+        ax.set_zlabel('Blue')
+        ax.set_title('3D Scatter plot of the raw RGB values')
+
+        if save:
+            plot_path = self.output_dir / f"{self.image_path.stem}_3d_scatter_raw.png"
+            plt.savefig(plot_path)
+            if self.logger:
+                self.logger.info(f"Saved cluster plot to {plot_path}")
+
+        plt.close()
+        return self
+# Example usage:
+
+# input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
+# output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
+#
+# processor = ImageSegmentationProcessor(input_dir, output_dir)
+# processor.cluster_pixels(n_clusters=5)
+# processor.plot_clusters()
+# processor.remove_background(background_clusters=[0, 4])

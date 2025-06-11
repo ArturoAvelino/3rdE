@@ -387,8 +387,9 @@ def main():
     # Remove color background from the images.
     try:
         processor = ImageSegmentationProcessor(input_dir, output_dir)
-        processor.cluster_pixels(n_clusters=5)
-        processor.plot_clusters( )
+        processor.cluster_rgb_colors(n_clusters=5)
+        processor.plot_rgb_rawdata()
+        processor.plot_rgb_clusters()
         processor.remove_background(background_clusters=[0, 4])
         logger.info("Successfully completed batch processing")
 

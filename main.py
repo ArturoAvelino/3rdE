@@ -16,7 +16,7 @@ def main():
     setup_logging()
     logger = logging.getLogger(__name__)
 
-    # Create output directory if it doesn't exist
+    # Create the output directory if it doesn't exist
     output_dir = Path("/Users/aavelino/Downloads/images/Guillaume/2025_05_15/output")
     output_dir.mkdir(exist_ok=True)
 
