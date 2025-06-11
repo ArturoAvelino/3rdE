@@ -312,14 +312,6 @@ def process_json_crop(input_dir, image_pattern="capt*.jpg", padding = 0):
 
             # -----------
 
-            #old # Copy the JSON file to the output directory
-            #old with open(json_file, 'r') as f:
-            #old     json_data = json.load(f)
-            #old
-            #old output_json = output_dir / json_file.name
-            #old with open(output_json, 'w') as f:
-            #old     json.dump(json_data, f, indent=4)
-
             logger.info(f"Successfully processed {image_file.name}")
 
         except Exception as e:
@@ -346,11 +338,13 @@ def process_background_remover(input_dir, image_pattern="capt*.jpg"):
 
     for image_file in image_files:
         try:
-            #old1 Construct image file path (same name as image but .json extension)
-            #old1 json_file = image_file.with_suffix('.json')
-
             # Construct image file path
             image_path = input_dir / image_file
+
+            if not image_path.exists():
+                logger.warning(
+                    f"Image file not found for image {image_file.name}, skipping")
+                continue
 
             # Create output directory with same name as the image file
             output_dir = input_dir / image_file.stem
@@ -358,33 +352,16 @@ def process_background_remover(input_dir, image_pattern="capt*.jpg"):
 
             logger.info(f"Processing {image_file.name}")
 
+            # -----------
+            # Remove color background from the images.
+
             processor = ImageSegmentationProcessor(image_path, output_dir)
             processor.cluster_rgb_colors(n_clusters=5)
             processor.plot_rgb_rawdata()
             processor.plot_rgb_clusters()
             processor.remove_background(background_clusters=[0, 4])
-            logger.info("Successfully completed batch processing")
 
             # -----------
-            # Process the reading of JSON file and cropping the images
-            #old1 processor = CropIndividualObjects(
-            #old1     json_file_path=json_file,
-            #old1     output_dir=output_dir,
-            #old1     normalize_coords=False,
-            #old1     padding=padding,
-            #old1     use_bbox=False
-            #old1 )
-            #old1 processor.process_all()
-
-            # -----------
-
-            #old # Copy the JSON file to the output directory
-            #old with open(json_file, 'r') as f:
-            #old     json_data = json.load(f)
-            #old
-            #old output_json = output_dir / json_file.name
-            #old with open(output_json, 'w') as f:
-            #old     json.dump(json_data, f, indent=4)
 
             logger.info(f"Successfully processed {image_file.name}")
 
@@ -393,9 +370,10 @@ def process_background_remover(input_dir, image_pattern="capt*.jpg"):
 
 
 def main():
+
     # Define input directory
-    # input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
-    input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044")
+    input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+    # input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044")
 
     if not input_dir.exists():
         print(f"Error: Input directory not found: {input_dir}")
@@ -409,6 +387,7 @@ def main():
 
     # ----------------------------------------
     # Remove color background from a batch of images, using clustering.
+    # Comment these lines if you don't want to remove background from the images.
     try:
         process_background_remover(input_dir)
         logger.info("Successfully completed batch processing")
