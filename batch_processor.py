@@ -326,77 +326,151 @@ def process_json_crop(input_dir, image_pattern="capt*.jpg", padding = 0):
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
 
+def process_background_remover(input_dir, image_pattern="capt*.jpg"):
+    """
+    Process a batch of images and their corresponding JSON segmentation files, creating
+    visualization plots and organizing outputs in dedicated directories.
+    """
+    logger = logging.getLogger(__name__)
+    input_dir = Path(input_dir)
+
+    # Find all image files matching the pattern
+    image_files = list(input_dir.glob(image_pattern))
+
+    if not image_files:
+        logger.warning(
+            f"No image files found matching pattern '{image_pattern}' in {input_dir}")
+        return
+
+    logger.info(f"Found {len(image_files)} image files to process")
+
+    for image_file in image_files:
+        try:
+            #old1 Construct image file path (same name as image but .json extension)
+            #old1 json_file = image_file.with_suffix('.json')
+
+            # Construct image file path
+            image_path = input_dir / image_file
+
+            # Create output directory with same name as the image file
+            output_dir = input_dir / image_file.stem
+            output_dir.mkdir(exist_ok=True)
+
+            logger.info(f"Processing {image_file.name}")
+
+            processor = ImageSegmentationProcessor(image_path, output_dir)
+            processor.cluster_rgb_colors(n_clusters=5)
+            processor.plot_rgb_rawdata()
+            processor.plot_rgb_clusters()
+            processor.remove_background(background_clusters=[0, 4])
+            logger.info("Successfully completed batch processing")
+
+            # -----------
+            # Process the reading of JSON file and cropping the images
+            #old1 processor = CropIndividualObjects(
+            #old1     json_file_path=json_file,
+            #old1     output_dir=output_dir,
+            #old1     normalize_coords=False,
+            #old1     padding=padding,
+            #old1     use_bbox=False
+            #old1 )
+            #old1 processor.process_all()
+
+            # -----------
+
+            #old # Copy the JSON file to the output directory
+            #old with open(json_file, 'r') as f:
+            #old     json_data = json.load(f)
+            #old
+            #old output_json = output_dir / json_file.name
+            #old with open(output_json, 'w') as f:
+            #old     json.dump(json_data, f, indent=4)
+
+            logger.info(f"Successfully processed {image_file.name}")
+
+        except Exception as e:
+            logger.error(f"Error processing {image_file.name}: {str(e)}")
+
+
+def main():
+    # Define input directory
+    # input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+    input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044")
+
+    if not input_dir.exists():
+        print(f"Error: Input directory not found: {input_dir}")
+        return
+
+    # Setup logging (will create processing.log in the input directory)
+    setup_logging(input_dir)
+    logger = logging.getLogger(__name__)
+
+    logger.info("Starting batch processing of images ...")
+
+    # ----------------------------------------
+    # Remove color background from a batch of images, using clustering.
+    try:
+        process_background_remover(input_dir)
+        logger.info("Successfully completed batch processing")
+
+    # ----------------------------------------
+    # # Plot CONTOURS based on the JSON files.
+    # # Comment these 3 lines if you don't want to plot contours.
+    # try:
+    #     process_json_plot_contours(input_dir)
+    #     logger.info("Successfully completed batch processing")
+
+    # ----------------------------------------
+    # # Create CROP images based on the JSON files.
+    # # Comment these 3 lines if you don't want to crop.
+    # try:
+    #     process_json_crop(input_dir, padding=1)
+    #     logger.info("Successfully completed batch processing")
+
+    # ----------------------------------------
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        raise
+
+
+# Good but tmp
 # def main():
 #     # Define input directory
-#     input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+#     #old. input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+#     input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
+#
+#     # Define output directory (creating a subdirectory named 'output' in the input directory)
+#     # output_dir = input_dir / "output"
+#     output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
 #
 #     if not input_dir.exists():
 #         print(f"Error: Input directory not found: {input_dir}")
 #         return
 #
+#     # Create the output directory if it doesn't exist
+#     output_dir.mkdir(exist_ok=True)
+#
 #     # Setup logging (will create processing.log in the input directory)
-#     setup_logging(input_dir)
+#     # setup_logging(input_dir)
+#     setup_logging(output_dir)
 #     logger = logging.getLogger(__name__)
 #
 #     logger.info("Starting batch processing of image segmentations...")
 #
 #     # ----------------------------------------
-#     # # Plot CONTOURS based on the JSON files.
-#     # # Comment these 3 lines if you don't want to plot contours.
+#     # Remove color background from the images.
 #     try:
-#         process_json_plot_contours(input_dir)
-#         logger.info("Successfully completed batch processing")
-#
-#     # ----------------------------------------
-#     # # Create CROP images based on the JSON files.
-#     # # Comment these 3 lines if you don't want to crop.
-#     # try:
-#         process_json_crop(input_dir, padding=1)
+#         processor = ImageSegmentationProcessor(input_dir, output_dir)
+#         processor.cluster_rgb_colors(n_clusters=5)
+#         processor.plot_rgb_rawdata()
+#         processor.plot_rgb_clusters()
+#         processor.remove_background(background_clusters=[0, 4])
 #         logger.info("Successfully completed batch processing")
 #
 #     # ----------------------------------------
 #     except Exception as e:
 #         logger.error(f"An unexpected error occurred: {str(e)}")
 #         raise
-
-
-def main():
-    # Define input directory
-    #old. input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
-    input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
-
-    # Define output directory (creating a subdirectory named 'output' in the input directory)
-    # output_dir = input_dir / "output"
-    output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
-
-    if not input_dir.exists():
-        print(f"Error: Input directory not found: {input_dir}")
-        return
-
-    # Create the output directory if it doesn't exist
-    output_dir.mkdir(exist_ok=True)
-
-    # Setup logging (will create processing.log in the input directory)
-    # setup_logging(input_dir)
-    setup_logging(output_dir)
-    logger = logging.getLogger(__name__)
-
-    logger.info("Starting batch processing of image segmentations...")
-
-    # ----------------------------------------
-    # Remove color background from the images.
-    try:
-        processor = ImageSegmentationProcessor(input_dir, output_dir)
-        processor.cluster_rgb_colors(n_clusters=5)
-        processor.plot_rgb_rawdata()
-        processor.plot_rgb_clusters()
-        processor.remove_background(background_clusters=[0, 4])
-        logger.info("Successfully completed batch processing")
-
-    # ----------------------------------------
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {str(e)}")
-        raise
 
 
 if __name__ == "__main__":
