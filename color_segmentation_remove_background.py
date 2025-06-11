@@ -78,14 +78,36 @@ X_scale = rgb_min_max_scaler.fit_transform(X)
 # Cluster the RGB colors using k-means, for one given number of clusters.
 
 num_clusters = 5
-kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(X_scale)
 
-# print(kmeans.cluster_centers_) # Using minmax (0,1) scaled data as input
+# Initial cluster centers. The values are scaled to (0,1).
+if num_clusters == 5:
+    kmeans_init_centers = np.asarray(
+        [[0.308, 0.545, 0.753],
+         [0.528, 0.448, 0.303],
+         [0.725, 0.728, 0.633],
+         [0.173, 0.112, 0.075],
+         [0.455, 0.612, 0.745]]
+    )
+
+kmeans = KMeans(n_clusters=num_clusters, init=kmeans_init_centers,
+                random_state=42).fit(X_scale)
+
+print(kmeans.cluster_centers_) # Using minmax (0,1) scaled data as input
+#out [[0.30878605 0.54503053 0.75334311]
+#out  [0.52875339 0.44859306 0.30302907]
+#out  [0.72518628 0.72811655 0.63300725]
+#out  [0.17311289 0.11289412 0.07501406]
+#out  [0.45567637 0.61260482 0.74593946]]
 
 # Unscale the `kmeans.cluster_centers_` values to the original RGB scale
 kmeans_centers_unscaled = rgb_min_max_scaler.inverse_transform(kmeans.cluster_centers_)
 
-# print(kmeans_centers_unscaled)
+print(kmeans_centers_unscaled)
+#out [[ 79.49107931 130.62720454 189.8424633 ]
+#out  [131.84330787 107.86796212  76.36332492]
+#out  [178.59433574 173.83550631 159.51782587]
+#out  [ 47.20086737  28.64301149  18.90354355]
+#out  [114.45097666 146.57473714 187.97674488]]
 
 # --------------------------30
 # Create a `X_with_clusters` array, using the first
@@ -146,7 +168,6 @@ save_fig(f"image_{num_clusters}_clusters")
 # Create a copy of X_with_clusters to avoid modifying the original array
 modified_array = X_with_clusters.copy()
 
-#
 # Create a mask for rows where the cluster value is the ones I want to remove.
 mask = np.isin(modified_array[:, 3], [0, 4]) # when "num_clusters = 4"
 
@@ -172,7 +193,7 @@ save_fig(f"{filename.stem}_no_bkgd_with_margins")
 # plt.show()
 
 
-# Plot without margins and the same size as the original input image
+# Plot without margins and the same pixel size as the original input image
 def save_image_same_size(image_data, output_path, output_name, extension="png",
                          add_title=None):
     """
@@ -225,7 +246,7 @@ def save_image_same_size(image_data, output_path, output_name, extension="png",
                 dpi=dpi)
 
     if add_title:
-        # Add title and save version with margins
+        # Add title and save the version with margins
         plt.title(add_title)
         output_file_with_title = output_path / f"{output_name}_with_margins.{extension}"
         plt.savefig(output_file_with_title)

@@ -1,8 +1,11 @@
 import logging
 from pathlib import Path
 import json
-from read_json_plot_contour_objects import read_json_plot_contours
-from read_json_crop_objects import CropIndividualObjects
+
+from tools.read_json_plot_contour_objects import read_json_plot_contours
+from tools.read_json_crop_objects import CropIndividualObjects
+
+from utils.background_remover import ImageSegmentationProcessor
 
 def setup_logging(input_dir):
     """
@@ -323,32 +326,70 @@ def process_json_crop(input_dir, image_pattern="capt*.jpg", padding = 0):
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
 
+# def main():
+#     # Define input directory
+#     input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+#
+#     if not input_dir.exists():
+#         print(f"Error: Input directory not found: {input_dir}")
+#         return
+#
+#     # Setup logging (will create processing.log in the input directory)
+#     setup_logging(input_dir)
+#     logger = logging.getLogger(__name__)
+#
+#     logger.info("Starting batch processing of image segmentations...")
+#
+#     # ----------------------------------------
+#     # # Plot CONTOURS based on the JSON files.
+#     # # Comment these 3 lines if you don't want to plot contours.
+#     try:
+#         process_json_plot_contours(input_dir)
+#         logger.info("Successfully completed batch processing")
+#
+#     # ----------------------------------------
+#     # # Create CROP images based on the JSON files.
+#     # # Comment these 3 lines if you don't want to crop.
+#     # try:
+#         process_json_crop(input_dir, padding=1)
+#         logger.info("Successfully completed batch processing")
+#
+#     # ----------------------------------------
+#     except Exception as e:
+#         logger.error(f"An unexpected error occurred: {str(e)}")
+#         raise
+
+
 def main():
     # Define input directory
-    input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+    #old. input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+    input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
+
+    # Define output directory (creating a subdirectory named 'output' in the input directory)
+    # output_dir = input_dir / "output"
+    output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
 
     if not input_dir.exists():
         print(f"Error: Input directory not found: {input_dir}")
         return
 
+    # Create the output directory if it doesn't exist
+    output_dir.mkdir(exist_ok=True)
+
     # Setup logging (will create processing.log in the input directory)
-    setup_logging(input_dir)
+    # setup_logging(input_dir)
+    setup_logging(output_dir)
     logger = logging.getLogger(__name__)
 
     logger.info("Starting batch processing of image segmentations...")
 
     # ----------------------------------------
-    # Read JSON files and plot CONTOURS.
-    # Comment these 3 lines if you don't want to plot contounrs.
+    # Remove color background from the images.
     try:
-        process_json_plot_contours(input_dir)
-        logger.info("Successfully completed batch processing")
-
-    # ----------------------------------------
-    # Read JSON files and create CROP images.
-    # Comment these 3 lines if you don't want to crop.
-    # try:
-        process_json_crop(input_dir, padding=1)
+        processor = ImageSegmentationProcessor(input_dir, output_dir)
+        processor.cluster_pixels(n_clusters=5)
+        processor.plot_clusters( )
+        processor.remove_background(background_clusters=[0, 4])
         logger.info("Successfully completed batch processing")
 
     # ----------------------------------------
