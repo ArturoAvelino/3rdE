@@ -6,6 +6,7 @@ from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
 
 from utils.background_remover import ImageSegmentationProcessor
+from utils.bounding_box_write_metadata import BoxAndCrop
 
 def setup_logging(input_dir):
     """
@@ -320,7 +321,7 @@ def process_json_crop(input_dir, image_pattern="capt*.jpg", padding = 0):
 
 def process_background_remover(input_dir, image_pattern="capt*.jpg"):
     """
-    Process a batch of images and their corresponding JSON segmentation files, creating
+    Process a batch of images, creating
     visualization plots and organizing outputs in dedicated directories.
     """
     logger = logging.getLogger(__name__)
@@ -369,6 +370,66 @@ def process_background_remover(input_dir, image_pattern="capt*.jpg"):
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
 
+# Not ready yet:
+def process_crop_objects(input_dir, image_pattern="capt*.jpg",
+                        sample_name="sample_name"):
+    """
+    Process a batch of images.
+    """
+    logger = logging.getLogger(__name__)
+    input_dir = Path(input_dir)
+
+    # Find all image files matching the pattern
+    image_files = list(input_dir.glob(image_pattern))
+
+    if not image_files:
+        logger.warning(
+            f"No image files found matching pattern '{image_pattern}' in {input_dir}")
+        return
+
+    logger.info(f"Found {len(image_files)} image files to process")
+
+    for image_file in image_files:
+        try:
+            # Construct image file path
+            image_path = input_dir / image_file
+
+
+            if not image_path.exists():
+                logger.warning(
+                    f"Image file not found for image {image_file.name}, skipping")
+                continue
+
+            # Create output directory with same name as the image file
+            output_dir = input_dir / image_file.stem
+            output_dir.mkdir(exist_ok=True)
+
+            # Construct image file path of the image without background.
+            image_no_bkgd_path = output_dir / f"{image_file.stem}_no_bkgd.png"
+
+            logger.info(f"Processing {image_file.name}")
+
+            # -----------
+            # Crop objects from the image.
+
+            processor = BoxAndCrop(
+                segmented_image = image_no_bkgd_path,
+                path_image_original = image_path,
+                sample_name = sample_name,
+                output_dir = output_dir
+            )
+
+            # Process all groups and save them as PNG
+            processor.process_all_groups(image_format='PNG')
+
+            # -----------
+
+            logger.info(f"Successfully processed {image_file.name}")
+
+        except Exception as e:
+            logger.error(f"Error processing {image_file.name}: {str(e)}")
+
+
 def main():
 
     # Define input directory
@@ -388,11 +449,17 @@ def main():
     # ----------------------------------------
     # Remove color background from a batch of images, using clustering.
     # Comment these lines if you don't want to remove background from the images.
-    try:
-        process_background_remover(input_dir)
-        logger.info("Successfully completed batch processing")
+    # try:
+    #     process_background_remover(input_dir)
+    #     logger.info("Successfully completed batch processing")
 
     # ----------------------------------------
+    # Crop objects from a batch of images.
+    try:
+        process_crop_objects(input_dir, padding=1, sample_name="BM4_E")
+        logger.info("Successfully completed batch processing")
+
+    # =========================================
     # # Plot CONTOURS based on the JSON files.
     # # Comment these 3 lines if you don't want to plot contours.
     # try:

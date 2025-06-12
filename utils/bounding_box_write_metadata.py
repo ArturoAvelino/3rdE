@@ -229,8 +229,8 @@ class BoxAndCrop:
 #     output_dir="/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/outputs/3_crop/"
 # )
 
-# # Process all groups and save as PNG
+# # Process all groups and save them as PNG
 # processor.process_all_groups(image_format='PNG')
 
-# # Or process a specific group and save as JPG
+# # Or process a specific group and save it as JPG
 # # processor.process_group(group_number=1, image_format='JPG')

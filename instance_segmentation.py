@@ -1,32 +1,47 @@
-# Instance segmentation  by grouping pixels that are together or closer to
-# each other
-
-from utils.figure_saving_utils import IMAGES_PATH, save_fig
-from pathlib import Path
-
-sample_name = "BM4_E"
-
-image_no_bkground = "capt0044_no_bkgd.png"
-path_image_no_bkground = IMAGES_PATH / "outputs" / image_no_bkground
-
-# image_original = "capt0044_no_bkgd.png"
-image_original = "capt0044.jpg"
-path_image_original = IMAGES_PATH / image_original
-
-# image_original = "capt0044.jpg"
-# path_image_original = IMAGES_PATH / image_original
-
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from utils.figure_saving_utils import save_fig
+from pathlib import Path
+from contextlib import redirect_stdout
+
+
+# Instance segmentation  by grouping pixels that are together or closer to
+# each other
+
+sample_name = "BM4_E"
+
+# Location of the original image.
+image_original = Path("capt0044.jpg")
+
+# IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "BM4_E" / "capt0044"
+IMAGES_PATH = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+path_image_original = IMAGES_PATH /image_original
+
+output_dir = IMAGES_PATH / image_original.stem / "crops"
+path_subfolder = IMAGES_PATH / image_original.stem
+
+# Location of the image with no background.
+image_no_bkground = f"{image_original.stem}_no_bkgd.png"
+path_image_no_bkground = IMAGES_PATH / f"{image_original.stem}" / image_no_bkground
+# path_image_no_bkground = output_dir / image_no_bkground
 
 # Upload the image:
 image_np = np.asarray(Image.open(path_image_no_bkground))
 
-# print(image_np.shape)
+print(image_np.shape)
+# (4000, 6000, 3)
 # (2000, 3000, 4)
 
 # print(image_np[:1])
+#out [[[255 255 255]
+#out   [255 255 255]
+#out   [255 255 255]
+#out   ...
+#out   [255 255 255]
+#out   [255 255 255]
+#out   [255 255 255]]]
+
 #out [[[255 255 255 255]
 #out   [255 255 255 255]
 #out   [255 255 255 255]
@@ -45,6 +60,7 @@ image_np = np.asarray(Image.open(path_image_no_bkground))
 # plt.axis('off')
 # save_fig("image_no_background_check")
 # # plt.show()
+plt.close()
 
 # ========================================================60
 # Add the x-y values of the location of each pixel to the 3d image array
@@ -56,7 +72,7 @@ height, width = image_np.shape[:2]
 
 # Image proportion (width/height)
 image_proportion = height / width
-print(f"Image proportion: {image_proportion:.2f}")
+# print(f"Image proportion: {image_proportion:.2f}")
 # Image proportion: 0.67
 
 # Create meshgrid for y and x coordinates
@@ -83,7 +99,7 @@ y_coords, x_coords = np.meshgrid(np.arange(height), np.arange(width),
 #out  [3 3 3 ... 3 3 3]
 #out  [4 4 4 ... 4 4 4]]
 
-# Create a new array with 6 channels
+# Create a new array with 5 channels
 image_with_coords = np.zeros((height, width, 6))
 
 # print(image_with_coords.shape)
@@ -91,7 +107,13 @@ image_with_coords = np.zeros((height, width, 6))
 
 # Copy the original RGB values to the first 3 channels and the "alpha" values to
 # the 4th channel
-image_with_coords[:, :, :4] = image_np
+
+image_with_coords[:, :, :3] = image_np
+
+# try: # if the image has no alpha channel
+#     image_with_coords[:, :, :3] = image_np
+# else:
+#     image_with_coords[:, :, :4] = image_np
 
 # Add x coordinates to the 5th channel
 image_with_coords[:, :, 4] = x_coords
@@ -304,8 +326,7 @@ segmented_image = segment_image_kdtree(filtered_image,
 
 # Print all the rows of a given group
 group_id = 1
-
-print(f"Number of pixels in group {group_id}: {len(segmented_image[segmented_image[:, -1] == group_id])}")
+# print(f"Number of pixels in group {group_id}: {len(segmented_image[segmented_image[:, -1] == group_id])}")
 #out Number of pixels in group 1: 12751
 
 # print(segmented_image[segmented_image[:, -1] == group_id])
@@ -353,21 +374,42 @@ plt.xlabel('X coordinate')
 plt.ylabel('Y coordinate')
 plt.gca().invert_yaxis()  # This makes y-axis increase downward
 plt.title(f'Filtered Pixel Groups (minimum {min_pixels} pixels, distance <= {max_distance} pixels)')
-save_fig("pixel_groups_kdtree_filtered", tight_layout=True)
+plt.tight_layout()
+print("Saving pixel groups image...")
+plt.savefig(Path(path_subfolder / "pixel_groups.png"), dpi=150)
+# save_fig("pixel_groups_kdtree_filtered", tight_layout=True)
+plt.close()
 
 # --------------------------------------------------------60
 # Print statistics about the groups
 
-valid_labels = segmented_image[segmented_image[:, -1] >= 0][:, -1]
-unique_labels = np.unique(valid_labels)
-print(f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {len(valid_labels)} total groups")
-# Found 7 valid groups (with ≥10000 pixels) out of 157785 total groups
+#old valid_labels = segmented_image[segmented_image[:, -1] >= 0][:, -1]
+#old unique_labels = np.unique(valid_labels)
+#old print(f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {len(valid_labels)} total groups")
+#old # Found 7 valid groups (with ≥10000 pixels) out of 157785 total groups
+#old
+#old print("\nStatistics for valid groups:")
+#old for label in unique_labels:
+#old     group_pixels = segmented_image[segmented_image[:, -1] == label]
+#old     print(f"\nGroup {int(label)}:")
+#old     print(f"Number of pixels: {len(group_pixels)}")
 
 print("\nStatistics for valid groups:")
-for label in unique_labels:
-    group_pixels = segmented_image[segmented_image[:, -1] == label]
-    print(f"\nGroup {int(label)}:")
-    print(f"Number of pixels: {len(group_pixels)}")
+# Open a file to save the output
+with open(Path(path_subfolder /'pixels_groups.txt'), 'w') as f:
+    # Redirect stdout to the file
+    with redirect_stdout(f):
+        # Your existing code goes here
+        valid_labels = segmented_image[segmented_image[:, -1] >= 0][:, -1]
+        unique_labels = np.unique(valid_labels)
+        print(
+            f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {len(valid_labels)} total groups")
+
+        print("\nStatistics for valid groups:")
+        for label in unique_labels:
+            group_pixels = segmented_image[segmented_image[:, -1] == label]
+            print(f"\nGroup {int(label)}:")
+            print(f"Number of pixels: {len(group_pixels)}")
 
 # ========================================================60
 
@@ -375,11 +417,11 @@ from utils.bounding_box_write_metadata import BoxAndCrop
 
 # Example usage
 processor = BoxAndCrop(
-    segmented_image=segmented_image,
-    path_image_original= path_image_original,
-    path_image_no_bkgd = path_image_no_bkground,
-    sample_name="BM4_E",
-    output_dir="/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/3_crops"
+    segmented_image = segmented_image,
+    path_image_original = path_image_original,
+    path_image_no_bkgd  = path_image_no_bkground,
+    sample_name = "BM4_E",
+    output_dir = output_dir
 )
 
 # Process all groups and save as PNG
@@ -387,5 +429,3 @@ processor.process_all_groups(image_format='PNG')
 
 # Or process a specific group
 # processor.process_group(group_number=1, image_format='PNG')
-
-
