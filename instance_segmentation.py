@@ -6,25 +6,41 @@ from pathlib import Path
 from contextlib import redirect_stdout
 
 
-# Instance segmentation  by grouping pixels that are together or closer to
+# Instance segmentation by grouping pixels that are together or closer to
 # each other
 
+# Main directory containing the all images.
+# IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "BM4_E" / "capt0044"
+# IMAGES_PATH = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+IMAGES_PATH = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox")
+
+# Sample name. Info to be written in the metadata JSON file.
 sample_name = "BM4_E"
 
-# Location of the original image.
-image_original = Path("capt0044.jpg")
+# Name of the original raw image
+image_original = Path("capt0011.jpg")
 
-# IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "BM4_E" / "capt0044"
-IMAGES_PATH = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+# Location of the original image.
 path_image_original = IMAGES_PATH /image_original
 
-output_dir = IMAGES_PATH / image_original.stem / "crops"
-path_subfolder = IMAGES_PATH / image_original.stem
+# Output directory for the crops. The directory will be created if it
+# doesn't exit.
+output_dir = IMAGES_PATH / "output_10_clustering_crops" / image_original.stem / "crops"
 
-# Location of the image with no background.
+# folder containing the image with no background.
+path_subfolder = IMAGES_PATH / "output_10_clustering_crops" / image_original.stem
+
+# Name of the image with no background.
 image_no_bkground = f"{image_original.stem}_no_bkgd.png"
-path_image_no_bkground = IMAGES_PATH / f"{image_original.stem}" / image_no_bkground
+
+# Full path to the image with no background.
+path_image_no_bkground = path_subfolder / image_no_bkground
 # path_image_no_bkground = output_dir / image_no_bkground
+
+# -------------------------------
+
+# Create the output directory if it doesn't exist
+output_dir.mkdir(parents=True, exist_ok=True)
 
 # Upload the image:
 image_np = np.asarray(Image.open(path_image_no_bkground))
@@ -376,7 +392,7 @@ plt.gca().invert_yaxis()  # This makes y-axis increase downward
 plt.title(f'Filtered Pixel Groups (minimum {min_pixels} pixels, distance <= {max_distance} pixels)')
 plt.tight_layout()
 print("Saving pixel groups image...")
-plt.savefig(Path(path_subfolder / "pixel_groups.png"), dpi=150)
+plt.savefig(Path(output_dir / f"{image_original.stem}_pixel_groups.png"), dpi=150)
 # save_fig("pixel_groups_kdtree_filtered", tight_layout=True)
 plt.close()
 
@@ -396,7 +412,7 @@ plt.close()
 
 print("\nStatistics for valid groups:")
 # Open a file to save the output
-with open(Path(path_subfolder /'pixels_groups.txt'), 'w') as f:
+with open(Path(output_dir / f'{image_original.stem}_pixels_groups.txt'), 'w') as f:
     # Redirect stdout to the file
     with redirect_stdout(f):
         # Your existing code goes here
@@ -413,15 +429,16 @@ with open(Path(path_subfolder /'pixels_groups.txt'), 'w') as f:
 
 # ========================================================60
 
-from utils.bounding_box_write_metadata import BoxAndCrop
+from utils.bounding_box_write_metadata import CropImageAndWriteBox
 
 # Example usage
-processor = BoxAndCrop(
+processor = CropImageAndWriteBox(
     segmented_image = segmented_image,
     path_image_original = path_image_original,
     path_image_no_bkgd  = path_image_no_bkground,
     sample_name = "BM4_E",
-    output_dir = output_dir
+    output_dir = output_dir,
+    padding=10
 )
 
 # Process all groups and save as PNG

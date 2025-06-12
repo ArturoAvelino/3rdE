@@ -6,7 +6,7 @@ from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
 
 from utils.background_remover import ImageSegmentationProcessor
-from utils.bounding_box_write_metadata import BoxAndCrop
+from utils.bounding_box_write_metadata import CropImageAndWriteBox
 
 def setup_logging(input_dir):
     """
@@ -412,7 +412,7 @@ def process_crop_objects(input_dir, image_pattern="capt*.jpg",
             # -----------
             # Crop objects from the image.
 
-            processor = BoxAndCrop(
+            processor = CropImageAndWriteBox(
                 segmented_image = image_no_bkgd_path,
                 path_image_original = image_path,
                 sample_name = sample_name,

@@ -4,9 +4,9 @@ import json
 from PIL import Image
 import os
 
-class BoxAndCrop:
+class CropImageAndWriteBox:
     def __init__(self, segmented_image, path_image_original, path_image_no_bkgd,
-                 sample_name, output_dir):
+                 sample_name, output_dir, padding=0):
         """
         BoxAndCrop is a class designed to process segmented image data
         and extract individual objects by creating bounding boxes around pixel
@@ -80,10 +80,11 @@ class BoxAndCrop:
         self.path_image_no_bkgd = Path(path_image_no_bkgd)
         self.sample_name = sample_name
         self.output_dir = Path(output_dir)
+        self.padding = padding
         self.image_original = None
         self.image_no_bkgd  = None
         
-        # Create output directory if it doesn't exist
+        # Create the output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # Load the original image
@@ -118,8 +119,15 @@ class BoxAndCrop:
         right = int(np.max(group_pixels[:, 4]))
         upper = int(np.min(group_pixels[:, 5]))
         lower = int(np.max(group_pixels[:, 5]))
-        
-        return left, upper, right, lower
+
+        # Add padding
+        left_padded = left - self.padding
+        right_padded = right + self.padding
+        upper_padded = upper - self.padding
+        lower_padded = lower + self.padding
+
+        # return left, upper, right, lower
+        return left_padded, upper_padded, right_padded, lower_padded
 
     def create_json_metadata(self, group_number, bbox_coords):
         """
@@ -133,11 +141,17 @@ class BoxAndCrop:
             dict: JSON metadata structure
         """
         left, upper, right, lower = bbox_coords
-        width = right - left
-        height = lower - upper
-        center_x = left + width // 2
-        center_y = upper + height // 2
-        
+
+        # Determine the center of the box
+        width_padded = right - left
+        height_padded = lower - upper
+        center_x = left + width_padded // 2
+        center_y = upper + height_padded // 2
+
+        # Determine the width and height WITHOUT the padding
+        width  = width_padded - (2 * self.padding)
+        height = height_padded - (2 * self.padding)
+
         return {
             "image": [{
                 "sample_name": self.sample_name,
