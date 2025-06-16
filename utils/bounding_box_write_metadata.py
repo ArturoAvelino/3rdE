@@ -54,19 +54,20 @@ class CropImageAndWriteBox:
 
         Usage Example:
         -------------
-        processor = BoxAndCrop(
-            segmented_image=segmented_image,
-            path_image_original="path/to/image.jpg",
-            path_image_no_bkgd = "path/to/image_no_background.jpg",
-            sample_name="BM4_E",
-            output_dir="path/to/output"
+        processor = CropImageAndWriteBox(
+            segmented_image = segmented_image,
+            path_image_original = path_image_original,
+            path_image_no_bkgd  = path_image_no_bkground,
+            sample_name = "BM4_E",
+            output_dir = output_dir,
+            padding = 10  # pixel units.
         )
 
-        # Process all groups
+        # Process all groups and save as PNG
         processor.process_all_groups(image_format='PNG')
 
-        # Or process specific group
-        # processor.process_group(group_number=1, image_format='JPG')
+        # Or process a specific group
+        # processor.process_group(group_number=1, image_format='PNG')
 
         Note:
         -----
@@ -158,14 +159,7 @@ class CropImageAndWriteBox:
         else:
             lower_padded = lower + self.padding
 
-        #old. # Add padding
-        #old. left_padded = left - self.padding
-        #old. right_padded = right + self.padding
-        #old. upper_padded = upper - self.padding
-        #old. lower_padded = lower + self.padding
-
-        # return left, upper, right, lower
-        return left_padded, upper_padded, right_padded, lower_padded
+        return left_padded, upper_padded, right_padded, lower_padded, left, upper, right, lower
 
     def create_json_metadata(self, group_number, bbox_coords):
         """
@@ -181,14 +175,10 @@ class CropImageAndWriteBox:
         left, upper, right, lower = bbox_coords
 
         # Determine the center of the box
-        width_padded = right - left
-        height_padded = lower - upper
-        center_x = left + width_padded // 2
-        center_y = upper + height_padded // 2
-
-        # Determine the width and height WITHOUT the padding
-        width  = width_padded - (2 * self.padding)
-        height = height_padded - (2 * self.padding)
+        width = right - left
+        height = lower - upper
+        center_x = left + width // 2
+        center_y = upper + height // 2
 
         return {
             "image": [{
@@ -227,11 +217,14 @@ class CropImageAndWriteBox:
 
         try:
             # Get bounding box coordinates
-            bbox_coords = self.get_bounding_box(group_number)
+            left_padded, upper_padded, right_padded, lower_padded, left, upper, right, lower = self.get_bounding_box(group_number)
+
+            crop_coords = left_padded, upper_padded, right_padded, lower_padded
+            bbox_coords = left, upper, right, lower
 
             # Crop the image
-            cropped_image         = self.image_original.crop(bbox_coords)
-            cropped_image_no_bkgd = self.image_no_bkgd.crop(bbox_coords)
+            cropped_image         = self.image_original.crop(crop_coords)
+            cropped_image_no_bkgd = self.image_no_bkgd.crop(crop_coords)
 
             # Generate output filenames
             base_name = self.path_image_original.stem
@@ -268,21 +261,3 @@ class CropImageAndWriteBox:
         
         for group_number in valid_groups:
             self.process_group(int(group_number), image_format)
-
-# -----------------------------
-# # Example usage
-
-# from utils.bounding_box_metadata_processor import BoxAndCrop
-
-# processor = BoxAndCrop(
-#     segmented_image=segmented_image,
-#     path_image_original= path_image_original,
-#     sample_name="BM4_E",
-#     output_dir="/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/outputs/3_crop/"
-# )
-
-# # Process all groups and save them as PNG
-# processor.process_all_groups(image_format='PNG')
-
-# # Or process a specific group and save it as JPG
-# # processor.process_group(group_number=1, image_format='JPG')
