@@ -438,7 +438,7 @@ processor = CropImageAndWriteBox(
     path_image_no_bkgd  = path_image_no_bkground,
     sample_name = "BM4_E",
     output_dir = output_dir,
-    padding=10
+    padding=20
 )
 
 # Process all groups and save as PNG

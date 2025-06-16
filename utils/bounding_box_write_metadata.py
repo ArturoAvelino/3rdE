@@ -86,7 +86,7 @@ class CropImageAndWriteBox:
         
         # Create the output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Load the original image
         self.load_original_image()
 
@@ -121,10 +121,34 @@ class CropImageAndWriteBox:
         lower = int(np.max(group_pixels[:, 5]))
 
         # Add padding
-        left_padded = left - self.padding
-        right_padded = right + self.padding
-        upper_padded = upper - self.padding
-        lower_padded = lower + self.padding
+        # Before adding padding, check if any of the borders are in the edge of
+        # the image before adding padding. If any of the borders are on
+        # the edge then don't pad that border.
+        if left == 0:
+            left_padded = left
+        else:
+            left_padded = left - self.padding
+
+        if right == self.image_original.width - 1:
+            right_padded = right
+        else:
+            right_padded = right + self.padding
+
+        if upper == 0:
+            upper_padded = upper
+        else:
+            upper_padded = upper - self.padding
+
+        if lower == self.image_original.height - 1:
+            lower_padded = lower
+        else:
+            lower_padded = lower + self.padding
+
+        #old. # Add padding
+        #old. left_padded = left - self.padding
+        #old. right_padded = right + self.padding
+        #old. upper_padded = upper - self.padding
+        #old. lower_padded = lower + self.padding
 
         # return left, upper, right, lower
         return left_padded, upper_padded, right_padded, lower_padded
