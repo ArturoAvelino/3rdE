@@ -120,27 +120,41 @@ class CropImageAndWriteBox:
         upper = int(np.min(group_pixels[:, 5]))
         lower = int(np.max(group_pixels[:, 5]))
 
-        # Add padding
+        # Padding
         # Before adding padding, check if any of the borders are in the edge of
         # the image before adding padding. If any of the borders are on
         # the edge then don't pad that border.
         if left == 0:
             left_padded = left
+        # If the left border is closer to the image edge than the padding
+        # value, then set the left border to be simply equal to
+        # zero:
+        elif 0 < left <= self.padding:
+            left_padded = 0
         else:
             left_padded = left - self.padding
 
         if right == self.image_original.width - 1:
             right_padded = right
+        # If the right border is closer to the image edge than the padding
+        # value, then set the right border to be simply equal to
+        # the right edge value:
+        elif self.image_original.width - 1 - self.padding <= right < self.image_original.width - 1:
+            right_padded = self.image_original.width - 1
         else:
             right_padded = right + self.padding
 
         if upper == 0:
             upper_padded = upper
+        elif 0 < upper <= self.padding:
+            upper_padded = 0
         else:
             upper_padded = upper - self.padding
 
         if lower == self.image_original.height - 1:
             lower_padded = lower
+        elif self.image_original.height - 1 - self.padding <= lower < self.image_original.height - 1:
+            lower_padded = self.image_original.height - 1
         else:
             lower_padded = lower + self.padding
 
