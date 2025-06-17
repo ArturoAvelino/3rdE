@@ -18,17 +18,17 @@ IMAGES_PATH = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox")
 sample_name = "BM4_E"
 
 # Name of the original raw image
-image_original = Path("capt0011.jpg")
+image_original = Path("capt0030.jpg")
 
 # Location of the original image.
 path_image_original = IMAGES_PATH /image_original
 
 # Output directory for the crops. The directory will be created if it
 # doesn't exit.
-output_dir = IMAGES_PATH / "output_10_clustering_crops" / image_original.stem / "crops"
+output_dir = IMAGES_PATH / "clustering_crops" / image_original.stem / "crops"
 
 # folder containing the image with no background.
-path_subfolder = IMAGES_PATH / "output_10_clustering_crops" / image_original.stem
+path_subfolder = IMAGES_PATH / "clustering_crops" / image_original.stem
 
 # Name of the image with no background.
 image_no_bkground = f"{image_original.stem}_no_bkgd.png"
@@ -335,7 +335,7 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
 
 # Run the segmentation
 max_distance = 4.0
-min_pixels = 5000
+min_pixels = 2000
 segmented_image = segment_image_kdtree(filtered_image,
                                        max_distance=max_distance,
                                        min_pixels=min_pixels)
@@ -399,17 +399,6 @@ plt.close()
 # --------------------------------------------------------60
 # Print statistics about the groups
 
-#old valid_labels = segmented_image[segmented_image[:, -1] >= 0][:, -1]
-#old unique_labels = np.unique(valid_labels)
-#old print(f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {len(valid_labels)} total groups")
-#old # Found 7 valid groups (with ≥10000 pixels) out of 157785 total groups
-#old
-#old print("\nStatistics for valid groups:")
-#old for label in unique_labels:
-#old     group_pixels = segmented_image[segmented_image[:, -1] == label]
-#old     print(f"\nGroup {int(label)}:")
-#old     print(f"Number of pixels: {len(group_pixels)}")
-
 print("\nStatistics for valid groups:")
 # Open a file to save the output
 with open(Path(output_dir / f'{image_original.stem}_pixels_groups.txt'), 'w') as f:
@@ -438,7 +427,7 @@ processor = CropImageAndWriteBox(
     path_image_no_bkgd  = path_image_no_bkground,
     sample_name = "BM4_E",
     output_dir = output_dir,
-    padding = 40  # pixel units.
+    padding = 35  # pixel units.
 )
 
 # Process all groups and save as PNG
