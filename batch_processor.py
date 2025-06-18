@@ -360,6 +360,7 @@ def process_background_remover(input_dir, image_pattern="capt*.jpg"):
             processor.cluster_rgb_colors(n_clusters=5)
             processor.plot_rgb_rawdata()
             processor.plot_rgb_clusters()
+            processor.plot_rgb_clusters_colorful()
             processor.remove_background(background_clusters=[0, 4])
 
             # -----------
@@ -433,8 +434,8 @@ def process_crop_objects(input_dir, image_pattern="capt*.jpg",
 def main():
 
     # Define input directory
-    input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
-    # input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044")
+    # input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+    input_dir = Path("/Users/aavelino/Downloads/images/Small_acarians_Loic")
 
     if not input_dir.exists():
         print(f"Error: Input directory not found: {input_dir}")
@@ -449,15 +450,15 @@ def main():
     # ----------------------------------------
     # Remove color background from a batch of images, using clustering.
     # Comment these lines if you don't want to remove background from the images.
-    # try:
-    #     process_background_remover(input_dir)
-    #     logger.info("Successfully completed batch processing")
+    try:
+        process_background_remover(input_dir, image_pattern="F40_A_*.jpg")
+        logger.info("Successfully completed batch processing")
 
     # ----------------------------------------
     # Crop objects from a batch of images.
-    try:
-        process_crop_objects(input_dir, padding=1, sample_name="BM4_E")
-        logger.info("Successfully completed batch processing")
+    # try:
+    #     process_crop_objects(input_dir, padding=1, sample_name="BM4_E")
+    #     logger.info("Successfully completed batch processing")
 
     # =========================================
     # # Plot CONTOURS based on the JSON files.

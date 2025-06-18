@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 
 class ImageSegmentationProcessor:
+
     def __init__(self,
                  image_path: Union[str, Path],
                  output_dir: Union[str, Path],
@@ -41,22 +42,32 @@ class ImageSegmentationProcessor:
         Usage Example:
         -------------
         ```python
-        # Basic usage
+        # Basic usage:
+
+        # input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
+        # output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
+        processor = ImageSegmentationProcessor(image_path, output_dir)
+        processor.cluster_rgb_colors(n_clusters=5)
+        processor.plot_rgb_rawdata()
+        processor.plot_rgb_clusters()
+        processor.remove_background(background_clusters=[0, 4])
+
+        # or:
         processor = ImageSegmentationProcessor(
           image_path="input/image.jpg",
           output_dir="output",
           enable_logging=True
         )
 
-        # Method chaining example
-        processor.cluster_pixels(n_clusters=8) \
-              .remove_background(background_clusters=[0, 1]) \
-              .plot_clusters(sample_step=1000)
-
         # Individual method usage
-        processor.cluster_pixels(n_clusters=8)
+        processor.cluster_rgb_colors(n_clusters=8)
         processor.remove_background(background_clusters=0, output_suffix="_nobg")
-        processor.plot_clusters(save=True)
+        processor.plot_rgb_clusters(save=True)
+
+        # Method chaining example
+        processor.cluster_rgb_colors(n_clusters=8) \
+              .remove_background(background_clusters=[0, 1]) \
+              .plot_rgb_clusters(sample_step=1000)
         ```
         --------
         Initialize the image segmentation processor.
@@ -98,6 +109,7 @@ class ImageSegmentationProcessor:
         # Load and validate the image
         self._load_image()
 
+
     def _setup_logging(self) -> None:
         """Configure logging for this image processing session."""
         # Create a logger with the image name
@@ -121,6 +133,7 @@ class ImageSegmentationProcessor:
 
         self.logger.info(f"Started processing image: {self.image_path.name}")
 
+
     def _load_image(self) -> None:
         """
         Load and validate the input image.
@@ -140,6 +153,7 @@ class ImageSegmentationProcessor:
         if self.logger:
             self.logger.info(
                 f"Loaded image: {self.image_path.name} ({self.image.size[0]}x{self.image.size[1]})")
+
 
     def cluster_rgb_colors(self,
                            n_clusters: int = 5,
@@ -203,11 +217,11 @@ class ImageSegmentationProcessor:
 
         Raises:
             ValueError: If background_clusters contains invalid cluster indices
-            RuntimeError: If cluster_pixels() hasn't been called yet
+            RuntimeError: If cluster_rgb_colors() hasn't been called yet
         """
         if self.cluster_labels is None:
             raise RuntimeError(
-                "Must run 'cluster_pixels()' before removing background")
+                "Must run 'cluster_rgb_colors()' before removing background")
 
         # Convert single cluster index to list
         if isinstance(background_clusters, int):
@@ -246,58 +260,6 @@ class ImageSegmentationProcessor:
         return self
 
 
-    def plot_rgb_clusters(self,
-                          sample_step: int = 1000,
-                          save: bool = True) -> 'ImageSegmentationProcessor':
-        """
-        Create a 3D scatter plot of the RGB values colored by cluster.
-
-        Args:
-            sample_step: Step size for sampling points to avoid overcrowding
-            save: Whether to save the plot to a file
-
-        Returns:
-            self for method chaining
-        """
-        if self.cluster_labels is None:
-            raise RuntimeError("Must run cluster_pixels before plotting")
-
-        if self.logger:
-            self.logger.info("Creating 3D scatter plot of RGB clusters")
-
-        # Sample points to avoid overcrowding
-        sample_indices = np.arange(0, len(self.rgb_data), sample_step)
-        rgb_sample = self.rgb_data[sample_indices]
-        labels_sample = self.cluster_labels[sample_indices]
-
-        # Create the plot
-        fig = plt.figure(figsize=(10, 10))
-        ax = fig.add_subplot(111, projection='3d')
-
-        scatter = ax.scatter(rgb_sample[:, 0],
-                             rgb_sample[:, 1],
-                             rgb_sample[:, 2],
-                             c=labels_sample,
-                             cmap='viridis',
-                             marker='.')
-
-        ax.set_xlabel('Red')
-        ax.set_ylabel('Green')
-        ax.set_zlabel('Blue')
-        ax.set_title('3D Scatter Plot of RGB Values')
-
-        plt.colorbar(scatter, label='Cluster')
-
-        if save:
-            plot_path = self.output_dir / f"{self.image_path.stem}_3d_scatter.png"
-            plt.savefig(plot_path)
-            if self.logger:
-                self.logger.info(f"Saved cluster plot to {plot_path}")
-
-        plt.close()
-        return self
-
-
     def plot_rgb_rawdata(self,
                           sample_step: int = 1000,
                           save: bool = True) -> 'ImageSegmentationProcessor':
@@ -312,7 +274,7 @@ class ImageSegmentationProcessor:
             self for method chaining
         """
         if self.cluster_labels is None:
-            raise RuntimeError("Must run cluster_pixels before plotting")
+            raise RuntimeError("Must run cluster_rgb_colors before plotting")
 
         if self.logger:
             self.logger.info("Creating 3D scatter plot of RGB clusters")
@@ -320,7 +282,6 @@ class ImageSegmentationProcessor:
         # Sample points to avoid overcrowding
         sample_indices = np.arange(0, len(self.rgb_data), sample_step)
         rgb_sample = self.rgb_data[sample_indices]
-        labels_sample = self.cluster_labels[sample_indices]
 
         # Create the plot
         fig = plt.figure(figsize=(10, 10))
@@ -345,12 +306,123 @@ class ImageSegmentationProcessor:
 
         plt.close()
         return self
-# Example usage:
 
-# input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
-# output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
-#
-# processor = ImageSegmentationProcessor(input_dir, output_dir)
-# processor.cluster_pixels(n_clusters=5)
-# processor.plot_clusters()
-# processor.remove_background(background_clusters=[0, 4])
+
+    def plot_rgb_clusters(self,
+                         sample_step: int = 1000,
+                         save: bool = True) -> 'ImageSegmentationProcessor':
+        """
+        Create a 3D scatter plot of the RGB values colored by their cluster centers.
+
+        Args:
+            sample_step: Step size for sampling points to avoid overcrowding
+            save: Whether to save the plot to a file
+
+        Returns:
+            self for method chaining
+        """
+        if self.cluster_labels is None:
+            raise RuntimeError("Must run cluster_rgb_colors before plotting")
+
+        if self.logger:
+            self.logger.info("Creating 3D scatter plot of RGB clusters")
+
+        # Sample points to avoid overcrowding
+        sample_indices = np.arange(0, len(self.rgb_data), sample_step)
+        rgb_sample = self.rgb_data[sample_indices]
+        labels_sample = self.cluster_labels[sample_indices]
+
+        # Create the plot
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Map each point to its cluster center color
+        cluster_colors = self.cluster_centers[labels_sample] / 255.0  # Normalize to [0,1] range
+
+        scatter = ax.scatter(rgb_sample[:, 0],
+                            rgb_sample[:, 1],
+                            rgb_sample[:, 2],
+                            c=cluster_colors,
+                            marker='.')
+
+        ax.set_xlabel('Red')
+        ax.set_ylabel('Green')
+        ax.set_zlabel('Blue')
+        ax.set_title('3D Scatter Plot of RGB Values')
+
+        # Create a custom colorbar with discrete cluster colors
+        unique_labels = np.arange(len(self.cluster_centers))
+        cmap = plt.cm.colors.ListedColormap(self.cluster_centers / 255.0)
+        norm = plt.cm.colors.BoundaryNorm(boundaries=np.arange(len(self.cluster_centers) + 1) - 0.5,
+                                         ncolors=len(self.cluster_centers))
+
+        # Add colorbar with cluster numbers
+        cbar = plt.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap),
+                           ax=ax,
+                           label='Cluster',
+                           ticks=unique_labels)
+        cbar.ax.set_yticklabels([f'Cluster {i}' for i in unique_labels])
+
+        if save:
+            plot_path = self.output_dir / f"{self.image_path.stem}_3d_scatter.png"
+            plt.savefig(plot_path)
+            if self.logger:
+                self.logger.info(f"Saved cluster plot to {plot_path}")
+
+        plt.close()
+        return self
+
+
+    def plot_rgb_clusters_colorful(self,
+                         sample_step: int = 1000,
+                         save: bool = True) -> 'ImageSegmentationProcessor':
+        """
+        Create a 3D scatter plot of the RGB values colored by their cluster centers.
+
+        Args:
+            sample_step: Step size for sampling points to avoid overcrowding
+            save: Whether to save the plot to a file
+
+        Returns:
+            self for method chaining
+        """
+        if self.cluster_labels is None:
+            raise RuntimeError("Must run cluster_rgb_colors before plotting")
+
+        if self.logger:
+            self.logger.info("Creating 3D scatter plot of RGB clusters")
+
+        # Sample points to avoid overcrowding
+        sample_indices = np.arange(0, len(self.rgb_data), sample_step)
+        rgb_sample = self.rgb_data[sample_indices]
+        labels_sample = self.cluster_labels[sample_indices]
+
+        # Create the plot
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.add_subplot(111, projection='3d')
+
+        scatter = ax.scatter(rgb_sample[:, 0],
+                            rgb_sample[:, 1],
+                            rgb_sample[:, 2],
+                            marker='.',
+
+                            c=labels_sample,
+                            cmap='viridis'
+                           )
+
+        ax.set_xlabel('Red')
+        ax.set_ylabel('Green')
+        ax.set_zlabel('Blue')
+        ax.set_title('3D Scatter Plot of RGB Values')
+
+        plt.colorbar(scatter, label='Cluster')
+
+        if save:
+            plot_path = self.output_dir / f"{self.image_path.stem}_3d_scatter_color.png"
+            plt.savefig(plot_path)
+            if self.logger:
+                self.logger.info(f"Saved colorful cluster plot to {plot_path}")
+
+        plt.close()
+        return self
+
