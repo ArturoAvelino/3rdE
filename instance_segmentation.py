@@ -12,15 +12,15 @@ from contextlib import redirect_stdout
 padding = 35 # pixel units.
 
 # Main directory containing the all images.
-# IMAGES_PATH = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox")
-IMAGES_PATH = Path("/Users/aavelino/Downloads/images/Small_acarians_Loic")
+IMAGES_PATH = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox")
+# IMAGES_PATH = Path("/Users/aavelino/Downloads/images/Small_acarians_Loic")
 
 # Sample name. Info to be written in the metadata JSON file.
-# sample_name = "BM4_E"
-sample_name = "F40_A"
+sample_name = "BM4_E"
+# sample_name = "F40_A"
 
 # Name of the original raw image
-image_original = Path("F40_A_r9c4.jpg")
+image_original = Path("capt0033.jpg")
 
 # Location of the original image.
 path_image_original = IMAGES_PATH /image_original
@@ -30,15 +30,14 @@ path_image_original = IMAGES_PATH /image_original
 image_no_bkground = f"{image_original.stem}_no_bkgd.png"
 
 # Folder containing the image with no background.
-# path_subfolder = IMAGES_PATH / "clustering_crops" / image_original.stem
-path_subfolder = IMAGES_PATH / image_original.stem
+path_subfolder = IMAGES_PATH / "clustering_crops" / image_original.stem
+# path_subfolder = IMAGES_PATH / image_original.stem
 
 # Full path to the image with no background.
 path_image_no_bkground = path_subfolder / image_no_bkground
 
 #--------------
-# Output directory for the crops. The directory will be created if it
-# doesn't exit.
+# Output directory for the crops. The directory will be created if it doesn't exit.
 # output_dir = IMAGES_PATH / "clustering_crops" / image_original.stem / "crops"
 output_dir = path_subfolder / "crops"
 
@@ -407,7 +406,7 @@ plt.close()
 
 print("\nWriting to a text file the statistics for valid groups ...")
 # Open a file to save the output
-with open(Path(output_dir / f'{image_original.stem}_pixels_groups.txt'), 'w') as f:
+with open(Path(output_dir / f'{image_original.stem}_pixel_groups.txt'), 'w') as f:
     # Redirect stdout to the file
     with redirect_stdout(f):
 

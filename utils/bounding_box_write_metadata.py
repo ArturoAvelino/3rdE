@@ -226,12 +226,17 @@ class CropImageAndWriteBox:
             cropped_image         = self.image_original.crop(crop_coords)
             cropped_image_no_bkgd = self.image_no_bkgd.crop(crop_coords)
 
-            # Generate output filenames
+            # Generate output image filenames
             base_name = self.path_image_original.stem
             base_no_bkgd_name = self.path_image_no_bkgd.stem
-            crop_filename         = f"{base_name}_{group_number}.{extension}"
-            crop_no_bkgd_filename = f"{base_no_bkgd_name}_{group_number}.{extension}"
-            json_filename = f"{base_name}_{group_number}.json"
+            crop_filename         = f"crop_{group_number}_{base_name}.{extension}"
+            crop_no_bkgd_filename = f"crop_{group_number}_{base_no_bkgd_name}.{extension}"
+
+            #old. crop_filename         = f"{base_name}_{group_number}.{extension}"
+            #old. crop_no_bkgd_filename = f"{base_no_bkgd_name}_{group_number}.{extension}"
+
+            # Generate output JSON filename
+            json_filename = f"crop_{group_number}_{base_name}.json"
 
             # Save cropped image
             crop_path = self.output_dir / crop_filename
