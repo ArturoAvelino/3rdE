@@ -9,35 +9,40 @@ from contextlib import redirect_stdout
 # Instance segmentation by grouping pixels that are together or closer to
 # each other
 
+padding = 35 # pixel units.
+
 # Main directory containing the all images.
-# IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "BM4_E" / "capt0044"
-# IMAGES_PATH = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
-IMAGES_PATH = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox")
+# IMAGES_PATH = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox")
+IMAGES_PATH = Path("/Users/aavelino/Downloads/images/Small_acarians_Loic")
 
 # Sample name. Info to be written in the metadata JSON file.
-sample_name = "BM4_E"
+# sample_name = "BM4_E"
+sample_name = "F40_A"
 
 # Name of the original raw image
-image_original = Path("capt0030.jpg")
+image_original = Path("F40_A_r9c4.jpg")
 
 # Location of the original image.
 path_image_original = IMAGES_PATH /image_original
 
-# Output directory for the crops. The directory will be created if it
-# doesn't exit.
-output_dir = IMAGES_PATH / "clustering_crops" / image_original.stem / "crops"
-
-# folder containing the image with no background.
-path_subfolder = IMAGES_PATH / "clustering_crops" / image_original.stem
-
+#--------------
 # Name of the image with no background.
 image_no_bkground = f"{image_original.stem}_no_bkgd.png"
 
+# Folder containing the image with no background.
+# path_subfolder = IMAGES_PATH / "clustering_crops" / image_original.stem
+path_subfolder = IMAGES_PATH / image_original.stem
+
 # Full path to the image with no background.
 path_image_no_bkground = path_subfolder / image_no_bkground
-# path_image_no_bkground = output_dir / image_no_bkground
 
-# -------------------------------
+#--------------
+# Output directory for the crops. The directory will be created if it
+# doesn't exit.
+# output_dir = IMAGES_PATH / "clustering_crops" / image_original.stem / "crops"
+output_dir = path_subfolder / "crops"
+
+# ========================================================
 
 # Create the output directory if it doesn't exist
 output_dir.mkdir(parents=True, exist_ok=True)
@@ -269,7 +274,7 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
 
     # Initialize labels array with -1 (unlabeled)
     labels = np.full(len(coords), -1)
-    current_label = 0
+    labels_all_groups = 0
 
     # Dictionary to store pixels for each label
     group_pixels = {}
@@ -301,8 +306,8 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
     # Process all points
     for i in range(len(coords)):
         if labels[i] == -1:
-            group_pixels[current_label] = bfs_labeling(i, current_label)
-            current_label += 1
+            group_pixels[labels_all_groups] = bfs_labeling(i, labels_all_groups)
+            labels_all_groups += 1
 
     # Filter groups based on size
     valid_labels = set()
@@ -328,15 +333,15 @@ def segment_image_kdtree(filtered_image, max_distance=5.0, min_pixels=400):
     end_time = time.time()
     print(f"Segmentation completed in {end_time - start_time:.2f} seconds")
     print(
-        f"Found {new_label} valid groups (with ≥{min_pixels} pixels) out of {current_label} total groups")
+        f"Found {new_label} valid groups (with ≥{min_pixels} pixels) out of {labels_all_groups} total groups")
 
-    return result
+    return result, labels_all_groups
 
 
 # Run the segmentation
 max_distance = 4.0
-min_pixels = 2000
-segmented_image = segment_image_kdtree(filtered_image,
+min_pixels = 1000
+segmented_image, labels_all_groups = segment_image_kdtree(filtered_image,
                                        max_distance=max_distance,
                                        min_pixels=min_pixels)
 
@@ -368,6 +373,7 @@ group_id = 1
 #out  [ 1.590e+02  1.680e+02  1.880e+02  2.550e+02  1.910e+03  1.590e+02 -1.000e+00]
 #out  [ 2.180e+02  2.230e+02  2.300e+02  2.550e+02  1.911e+03  1.590e+02 -1.000e+00]]
 
+# --------------------------30
 # Visualize the results
 
 # Calculate figure size maintaining the image proportion
@@ -399,35 +405,50 @@ plt.close()
 # --------------------------------------------------------60
 # Print statistics about the groups
 
-print("\nStatistics for valid groups:")
+print("\nWriting to a text file the statistics for valid groups ...")
 # Open a file to save the output
 with open(Path(output_dir / f'{image_original.stem}_pixels_groups.txt'), 'w') as f:
     # Redirect stdout to the file
     with redirect_stdout(f):
-        # Your existing code goes here
+
+        # Print settings
+        print("Settings for the segmentation process:\n")
+        print(f"- Sample name: {sample_name}")
+        print(f"- Image filename: {image_original}")
+        print(f"- Minimal size area of the objects: {min_pixels} pixels.")
+        print(f"- Maximum distance between pixels to be considered as part of the same object: {max_distance} pixels.")
+        print(f"- Paddings: {padding} pixels.")
+        print("\n------------------------\n")
+
+        # Compute the number of groups
         valid_labels = segmented_image[segmented_image[:, -1] >= 0][:, -1]
         unique_labels = np.unique(valid_labels)
         print(
-            f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {len(valid_labels)} total groups")
+            f"Found {len(unique_labels)} valid groups (with ≥{min_pixels} pixels) out of {labels_all_groups} total objects of any size.")
+        print(f"(Note: the segmentation and statistics are based on the image without background (with white pixels))")
 
         print("\nStatistics for valid groups:")
         for label in unique_labels:
             group_pixels = segmented_image[segmented_image[:, -1] == label]
-            print(f"\nGroup {int(label)}:")
+            print(f"\nObject {int(label)}:")
             print(f"Number of pixels: {len(group_pixels)}")
+
+print("\nWriting statistics: done.")
 
 # ========================================================60
 
+# Crop and write the bounding box
+
 from utils.bounding_box_write_metadata import CropImageAndWriteBox
 
-# Example usage
+
 processor = CropImageAndWriteBox(
     segmented_image = segmented_image,
     path_image_original = path_image_original,
     path_image_no_bkgd  = path_image_no_bkground,
-    sample_name = "BM4_E",
+    sample_name = sample_name,
     output_dir = output_dir,
-    padding = 35  # pixel units.
+    padding = padding  # pixel units.
 )
 
 # Process all groups and save as PNG
@@ -435,3 +456,5 @@ processor.process_all_groups(image_format='PNG')
 
 # Or process a specific group
 # processor.process_group(group_number=1, image_format='PNG')
+
+
