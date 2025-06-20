@@ -6,7 +6,7 @@ from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
 
 from utils.background_remover import ImageSegmentationProcessor
-from utils.bounding_box_write_metadata import CropImageAndWriteBox
+from utils.crop_and_write_bounding_box_info import CropImageAndWriteBox
 
 def setup_logging(input_dir):
     """

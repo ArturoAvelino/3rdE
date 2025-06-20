@@ -438,7 +438,7 @@ print("\nWriting statistics: done.")
 
 # Crop and write the bounding box
 
-from utils.bounding_box_write_metadata import CropImageAndWriteBox
+from utils.crop_and_write_bounding_box_info import CropImageAndWriteBox
 
 
 processor = CropImageAndWriteBox(
