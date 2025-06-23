@@ -455,8 +455,3 @@ processor.process_all_groups(image_format='PNG')
 
 # Or process a specific group
 # processor.process_group(group_number=1, image_format='PNG')
-
-# Testing if the new conf works
-print("Testing if the new conf works")
-
-
