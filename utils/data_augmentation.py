@@ -9,13 +9,22 @@ from keras_preprocessing.image import ImageDataGenerator
 
 
 # Full path and name of the image file.
-filepath = "/Users/aavelino/Downloads/images/BM4_E_sandbox/crops_all_together/color/capt0033_4.png"
+# filepath = "/Users/aavelino/Downloads/images/BM4_E_sandbox/crops_all_together/color/capt0033_4.png"
+filepath = "/Users/aavelino/Downloads/images/BM4_E_sandbox/crops_all_together/color/capt0020_34.png"
 
+# ========================================================60
 # Upload an image
 image_np = np.asarray(Image.open(filepath))
 
 # print(image_np.shape)
+#out (192, 288, 3)
 #out (112, 123, 3)
+
+
+# Print the shape to verify dimensions
+original_shape = image_np.shape
+print(f"Original image shape: {original_shape}")
+#out Original image shape: (192, 288, 3)
 
 # Plot the image to check that it is correctly uploaded
 #pl plt.figure(figsize=(10,6))
@@ -25,7 +34,6 @@ image_np = np.asarray(Image.open(filepath))
 #pl plt.tight_layout()
 #pl plt.show()
 
-
 # -------------------------------------------------
 # Do data augmentation using Keras
 
@@ -33,20 +41,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras_preprocessing.image import ImageDataGenerator
 
+# Vertical and horizontal shifting of the image
+shifting = 0
+
 data_gen = ImageDataGenerator(rotation_range=180,
-                              width_shift_range=15,  # pixels
-                              height_shift_range=15, # pixels
+                              width_shift_range=shifting,  # pixels
+                              height_shift_range=shifting,  # pixels
                               horizontal_flip=True,
                               vertical_flip=True)
 
-data_gen.fit(image_np.reshape(1, 112, 123, 3))
-
-# data_gen.fit(X_train.reshape(X_train.shape[0], 28, 28, 1))
+# Reshape the image correctly - use the original dimensions
+data_gen.fit(image_np.reshape((1,) + original_shape))
 
 # We call the flow method to generate the new images:
-data_generator = data_gen.flow(image_np.reshape(1, 112, 123, 3),shuffle=False, batch_size=1)
+data_generator = data_gen.flow(image_np.reshape((1,) + original_shape),
+                             shuffle=False,
+                             batch_size=1)
 
-print(type(data_generator))
+# print(type(data_generator))
 #out <class 'keras_preprocessing.image.numpy_array_iterator.NumpyArrayIterator'>
 
 # --------------------------30
@@ -62,7 +74,7 @@ num_augmentations = 5
 image_aug = [data_generator.next() for i in range(0, num_augmentations)]
 
 # Reshape the new images from rank 4 to its original shape of rank 2:
-image_aug_reshaped = np.asarray(image_aug).reshape(num_augmentations, 112, 123, 3)
+image_aug_reshaped = np.asarray(image_aug).reshape(num_augmentations, *original_shape)
 
 # Create a mini-dataset using the original image + the augmented images.
 # Before stacking, expand dimensions of image_np
@@ -71,6 +83,7 @@ image_np_expanded = np.expand_dims(image_np, axis=0)
 image_aug_ext = np.vstack((image_np_expanded, image_aug_reshaped))
 
 print(image_aug_ext.shape)
+#out (6, 192, 288, 3)
 #out (6, 112, 123, 3)
 
 # --------------------------30
@@ -121,8 +134,12 @@ def plot_augmented_images_mosaic(image_aug_ext, save_path=None, show_plot=False)
 
 # Plot the original image + the augmentated data and save the plot
 
-savefig_path = '/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/mnist/augmented_images.png'
+savefig_path = (f'/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/\
+3rdEd/images/09_unsupervised_learning/augmentation/test_2_capt0020_34/\
+capt0020_34_aug_shift_{shifting}.png')
+
 plot_augmented_images_mosaic(image_aug_ext, save_path=savefig_path)
 plt.close()
+print("Plot saved to file :)")
 
-print("hello!")
+
