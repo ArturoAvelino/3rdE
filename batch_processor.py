@@ -7,6 +7,7 @@ from tools.read_json_crop_objects import CropIndividualObjects
 
 from utils.background_remover import ImageSegmentationProcessor
 from utils.crop_and_write_bounding_box_info import CropImageAndWriteBox
+from utils.instance_segmentator import InstanceSegmentation
 
 def setup_logging(input_dir):
     """
@@ -450,9 +451,20 @@ def main():
     # ----------------------------------------
     # Remove color background from a batch of images, using clustering.
     # Comment these lines if you don't want to remove background from the images.
+    # try:
+    #     process_background_remover(input_dir, image_pattern="F40_A_*.jpg")
+    #     logger.info("Successfully completed batch processing")
+
+    # ----------------------------------------
+    # Grouping pixels to segment the objects present in an image and then
+    # plotting the map of these objects.
     try:
-        process_background_remover(input_dir, image_pattern="F40_A_*.jpg")
-        logger.info("Successfully completed batch processing")
+        # Path to your JSON config file
+        config_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
+
+        # Initialize and process
+        processor = InstanceSegmentation(config_path=config_path)
+        processor.process()  # This will run all steps
 
     # ----------------------------------------
     # Crop objects from a batch of images.
@@ -478,47 +490,6 @@ def main():
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
         raise
-
-
-# Good but tmp
-# def main():
-#     # Define input directory
-#     #old. input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
-#     input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
-#
-#     # Define output directory (creating a subdirectory named 'output' in the input directory)
-#     # output_dir = input_dir / "output"
-#     output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
-#
-#     if not input_dir.exists():
-#         print(f"Error: Input directory not found: {input_dir}")
-#         return
-#
-#     # Create the output directory if it doesn't exist
-#     output_dir.mkdir(exist_ok=True)
-#
-#     # Setup logging (will create processing.log in the input directory)
-#     # setup_logging(input_dir)
-#     setup_logging(output_dir)
-#     logger = logging.getLogger(__name__)
-#
-#     logger.info("Starting batch processing of image segmentations...")
-#
-#     # ----------------------------------------
-#     # Remove color background from the images.
-#     try:
-#         processor = ImageSegmentationProcessor(input_dir, output_dir)
-#         processor.cluster_rgb_colors(n_clusters=5)
-#         processor.plot_rgb_rawdata()
-#         processor.plot_rgb_clusters()
-#         processor.remove_background(background_clusters=[0, 4])
-#         logger.info("Successfully completed batch processing")
-#
-#     # ----------------------------------------
-#     except Exception as e:
-#         logger.error(f"An unexpected error occurred: {str(e)}")
-#         raise
-
 
 if __name__ == "__main__":
     main()

@@ -392,7 +392,7 @@ class InstanceSegmentation:
 
                 print(f"Found {len(unique_labels)} valid groups (i.e., that are >= {self.min_pixels} pixels) "
                       f"out of {self.total_groups} total groups.")
-                print("Note: the segmentation has been done on the image without background")
+                print("Note: the segmentation has been done on the image without background.")
                 print("\nStatistics for valid groups:")
 
                 for label in unique_labels:
@@ -416,16 +416,3 @@ class InstanceSegmentation:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             return False
-
-
-# USE
-
-from pathlib import Path
-from instance_segmentator import InstanceSegmentation
-
-# Path to your JSON config file
-config_path='/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
-
-# Initialize and process
-processor = InstanceSegmentation(config_path=config_path)
-processor.process()  # This will run all steps
