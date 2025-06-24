@@ -59,7 +59,7 @@ class InstanceSegmentation:
         ```
         # Path to your JSON config file
         config_path='/path/to/config_file.json'
-        
+
         # Initialize and process
         processor = InstanceSegmentation(config_path=config_path)
         processor.process()  # This will run all steps
@@ -81,6 +81,7 @@ class InstanceSegmentation:
             output_dir="/path/to/output",
             min_pixels=1000,
             max_distance=4.0
+            sample_name="sample_name"
         )
         processor.process()
         ```
@@ -91,6 +92,7 @@ class InstanceSegmentation:
     - output_dir: Directory for saving outputs
     - min_pixels: Minimum pixel count for valid objects (default: 1000)
     - max_distance: Maximum pixel-to-pixel distance for grouping (default: 4.0)
+    - sample_name: Sample name.
 
     JSON Configuration Format:
     ------------------------
@@ -114,11 +116,9 @@ class InstanceSegmentation:
     ------------
     1. Visualization:
        - PNG file showing detected objects with different colors
-       - Plot with bounding boxes around detected objects
 
     2. Statistics:
        - Text file with object statistics
-       - JSON file with detailed metadata
 
     3. Metadata:
        - Processing parameters
@@ -133,6 +133,9 @@ class InstanceSegmentation:
     - scipy: KD-tree implementation for spatial indexing
     - pathlib: Path handling
     - json: Configuration file parsing
+    - time
+    - collections.deque
+    - contextlib.redirect_stdout
 
     Notes:
     ------
@@ -140,24 +143,8 @@ class InstanceSegmentation:
     - Memory usage scales with image size and number of non-background pixels
     - Processing time depends on image size and max_distance parameter
     - Large max_distance values can significantly increase processing time
-
-    Example:
-    --------
-    ```python
-    from instance_segmentation import InstanceSegmentation
-
-    # Initialize processor
-    processor = InstanceSegmentation(config_path='config.json')
-
-    # Process single image
-    processor.create_image_with_coordinates()
-    processor.segment_image_kdtree()
-    processor.generate_plot()
-    processor.write_metadata()
-
-    # Or use the convenience method for batch processing
-    processor.process_batch('input_directory/*.jpg')
     """
+
     def __init__(self, config_path=None, **kwargs):
         """
         Initialize the InstanceSegmentation class.
