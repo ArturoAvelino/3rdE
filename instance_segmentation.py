@@ -80,7 +80,7 @@ print(image_np.shape)
 # plt.axis('off')
 # save_fig("image_no_background_check")
 # # plt.show()
-plt.close()
+# plt.close()
 
 # ========================================================60
 # Add the x-y values of the location of each pixel to the 3d image array
@@ -119,7 +119,7 @@ y_coords, x_coords = np.meshgrid(np.arange(height), np.arange(width),
 #out  [3 3 3 ... 3 3 3]
 #out  [4 4 4 ... 4 4 4]]
 
-# Create a new array with 5 channels
+# Create a new array with 6 channels
 image_with_coords = np.zeros((height, width, 6))
 
 # print(image_with_coords.shape)
@@ -211,7 +211,7 @@ filtered_image = reshaped_image[mask]
 
 # Optimized solution using a spatial indexing approach with scipy's KDTree,
 # which is much more efficient for nearest neighbor searches.
-# Ignore groups with less than a given amount of pixels.
+# Ignore groups with less than a given number of pixels.
 
 import numpy as np
 from scipy.spatial import KDTree
@@ -345,7 +345,7 @@ segmented_image, labels_all_groups = segment_image_kdtree(filtered_image,
                                        min_pixels=min_pixels)
 
 # Print all the rows of a given group
-group_id = 1
+# group_id = 1
 # print(f"Number of pixels in group {group_id}: {len(segmented_image[segmented_image[:, -1] == group_id])}")
 #out Number of pixels in group 1: 12751
 

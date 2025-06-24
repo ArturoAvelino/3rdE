@@ -339,7 +339,7 @@ def process_background_remover(input_dir, image_pattern="capt*.jpg"):
 
     for image_file in image_files:
         try:
-            # Construct image file path
+            # Construct the image file path
             image_path = input_dir / image_file
 
             if not image_path.exists():

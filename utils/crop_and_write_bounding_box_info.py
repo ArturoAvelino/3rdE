@@ -5,76 +5,77 @@ from PIL import Image
 import os
 
 class CropImageAndWriteBox:
+    """
+    CropImageAndWriteBox is a class designed to process segmented image data
+    and extract individual objects by creating bounding boxes around pixel
+    groups. It handles the creation of cropped images and associated
+    metadata for each identified object in the segmentation.
+
+    Args:
+        segmented_image (np.ndarray): Array containing pixel data and group information
+        path_image_original (str): Path to the original image file
+        sample_name (str): Name of the sample for JSON metadata
+        output_dir (str): Directory where outputs will be saved
+
+    Key Features:
+    -------------
+    - Creates bounding boxes around pixel groups using coordinate data
+    - Crops original image based on computed bounding boxes
+    - Generates standardized JSON metadata for each crop
+    - Supports both PNG and JPG output formats
+    - Creates output directory structure automatically
+
+    Input Requirements:
+    ------------------
+    - segmented_image: Numpy array with shape (N, 7) where:
+        * Columns 0-3: RGB and alpha values (not used)
+        * Column 4: x-coordinates
+        * Column 5: y-coordinates
+        * Column 6: group labels (-1 for background, ≥0 for valid groups)
+    - path_image_original: Path to the original image file.
+    - path_image_no_bkgd : Path to the image file with background removed.
+    - sample_name: Identifier for the sample being processed.
+    - output_dir: Directory path where outputs will be saved.
+
+    Output Structure:
+    ----------------
+    For each valid group, generates:
+    1. Cropped image file:
+       - Named as: "{original_filename}_{group_number}.{format}"
+       - Format: PNG or JPG (user-selectable)
+
+    2. JSON metadata file:
+       - Named as: "{original_filename}_{group_number}.json"
+       - Contains:
+         * Sample information (name, original filename, dimensions)
+         * Bounding box details (center coordinates, width, height)
+
+    Usage Example:
+    -------------
+    processor = CropImageAndWriteBox(
+        segmented_image = segmented_image,
+        path_image_original = path_image_original,
+        path_image_no_bkgd  = path_image_no_bkground,
+        sample_name = "BM4_E",
+        output_dir = output_dir,
+        padding = 10  # pixel units.
+    )
+
+    # Process all groups and save as PNG
+    processor.process_all_groups(image_format='PNG')
+
+    # Or process a specific group
+    # processor.process_group(group_number=1, image_format='PNG')
+
+    Note:
+    -----
+    The class assumes that the input segmented_image array contains valid
+    group labels and coordinate data. Groups labeled as -1 are ignored
+    during processing.
+    """
+
     def __init__(self, segmented_image, path_image_original, path_image_no_bkgd,
                  sample_name, output_dir, padding=0):
-        """
-        BoxAndCrop is a class designed to process segmented image data
-        and extract individual objects by creating bounding boxes around pixel
-        groups. It handles the creation of cropped images and associated
-        metadata for each identified object in the segmentation.
-
-        Args:
-            segmented_image (np.ndarray): Array containing pixel data and group information
-            path_image_original (str): Path to the original image file
-            sample_name (str): Name of the sample for JSON metadata
-            output_dir (str): Directory where outputs will be saved
-
-        Key Features:
-        -------------
-        - Creates bounding boxes around pixel groups using coordinate data
-        - Crops original image based on computed bounding boxes
-        - Generates standardized JSON metadata for each crop
-        - Supports both PNG and JPG output formats
-        - Creates output directory structure automatically
-
-        Input Requirements:
-        ------------------
-        - segmented_image: Numpy array with shape (N, 7) where:
-            * Columns 0-3: RGB and alpha values (not used)
-            * Column 4: x-coordinates
-            * Column 5: y-coordinates
-            * Column 6: group labels (-1 for background, ≥0 for valid groups)
-        - path_image_original: Path to the original image file.
-        - path_image_no_bkgd : Path to the image file with background removed.
-        - sample_name: Identifier for the sample being processed.
-        - output_dir: Directory path where outputs will be saved.
-
-        Output Structure:
-        ----------------
-        For each valid group, generates:
-        1. Cropped image file:
-           - Named as: "{original_filename}_{group_number}.{format}"
-           - Format: PNG or JPG (user-selectable)
-
-        2. JSON metadata file:
-           - Named as: "{original_filename}_{group_number}.json"
-           - Contains:
-             * Sample information (name, original filename, dimensions)
-             * Bounding box details (center coordinates, width, height)
-
-        Usage Example:
-        -------------
-        processor = CropImageAndWriteBox(
-            segmented_image = segmented_image,
-            path_image_original = path_image_original,
-            path_image_no_bkgd  = path_image_no_bkground,
-            sample_name = "BM4_E",
-            output_dir = output_dir,
-            padding = 10  # pixel units.
-        )
-
-        # Process all groups and save as PNG
-        processor.process_all_groups(image_format='PNG')
-
-        # Or process a specific group
-        # processor.process_group(group_number=1, image_format='PNG')
-
-        Note:
-        -----
-        The class assumes that the input segmented_image array contains valid
-        group labels and coordinate data. Groups labeled as -1 are ignored
-        during processing.
-        """
 
         self.segmented_image = segmented_image
         self.path_image_original = Path(path_image_original)

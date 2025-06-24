@@ -48,7 +48,9 @@ data_gen = ImageDataGenerator(rotation_range=180,
                               width_shift_range=shifting,  # pixels
                               height_shift_range=shifting,  # pixels
                               horizontal_flip=True,
-                              vertical_flip=True)
+                              vertical_flip=True,
+                              brightness_range=[0.5, 1.5]
+                              )
 
 # Reshape the image correctly - use the original dimensions
 data_gen.fit(image_np.reshape((1,) + original_shape))
