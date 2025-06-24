@@ -67,7 +67,7 @@ class InstanceSegmentation:
     2. Using Direct Parameters:
         ```python
         processor = InstanceSegmentation(
-            image_path="/path/to/image.jpg",
+            image_path="/path/to/image_without_background.jpg",
             output_dir="/path/to/output",
             min_pixels=1000,
             max_distance=4.0
@@ -77,7 +77,7 @@ class InstanceSegmentation:
 
     Configuration Parameters:
     -----------------------
-    - image_path: Path to the input image
+    - image_path: Path to the input image with no background
     - output_dir: Directory for saving outputs
     - min_pixels: Minimum pixel count for valid objects (default: 1000)
     - max_distance: Maximum pixel-to-pixel distance for grouping (default: 4.0)
@@ -86,10 +86,6 @@ class InstanceSegmentation:
     ------------------------
     {
         "image_info": {
-            "original_image": {
-                "filename": "image.jpg",
-                "path": "path/to/image.jpg"
-            },
             "no_background_image": {
                 "filename": "image_no_bkgd.png",
                 "path": "path/to/image_no_bkgd.png"
@@ -159,7 +155,7 @@ class InstanceSegmentation:
         Args:
             config_path (str or Path, optional): Path to JSON configuration file
             **kwargs: Optional parameters that override JSON config:
-                - image_path (str or Path): Path to the input image
+                - image_path (str or Path): Path to the input image with no background
                 - output_dir (str or Path): Directory to save output files
                 - min_pixels (int): Minimum size area of objects
                 - max_distance (float): Maximum distance between pixels to be considered part of the same object
@@ -215,17 +211,20 @@ class InstanceSegmentation:
 
             # Extract and validate image paths
             image_info = config['image_info']
-            if not all(key in image_info for key in ['original_image', 'no_background_image']):
-                raise ValueError("Missing image path information in config file, either to the original image or the no-background image, or both")
+            if not all(key in image_info for key in ['no_background_image']):
+                raise ValueError("Missing no-background image path information in config file")
 
-            #ori. self.image_path = Path(image_info['original_image']['path'])
+            #old. self.image_path = Path(image_info['original_image']['path'])
             self.image_path = Path(image_info['no_background_image']['path'])
-            self.no_background_image_path = Path(image_info['no_background_image']['path'])
+            #old. self.no_background_image_path = Path(image_info['no_background_image']['path'])
 
             if not self.image_path.exists():
-                raise FileNotFoundError(f"Original image not found: {self.image_path}")
-            if not self.no_background_image_path.exists():
-                raise FileNotFoundError(f"No-background image not found: {self.no_background_image_path}")
+                #old. raise FileNotFoundError(f"Original image not found: {self.image_path}")
+                raise FileNotFoundError(
+                    f"Image without background not found: {self.no_background_image_path}")
+
+            #old. if not self.no_background_image_path.exists():
+            #old.     raise FileNotFoundError(f"No-background image not found: {self.no_background_image_path}")
 
             # Extract processing parameters
             proc_params = config['processing_parameters']
