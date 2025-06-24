@@ -56,12 +56,22 @@ class InstanceSegmentation:
     Usage:
     ------
     1. Using JSON Configuration:
+        ```
+        # Path to your JSON config file
+        config_path='/path/to/config_file.json'
+        
+        # Initialize and process
+        processor = InstanceSegmentation(config_path=config_path)
+        processor.process()  # This will run all steps
+        ```
+        or
+
         ```python
-        processor = InstanceSegmentation(config_path='config.json')
-        processor.load_image()
+        processor = InstanceSegmentation(config_path='/path/to/config_file.json')
+        processor.create_image_with_coordinates()
         processor.segment_image_kdtree()
         processor.generate_plot()
-        processor.write_metadata(sample_name="Sample1")
+        processor.write_metadata()
         ```
 
     2. Using Direct Parameters:
@@ -87,8 +97,8 @@ class InstanceSegmentation:
     {
         "image_info": {
             "no_background_image": {
-                "filename": "image_no_bkgd.png",
-                "path": "path/to/image_no_bkgd.png"
+                "path": "path/to/image_without_background.png"
+                "sample_name": "my_sample_name"
             }
         },
         "processing_parameters": {
@@ -140,10 +150,10 @@ class InstanceSegmentation:
     processor = InstanceSegmentation(config_path='config.json')
 
     # Process single image
-    processor.load_image()
+    processor.create_image_with_coordinates()
     processor.segment_image_kdtree()
     processor.generate_plot()
-    processor.write_metadata(sample_name="Sample1")
+    processor.write_metadata()
 
     # Or use the convenience method for batch processing
     processor.process_batch('input_directory/*.jpg')
@@ -166,6 +176,8 @@ class InstanceSegmentation:
             self.image_path = Path(kwargs['image_path'])
         if 'output_dir' in kwargs:
             self.output_dir = Path(kwargs['output_dir'])
+        if 'sample_name' in kwargs:
+            self.sample_name = kwargs['sample_name']
         if 'min_pixels' in kwargs:
             self.min_pixels = kwargs['min_pixels']
         if 'max_distance' in kwargs:
@@ -176,7 +188,7 @@ class InstanceSegmentation:
         if missing_attrs:
             raise ValueError(f"Missing required attributes: {', '.join(missing_attrs)}")
 
-            # Initialize other attributes
+        # Initialize other attributes
         self.image_np = None
         self.image_with_coords = None
         self.filtered_image = None
@@ -213,25 +225,20 @@ class InstanceSegmentation:
             image_info = config['image_info']
             if not all(key in image_info for key in ['no_background_image']):
                 raise ValueError("Missing no-background image path information in config file")
-
-            #old. self.image_path = Path(image_info['original_image']['path'])
             self.image_path = Path(image_info['no_background_image']['path'])
-            #old. self.no_background_image_path = Path(image_info['no_background_image']['path'])
 
             if not self.image_path.exists():
-                #old. raise FileNotFoundError(f"Original image not found: {self.image_path}")
                 raise FileNotFoundError(
                     f"Image without background not found: {self.no_background_image_path}")
 
-            #old. if not self.no_background_image_path.exists():
-            #old.     raise FileNotFoundError(f"No-background image not found: {self.no_background_image_path}")
+            self.sample_name = image_info['no_background_image'].get('sample_name')
 
             # Extract processing parameters
             proc_params = config['processing_parameters']
             self.max_distance = float(proc_params.get('max_distance', 4.0))
             self.min_pixels = int(proc_params.get('min_pixels', 1000))
 
-            # Set output directory
+            # Set the output directory. Create it if it doesn't exist.
             self.output_dir = Path(config['output']['directory'])
             self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -242,8 +249,8 @@ class InstanceSegmentation:
         except Exception as e:
             raise Exception(f"Error loading configuration: {e}")
 
-    def load_image(self):
-        """Load and process the input original image."""
+    def create_image_with_coordinates(self):
+        """Load and process the input image."""
         self.image_np = np.asarray(Image.open(self.image_path))
         self.height, self.width = self.image_np.shape[:2]
         self.image_proportion = self.height / self.width
@@ -253,7 +260,7 @@ class InstanceSegmentation:
                                        np.arange(self.width),
                                        indexing='ij')
 
-        # Create array with coordinates
+        # Create an array with coordinates
         self.image_with_coords = np.zeros((self.height, self.width, 6))
         self.image_with_coords[:, :, :3] = self.image_np
         self.image_with_coords[:, :, 4] = x_coords
@@ -331,7 +338,8 @@ class InstanceSegmentation:
             new_label += 1
 
         self.segmented_image = np.column_stack((self.filtered_image, final_labels))
-        self.total_groups = new_label
+        #old. self.total_groups = new_label
+        self.total_groups = labels_all_groups
 
         end_time = time.time()
         print(f"Segmentation completed in {end_time - start_time:.2f} seconds")
@@ -364,19 +372,16 @@ class InstanceSegmentation:
         plt.savefig(output_path, dpi=150)
         plt.close()
 
-    def write_metadata(self, sample_name):
+    def write_metadata(self):
         """
         Write metadata and statistics to output file.
-
-        Args:
-            sample_name (str): Name of the sample being processed
         """
         output_file = self.output_dir / f'{self.image_path.stem}_pixel_groups.txt'
 
         with open(output_file, 'w') as f:
             with redirect_stdout(f):
-                print("Settings for the segmentation process:\n")
-                print(f"- Sample name: {sample_name}")
+                print("Settings used for the segmentation process:\n")
+                print(f"- Sample name: {self.sample_name}")
                 print(f"- Image filename: {self.image_path.name}")
                 print(f"- Minimal size area of the objects: {self.min_pixels} pixels")
                 print(f"- Maximum distance between pixels: {self.max_distance} pixels")
@@ -385,7 +390,9 @@ class InstanceSegmentation:
                 valid_labels = self.segmented_image[self.segmented_image[:, -1] >= 0][:, -1]
                 unique_labels = np.unique(valid_labels)
 
-                print(f"Found {len(unique_labels)} valid groups")
+                print(f"Found {len(unique_labels)} valid groups (i.e., that are >= {self.min_pixels} pixels) "
+                      f"out of {self.total_groups} total groups.")
+                print("Note: the segmentation has been done on the image without background")
                 print("\nStatistics for valid groups:")
 
                 for label in unique_labels:
@@ -398,10 +405,10 @@ class InstanceSegmentation:
         Process the image through all steps with error handling.
         """
         try:
-            self.load_image()
+            self.create_image_with_coordinates()
             self.segment_image_kdtree()
             self.generate_plot()
-            self.write_metadata(sample_name="Sample1")
+            self.write_metadata()
             return True
         except KeyboardInterrupt:
             print("\nProcess interrupted by user. Cleaning up...")
@@ -422,4 +429,3 @@ config_path='/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/cap
 # Initialize and process
 processor = InstanceSegmentation(config_path=config_path)
 processor.process()  # This will run all steps
-
