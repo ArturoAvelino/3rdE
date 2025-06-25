@@ -6,6 +6,8 @@ import os
 
 class CropImageAndWriteBox:
     """
+    CropImageAndWriteBox - Class for processing segmented image data and creating bounding boxes around pixel groups.
+
     CropImageAndWriteBox is a class designed to process segmented image data
     and extract individual objects by creating bounding boxes around pixel
     groups. It handles the creation of cropped images and associated
@@ -65,7 +67,7 @@ class CropImageAndWriteBox:
     processor.process_all_groups(image_format='PNG')
 
     # Or process a specific group
-    # processor.process_group(group_number=1, image_format='PNG')
+    # processor.crop_and_write_bbox(group_number=1, image_format='PNG')
 
     Note:
     -----
@@ -92,6 +94,7 @@ class CropImageAndWriteBox:
         # Load the original image
         self.load_original_image()
 
+
     def load_original_image(self):
         """Load the original image for cropping."""
         try:
@@ -99,6 +102,7 @@ class CropImageAndWriteBox:
             self.image_no_bkgd  = Image.open(self.path_image_no_bkgd)
         except Exception as e:
             raise Exception(f"Failed to load original image: {e}")
+
 
     def get_bounding_box(self, group_number):
         """
@@ -110,6 +114,7 @@ class CropImageAndWriteBox:
         Returns:
             tuple: (left, upper, right, lower) coordinates of the bounding box
         """
+
         # Get pixels belonging to the specified group
         group_pixels = self.segmented_image[self.segmented_image[:, 6] == group_number]
         
@@ -162,6 +167,7 @@ class CropImageAndWriteBox:
 
         return left_padded, upper_padded, right_padded, lower_padded, left, upper, right, lower
 
+
     def create_json_metadata(self, group_number, bbox_coords):
         """
         Create JSON metadata for a specific group.
@@ -173,6 +179,7 @@ class CropImageAndWriteBox:
         Returns:
             dict: JSON metadata structure
         """
+
         left, upper, right, lower = bbox_coords
 
         # Determine the center of the box
@@ -189,7 +196,7 @@ class CropImageAndWriteBox:
                 "height": self.image_original.height
             }],
             "annotations": [{
-                "category_id": group_number,
+                "id": group_number,
                 "bbox": [{
                     "center_x": center_x,
                     "center_y": center_y,
@@ -199,7 +206,8 @@ class CropImageAndWriteBox:
             }]
         }
 
-    def process_group(self, group_number, image_format='PNG'):
+
+    def crop_and_write_bbox(self, group_number, image_format='PNG'):
         """
         Process a specific group: create crop and save metadata.
 
@@ -207,6 +215,7 @@ class CropImageAndWriteBox:
             group_number (int): The group number to process
             image_format (str): Format to save the image ('PNG' or 'JPEG')
         """
+
         # Validate and normalize image format
         image_format = image_format.upper()
         if image_format not in ['PNG', 'JPEG', 'JPG']:
@@ -233,9 +242,6 @@ class CropImageAndWriteBox:
             crop_filename         = f"crop_{group_number}_{base_name}.{extension}"
             crop_no_bkgd_filename = f"crop_{group_number}_{base_no_bkgd_name}.{extension}"
 
-            #old. crop_filename         = f"{base_name}_{group_number}.{extension}"
-            #old. crop_no_bkgd_filename = f"{base_no_bkgd_name}_{group_number}.{extension}"
-
             # Generate output JSON filename
             json_filename = f"crop_{group_number}_{base_name}.json"
 
@@ -254,6 +260,70 @@ class CropImageAndWriteBox:
         except Exception as e:
             raise Exception(f"Error processing group {group_number}: {e}")
 
+    import json
+    from pathlib import Path
+
+    def combine_json_metadata(input_dir,
+                              output_filename='combined_metadata.json'):
+        """
+        Combines all individual JSON metadata files into a single JSON file.
+
+        Args:
+            input_dir (str or Path): Directory containing the individual JSON metadata files
+            output_filename (str): Name of the output combined JSON file
+
+        Returns:
+            Path: Path to the created combined JSON file
+        """
+        input_dir = Path(input_dir)
+
+        # Initialize the combined data structure
+        combined_data = {
+            "image": [],
+            "annotations": []
+        }
+
+        # Get all JSON files in the input directory
+        json_files = list(input_dir.glob('crop_*_*.json'))
+
+        # Check if any JSON files were found
+        if not json_files:
+            raise FileNotFoundError(
+                f"No JSON metadata files found in {input_dir}")
+
+        # Read and combine data from each JSON file
+        for json_file in json_files:
+            try:
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+
+                # For the first file, set the image information
+                if not combined_data["image"]:
+                    combined_data["image"] = data["image"]
+
+                # Add the annotations
+                combined_data["annotations"].extend(data["annotations"])
+
+            except json.JSONDecodeError as e:
+                print(f"Error reading {json_file}: {e}")
+                continue
+            except KeyError as e:
+                print(f"Invalid JSON structure in {json_file}: {e}")
+                continue
+
+        # Sort annotations by id for consistency
+        combined_data["annotations"].sort(key=lambda x: x["id"])
+
+        # Save the combined data
+        output_path = input_dir / output_filename
+        try:
+            with open(output_path, 'w') as f:
+                json.dump(combined_data, f, indent=4)
+            return output_path
+        except Exception as e:
+            raise IOError(f"Error writing combined JSON file: {e}")
+
+
     def process_all_groups(self, image_format='PNG'):
         """
         Process all valid groups in the segmented image.
@@ -266,4 +336,4 @@ class CropImageAndWriteBox:
         valid_groups = unique_groups[unique_groups >= 0]
         
         for group_number in valid_groups:
-            self.process_group(int(group_number), image_format)
+            self.crop_and_write_bbox(int(group_number), image_format)

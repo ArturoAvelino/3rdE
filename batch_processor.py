@@ -448,29 +448,34 @@ def main():
 
     logger.info("Starting batch processing of images ...")
 
-    # ----------------------------------------
+    # =========================================
     # Remove color background from a batch of images, using clustering.
     # Comment these lines if you don't want to remove background from the images.
     # try:
     #     process_background_remover(input_dir, image_pattern="F40_A_*.jpg")
     #     logger.info("Successfully completed batch processing")
 
-    # ----------------------------------------
+    # =========================================
     # Grouping pixels to segment the objects present in an image and then
     # plotting the map of these objects.
-    try:
-        # Path to your JSON config file
-        config_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
+    # try:
+    #     # Path to your JSON config file
+    #     config_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
+    #
+    #     # Initialize and process
+    #     processor = InstanceSegmentation(config_path=config_path)
+    #     processor.process()  # This will run all steps
 
-        # Initialize and process
-        processor = InstanceSegmentation(config_path=config_path)
-        processor.process()  # This will run all steps
-
-    # ----------------------------------------
+    # =========================================
     # Crop objects from a batch of images.
     # try:
     #     process_crop_objects(input_dir, padding=1, sample_name="BM4_E")
     #     logger.info("Successfully completed batch processing")
+
+    # --------------------------30
+    # Crop and write JSON metadata from a single image
+    try:
+        processor = CropImageAndWriteBox()
 
     # =========================================
     # # Plot CONTOURS based on the JSON files.
@@ -479,14 +484,15 @@ def main():
     #     process_json_plot_contours(input_dir)
     #     logger.info("Successfully completed batch processing")
 
-    # ----------------------------------------
+    # =========================================
     # # Create CROP images based on the JSON files.
     # # Comment these 3 lines if you don't want to crop.
     # try:
     #     process_json_crop(input_dir, padding=1)
     #     logger.info("Successfully completed batch processing")
 
-    # ----------------------------------------
+    # =========================================
+
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
         raise

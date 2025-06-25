@@ -20,7 +20,7 @@ sample_name = "BM4_E"
 # sample_name = "F40_A"
 
 # Name of the original raw image
-image_original = Path("capt0033.jpg")
+image_original = Path("capt0011.jpg")
 
 # Location of the original image.
 path_image_original = IMAGES_PATH /image_original
