@@ -260,9 +260,7 @@ class CropImageAndWriteBox:
         except Exception as e:
             raise Exception(f"Error processing group {group_number}: {e}")
 
-    import json
-    from pathlib import Path
-
+    # To fix the integration with the class.
     def combine_json_metadata(input_dir,
                               output_filename='combined_metadata.json'):
         """
@@ -275,6 +273,7 @@ class CropImageAndWriteBox:
         Returns:
             Path: Path to the created combined JSON file
         """
+
         input_dir = Path(input_dir)
 
         # Initialize the combined data structure

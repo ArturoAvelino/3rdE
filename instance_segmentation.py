@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from utils.figure_saving_utils import save_fig
+import json
 from pathlib import Path
 from contextlib import redirect_stdout
 
@@ -20,7 +21,7 @@ sample_name = "BM4_E"
 # sample_name = "F40_A"
 
 # Name of the original raw image
-image_original = Path("capt0011.jpg")
+image_original = Path("capt0020.jpg")
 
 # Location of the original image.
 path_image_original = IMAGES_PATH /image_original
@@ -49,7 +50,7 @@ output_dir.mkdir(parents=True, exist_ok=True)
 # Upload the image:
 image_np = np.asarray(Image.open(path_image_no_bkground))
 
-print(image_np.shape)
+# print(image_np.shape)
 # (4000, 6000, 3)
 # (2000, 3000, 4)
 
@@ -398,7 +399,7 @@ plt.title(f'Filtered Pixel Groups (minimum {min_pixels} pixels, distance <= {max
 plt.tight_layout()
 print("Saving pixel groups image...")
 plt.savefig(Path(output_dir / f"{image_original.stem}_pixel_groups.png"), dpi=150)
-# save_fig("pixel_groups_kdtree_filtered", tight_layout=True)
+#old save_fig("pixel_groups_kdtree_filtered", tight_layout=True)
 plt.close()
 
 # --------------------------------------------------------60
@@ -440,7 +441,6 @@ print("\nWriting statistics: done.")
 
 from utils.crop_and_write_bounding_box_info import CropImageAndWriteBox
 
-
 processor = CropImageAndWriteBox(
     segmented_image = segmented_image,
     path_image_original = path_image_original,
@@ -455,3 +455,80 @@ processor.process_all_groups(image_format='PNG')
 
 # Or process a specific group
 # processor.process_group(group_number=1, image_format='PNG')
+
+# ========================================================60
+
+# import json
+# from pathlib import Path
+#
+# # image_original = Path("capt0012.jpg")
+# # output_dir = Path(f'/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/{image_original.stem}/crops/')
+# output_dir ='/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0012/crops'
+
+def combine_json_metadata(input_dir,
+                          output_filename='combined_metadata.json'):
+    """
+    Combines all individual JSON metadata files into a single JSON file.
+
+    Args:
+        input_dir (str or Path): Directory containing the individual JSON metadata files
+        output_filename (str): Name of the output combined JSON file
+
+    Returns:
+        Path: Path to the created combined JSON file
+    """
+
+    input_dir = Path(input_dir)
+
+    # Initialize the combined data structure
+    combined_data = {
+        "image": [],
+        "annotations": []
+    }
+
+    # Get all JSON files in the input directory
+    json_files = list(input_dir.glob('crop_*_*.json'))
+
+    # Check if any JSON files were found
+    if not json_files:
+        raise FileNotFoundError(
+            f"No JSON metadata files found in {input_dir}")
+
+    # Read and combine data from each JSON file
+    for json_file in json_files:
+        try:
+            with open(json_file, 'r') as f:
+                data = json.load(f)
+
+            # For the first file, set the image information
+            if not combined_data["image"]:
+                combined_data["image"] = data["image"]
+
+            # Add the annotations
+            combined_data["annotations"].extend(data["annotations"])
+
+        except json.JSONDecodeError as e:
+            print(f"Error reading {json_file}: {e}")
+            continue
+        except KeyError as e:
+            print(f"Invalid JSON structure in {json_file}: {e}")
+            continue
+
+    # Sort annotations by id for consistency
+    combined_data["annotations"].sort(key=lambda x: x["id"])
+
+    # Save the combined data
+    output_path = input_dir / output_filename
+    try:
+        with open(output_path, 'w') as f:
+            json.dump(combined_data, f, indent=4)
+        return output_path
+    except Exception as e:
+        raise IOError(f"Error writing combined JSON file: {e}")
+
+
+combine_json_metadata(input_dir = output_dir,
+                      output_filename=f"{image_original.stem}_combined_metadata.json"
+                      )
+print("Combined metadata file created successfully.")
+
