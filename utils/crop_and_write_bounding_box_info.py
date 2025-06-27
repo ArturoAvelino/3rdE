@@ -87,7 +87,7 @@ class CropImageAndWriteBox:
         self.padding = padding
         self.image_original = None
         self.image_no_bkgd  = None
-        
+
         # Create the output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -107,20 +107,20 @@ class CropImageAndWriteBox:
     def get_bounding_box(self, group_number):
         """
         Get the bounding box coordinates for a specific group.
-        
+
         Args:
             group_number (int): The group number to process
-            
+
         Returns:
             tuple: (left, upper, right, lower) coordinates of the bounding box
         """
 
         # Get pixels belonging to the specified group
         group_pixels = self.segmented_image[self.segmented_image[:, 6] == group_number]
-        
+
         if len(group_pixels) == 0:
             raise ValueError(f"No pixels found for group {group_number}")
-        
+
         # Get min and max coordinates (x: column 4, y: column 5)
         left = int(np.min(group_pixels[:, 4]))
         right = int(np.max(group_pixels[:, 4]))
@@ -171,11 +171,11 @@ class CropImageAndWriteBox:
     def create_json_metadata(self, group_number, bbox_coords):
         """
         Create JSON metadata for a specific group.
-        
+
         Args:
             group_number (int): The group number
             bbox_coords (tuple): (left, upper, right, lower) coordinates
-        
+
         Returns:
             dict: JSON metadata structure
         """
@@ -261,8 +261,7 @@ class CropImageAndWriteBox:
             raise Exception(f"Error processing group {group_number}: {e}")
 
     # To fix the integration with the class.
-    def combine_json_metadata(input_dir,
-                              output_filename='combined_metadata.json'):
+    def combine_json_metadata(self, output_filename='combined_metadata.json'):
         """
         Combines all individual JSON metadata files into a single JSON file.
 
@@ -274,7 +273,7 @@ class CropImageAndWriteBox:
             Path: Path to the created combined JSON file
         """
 
-        input_dir = Path(input_dir)
+        input_dir = Path(self.output_dir)
 
         # Initialize the combined data structure
         combined_data = {
@@ -323,16 +322,20 @@ class CropImageAndWriteBox:
             raise IOError(f"Error writing combined JSON file: {e}")
 
 
-    def process_all_groups(self, image_format='PNG'):
+    def process_all_groups(self, combine_json_data=True, image_format='PNG'):
         """
         Process all valid groups in the segmented image.
-        
+
         Args:
             image_format (str): Format to save the images ('PNG' or 'JPG')
         """
+
         # Get unique group numbers (excluding -1 which typically represents invalid/background)
         unique_groups = np.unique(self.segmented_image[:, 6])
         valid_groups = unique_groups[unique_groups >= 0]
-        
+
         for group_number in valid_groups:
             self.crop_and_write_bbox(int(group_number), image_format)
+
+        if combine_json_data:
+            self.combine_json_metadata(output_filename=f"{self.path_image_original.stem}_combined_metadata.json")

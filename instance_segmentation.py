@@ -21,7 +21,7 @@ sample_name = "BM4_E"
 # sample_name = "F40_A"
 
 # Name of the original raw image
-image_original = Path("capt0020.jpg")
+image_original = Path("capt0011.jpg")
 
 # Location of the original image.
 path_image_original = IMAGES_PATH /image_original
@@ -451,7 +451,7 @@ processor = CropImageAndWriteBox(
 )
 
 # Process all groups and save as PNG
-processor.process_all_groups(image_format='PNG')
+processor.process_all_groups(combine_json_data=True)
 
 # Or process a specific group
 # processor.process_group(group_number=1, image_format='PNG')
@@ -465,70 +465,70 @@ processor.process_all_groups(image_format='PNG')
 # # output_dir = Path(f'/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/{image_original.stem}/crops/')
 # output_dir ='/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0012/crops'
 
-def combine_json_metadata(input_dir,
-                          output_filename='combined_metadata.json'):
-    """
-    Combines all individual JSON metadata files into a single JSON file.
+# def combine_json_metadata(input_dir,
+#                           output_filename='combined_metadata.json'):
+#     """
+#     Combines all individual JSON metadata files into a single JSON file.
+#
+#     Args:
+#         input_dir (str or Path): Directory containing the individual JSON metadata files
+#         output_filename (str): Name of the output combined JSON file
+#
+#     Returns:
+#         Path: Path to the created combined JSON file
+#     """
+#
+#     input_dir = Path(input_dir)
+#
+#     # Initialize the combined data structure
+#     combined_data = {
+#         "image": [],
+#         "annotations": []
+#     }
+#
+#     # Get all JSON files in the input directory
+#     json_files = list(input_dir.glob('crop_*_*.json'))
+#
+#     # Check if any JSON files were found
+#     if not json_files:
+#         raise FileNotFoundError(
+#             f"No JSON metadata files found in {input_dir}")
+#
+#     # Read and combine data from each JSON file
+#     for json_file in json_files:
+#         try:
+#             with open(json_file, 'r') as f:
+#                 data = json.load(f)
+#
+#             # For the first file, set the image information
+#             if not combined_data["image"]:
+#                 combined_data["image"] = data["image"]
+#
+#             # Add the annotations
+#             combined_data["annotations"].extend(data["annotations"])
+#
+#         except json.JSONDecodeError as e:
+#             print(f"Error reading {json_file}: {e}")
+#             continue
+#         except KeyError as e:
+#             print(f"Invalid JSON structure in {json_file}: {e}")
+#             continue
+#
+#     # Sort annotations by id for consistency
+#     combined_data["annotations"].sort(key=lambda x: x["id"])
+#
+#     # Save the combined data
+#     output_path = input_dir / output_filename
+#     try:
+#         with open(output_path, 'w') as f:
+#             json.dump(combined_data, f, indent=4)
+#         return output_path
+#     except Exception as e:
+#         raise IOError(f"Error writing combined JSON file: {e}")
 
-    Args:
-        input_dir (str or Path): Directory containing the individual JSON metadata files
-        output_filename (str): Name of the output combined JSON file
 
-    Returns:
-        Path: Path to the created combined JSON file
-    """
-
-    input_dir = Path(input_dir)
-
-    # Initialize the combined data structure
-    combined_data = {
-        "image": [],
-        "annotations": []
-    }
-
-    # Get all JSON files in the input directory
-    json_files = list(input_dir.glob('crop_*_*.json'))
-
-    # Check if any JSON files were found
-    if not json_files:
-        raise FileNotFoundError(
-            f"No JSON metadata files found in {input_dir}")
-
-    # Read and combine data from each JSON file
-    for json_file in json_files:
-        try:
-            with open(json_file, 'r') as f:
-                data = json.load(f)
-
-            # For the first file, set the image information
-            if not combined_data["image"]:
-                combined_data["image"] = data["image"]
-
-            # Add the annotations
-            combined_data["annotations"].extend(data["annotations"])
-
-        except json.JSONDecodeError as e:
-            print(f"Error reading {json_file}: {e}")
-            continue
-        except KeyError as e:
-            print(f"Invalid JSON structure in {json_file}: {e}")
-            continue
-
-    # Sort annotations by id for consistency
-    combined_data["annotations"].sort(key=lambda x: x["id"])
-
-    # Save the combined data
-    output_path = input_dir / output_filename
-    try:
-        with open(output_path, 'w') as f:
-            json.dump(combined_data, f, indent=4)
-        return output_path
-    except Exception as e:
-        raise IOError(f"Error writing combined JSON file: {e}")
-
-
-combine_json_metadata(input_dir = output_dir,
-                      output_filename=f"{image_original.stem}_combined_metadata.json"
-                      )
-print("Combined metadata file created successfully.")
+# combine_json_metadata(input_dir = output_dir,
+#                       output_filename=f"{image_original.stem}_combined_metadata.json"
+#                       )
+# print("Combined metadata file created successfully.")
 
