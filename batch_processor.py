@@ -393,7 +393,7 @@ def process_crop_objects(input_dir, image_pattern="capt*.jpg",
 
     for image_file in image_files:
         try:
-            # Construct image file path
+            # Construct an image file path
             image_path = input_dir / image_file
 
 
@@ -406,7 +406,7 @@ def process_crop_objects(input_dir, image_pattern="capt*.jpg",
             output_dir = input_dir / image_file.stem
             output_dir.mkdir(exist_ok=True)
 
-            # Construct image file path of the image without background.
+            # Construct an image file path of the image without a background.
             image_no_bkgd_path = output_dir / f"{image_file.stem}_no_bkgd.png"
 
             logger.info(f"Processing {image_file.name}")
@@ -449,33 +449,64 @@ def main():
     logger.info("Starting batch processing of images ...")
 
     # =========================================
-    # Remove color background from a batch of images, using clustering.
+    # Remove color background from a batch of images, using clustering. OK
     # Comment these lines if you don't want to remove background from the images.
     # try:
     #     process_background_remover(input_dir, image_pattern="F40_A_*.jpg")
     #     logger.info("Successfully completed batch processing")
 
     # =========================================
-    # Grouping pixels to segment the objects present in an image and then
+    # SINGLE image
+
+    # Grouping pixels to segment the objects present in a SINGLE image and then
     # plotting the map of these objects.
-    # try:
-    #     # Path to your JSON config file
-    #     config_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
-    #
-    #     # Initialize and process
-    #     processor = InstanceSegmentation(config_path=config_path)
-    #     processor.process()  # This will run all steps
+    try:
+        # Path to the JSON config file
+        config_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
+
+        # Initialize and process
+        processor = InstanceSegmentation(config_path=config_path)
+        processor.process()  # This will run all steps
+
+        # Extract the computed values from the processor
+        segmented_image = processor.segmented_image
+
+        # Get other required values from the processor's configuration
+        path_image_original = processor.image_path  # This should be the original image path
+        path_image_no_bkground = processor.image_path  # This is the no-background image from config
+        sample_name = processor.sample_name
+        output_dir = processor.output_dir
+
+        padding = 10  # Set your desired padding value
+
+        # ----------------------------
+
+        processor_crop = CropImageAndWriteBox(
+            segmented_image=segmented_image,
+            path_image_original=path_image_original,
+            path_image_no_bkgd=path_image_no_bkground,
+            sample_name=sample_name,
+            output_dir=output_dir,
+            padding=padding  # pixel units.
+        )
+
+        # Process all groups
+        processor_crop.process_all_groups(combine_json_data=True)
 
     # =========================================
+    # Not ready yet:
+
     # Crop objects from a batch of images.
     # try:
     #     process_crop_objects(input_dir, padding=1, sample_name="BM4_E")
     #     logger.info("Successfully completed batch processing")
 
     # --------------------------30
+    # Not ready yet:
+
     # Crop and write JSON metadata from a single image
-    try:
-        processor = CropImageAndWriteBox()
+    # try:
+    #     processor = CropImageAndWriteBox()
 
     # =========================================
     # # Plot CONTOURS based on the JSON files.

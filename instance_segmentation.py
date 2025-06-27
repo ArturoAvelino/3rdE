@@ -453,10 +453,9 @@ processor = CropImageAndWriteBox(
 # Process all groups and save as PNG
 processor.process_all_groups(combine_json_data=True)
 
-# Or process a specific group
-# processor.process_group(group_number=1, image_format='PNG')
-
 # ========================================================60
+
+# OK but old
 
 # import json
 # from pathlib import Path
