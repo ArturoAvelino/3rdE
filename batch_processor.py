@@ -6,7 +6,7 @@ from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
 
 from utils.background_remover import ImageSegmentationProcessor
-from utils.crop_and_write_bounding_box_info import CropImageAndWriteBox
+from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
 from utils.instance_segmentator import InstanceSegmentation
 
 def setup_logging(input_dir):
@@ -414,9 +414,9 @@ def process_crop_objects(input_dir, image_pattern="capt*.jpg",
             # -----------
             # Crop objects from the image.
 
-            processor = CropImageAndWriteBox(
+            processor = CropImageAndWriteBBox(
                 segmented_image = image_no_bkgd_path,
-                path_image_original = image_path,
+                path_raw_image= image_path,
                 sample_name = sample_name,
                 output_dir = output_dir
             )
@@ -472,26 +472,39 @@ def main():
         segmented_image = processor.segmented_image
 
         # Get other required values from the processor's configuration
-        path_image_original = processor.image_path  # This should be the original image path
-        path_image_no_bkground = processor.image_path  # This is the no-background image from config
+        path_raw_image = processor.raw_image_path  # This should be the original raw image path
+        path_no_bkground_image = processor.image_path  # This is the no-background image from config
         sample_name = processor.sample_name
         output_dir = processor.output_dir
 
-        padding = 10  # Set your desired padding value
+        padding = processor.padding
 
         # ----------------------------
+        # Crop and compute the bounding boxes for each object in the image
 
-        processor_crop = CropImageAndWriteBox(
-            segmented_image=segmented_image,
-            path_image_original=path_image_original,
-            path_image_no_bkgd=path_image_no_bkground,
-            sample_name=sample_name,
-            output_dir=output_dir,
-            padding=padding  # pixel units.
-        )
+        cropping = bool(processor.cropping)
 
-        # Process all groups
-        processor_crop.process_all_groups(combine_json_data=True)
+        # Debugging lines
+        print(f"- Raw cropping value: {repr(processor.cropping)}")
+        print(f"- Type of cropping value: {type(processor.cropping)}")
+        print(f"- Boolean conversion result: {cropping}")
+
+        if cropping == True:
+
+            try:
+                processor_crop = CropImageAndWriteBBox(
+                    segmented_image=segmented_image,
+                    path_raw_image=path_raw_image,
+                    path_image_no_bkgd=path_no_bkground_image,
+                    sample_name=sample_name,
+                    output_dir=output_dir,
+                    padding=padding  # pixel units.
+                )
+
+                # Process all groups
+                processor_crop.process_all_groups(combine_json_data=True)
+            except Exception as e:
+                raise Exception(f"Error processing info defined in the config file: {str(e)}")
 
     # =========================================
     # Not ready yet:

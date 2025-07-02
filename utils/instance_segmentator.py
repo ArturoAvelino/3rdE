@@ -159,16 +159,23 @@ class InstanceSegmentation:
         """
         if config_path:
             self.load_config(config_path)
-        if 'image_path' in kwargs:
-            self.image_path = Path(kwargs['image_path'])
-        if 'output_dir' in kwargs:
-            self.output_dir = Path(kwargs['output_dir'])
         if 'sample_name' in kwargs:
             self.sample_name = kwargs['sample_name']
+        if 'image_path' in kwargs:
+            self.image_path = Path(kwargs['image_path'])
+        if 'raw_image_path' in kwargs:
+            self.raw_image_path = Path(kwargs['raw_image_path'])
+        if 'output_dir' in kwargs:
+            self.output_dir = Path(kwargs['output_dir'])
         if 'min_pixels' in kwargs:
             self.min_pixels = kwargs['min_pixels']
         if 'max_distance' in kwargs:
             self.max_distance = kwargs['max_distance']
+        if 'padding' in kwargs:
+            self.padding = kwargs['padding']
+        if 'cropping' in kwargs:
+            self.cropping = kwargs['cropping']
+
         # Validate required attributes
         required_attrs = ['image_path', 'output_dir', 'min_pixels', 'max_distance']
         missing_attrs = [attr for attr in required_attrs if not hasattr(self, attr)]
@@ -200,7 +207,31 @@ class InstanceSegmentation:
         """
         try:
             with open(json_path, 'r') as f:
-                config = json.load(f)
+                content = f.read()
+
+            # Try to parse JSON with better error reporting
+            try:
+                config = json.loads(content)
+            except json.JSONDecodeError as json_err:
+                # Provide more detailed error information
+                lines = content.split('\n')
+                error_line_num = json_err.lineno
+                error_col = json_err.colno
+
+                print(f"JSON parsing error at line {error_line_num}, column {error_col}")
+                if error_line_num <= len(lines):
+                    print(f"Problematic line: {lines[error_line_num - 1]}")
+                    print(f"Error position: {' ' * (error_col - 1)}^")
+
+                # Common fixes for JSON syntax errors
+                error_msg = f"Invalid JSON format in config file at line {error_line_num}, column {error_col}: {json_err.msg}\n"
+                error_msg += "Common fixes:\n"
+                error_msg += "1. Ensure all property names are enclosed in double quotes (not single quotes)\n"
+                error_msg += "2. Remove any trailing commas after the last element in objects or arrays\n"
+                error_msg += "3. Remove any comments (JSON doesn't support comments)\n"
+                error_msg += "4. Escape special characters in strings with backslashes\n"
+
+                raise ValueError(error_msg)
 
             # Validate required sections
             required_sections = ['image_info', 'processing_parameters', 'output']
@@ -210,20 +241,44 @@ class InstanceSegmentation:
 
             # Extract and validate image paths
             image_info = config['image_info']
-            if not all(key in image_info for key in ['no_background_image']):
-                raise ValueError("Missing no-background image path information in config file")
-            self.image_path = Path(image_info['no_background_image']['path'])
+            if not all(key in image_info for key in ['sample_name', 'no_background_image']):
+                raise ValueError("Missing image path information or sample name in config file")
 
+            self.image_path = Path(image_info['no_background_image']['path'])
             if not self.image_path.exists():
                 raise FileNotFoundError(
-                    f"Image without background not found: {self.no_background_image_path}")
+                    f"Image without background not found: {self.image_path}")
 
-            self.sample_name = image_info['no_background_image'].get('sample_name')
+            # Raw image file path definition, i.e., the one with still the
+            # background color. This info is not used in this class but will be
+            # passed to the 'CropImageAndWriteBBox' class as an input parameter
+            # for cropping, so that the croppings are also done from the raw image.
+            self.raw_image_path = Path(image_info['raw_image']['path'])
+
+            # Info only to write it down as metadata in the output JSON file
+            self.sample_name = image_info['sample_name']
 
             # Extract processing parameters
             proc_params = config['processing_parameters']
             self.max_distance = float(proc_params.get('max_distance', 4.0))
             self.min_pixels = int(proc_params.get('min_pixels', 1000))
+
+            # This info is not used in this class but will be passed to the
+            # 'CropImageAndWriteBBox' class as an input parameter for cropping:
+            self.padding = int(proc_params.get('padding', 35))
+
+            # Read if the user wants to generate cropped images. This information
+            # will be passed to the 'CropImageAndWriteBBox' class as an input
+            # parameter for cropping.
+            # Some extra lines of code to make sure that the "cropping" parameter
+            # defined in the JSON file is correctly read as boolean instead of
+            # as string.
+            cropping_value = proc_params.get('cropping', False)
+            if isinstance(cropping_value, str):
+                self.cropping = cropping_value.lower() in ('true', 'True', 'TRUE',
+                                                           '1', 'yes', 'Yes', 'YES', 'on')
+            else:
+                self.cropping = bool(cropping_value)
 
             # Set the output directory. Create it if it doesn't exist.
             self.output_dir = Path(config['output']['directory'])
@@ -231,8 +286,10 @@ class InstanceSegmentation:
 
             return True
 
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON format in config file: {e}")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Configuration file not found: {json_path}")
+        except ValueError as e:
+            raise e
         except Exception as e:
             raise Exception(f"Error loading configuration: {e}")
 

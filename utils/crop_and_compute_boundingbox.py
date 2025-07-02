@@ -4,18 +4,18 @@ import json
 from PIL import Image
 import os
 
-class CropImageAndWriteBox:
+class CropImageAndWriteBBox:
     """
-    CropImageAndWriteBox - Class for processing segmented image data and creating bounding boxes around pixel groups.
+    CropImageAndWriteBBox - Class for processing segmented image data and creating bounding boxes around pixel groups.
 
-    CropImageAndWriteBox is a class designed to process segmented image data
+    CropImageAndWriteBBox is a class designed to process segmented image data
     and extract individual objects by creating bounding boxes around pixel
     groups. It handles the creation of cropped images and associated
     metadata for each identified object in the segmentation.
 
     Args:
         segmented_image (np.ndarray): Array containing pixel data and group information
-        path_image_original (str): Path to the original image file
+        path_raw_image (str): Path to the original image file
         sample_name (str): Name of the sample for JSON metadata
         output_dir (str): Directory where outputs will be saved
 
@@ -34,7 +34,7 @@ class CropImageAndWriteBox:
         * Column 4: x-coordinates
         * Column 5: y-coordinates
         * Column 6: group labels (-1 for background, ≥0 for valid groups)
-    - path_image_original: Path to the original image file.
+    - path_raw_image: Path to the original image file.
     - path_image_no_bkgd : Path to the image file with background removed.
     - sample_name: Identifier for the sample being processed.
     - output_dir: Directory path where outputs will be saved.
@@ -54,9 +54,9 @@ class CropImageAndWriteBox:
 
     Usage Example:
     -------------
-    processor = CropImageAndWriteBox(
+    processor = CropImageAndWriteBBox(
         segmented_image = segmented_image,
-        path_image_original = path_image_original,
+        path_raw_image = path_raw_image,
         path_image_no_bkgd  = path_image_no_bkground,
         sample_name = "BM4_E",
         output_dir = output_dir,
@@ -76,11 +76,11 @@ class CropImageAndWriteBox:
     during processing.
     """
 
-    def __init__(self, segmented_image, path_image_original, path_image_no_bkgd,
+    def __init__(self, segmented_image, path_raw_image, path_image_no_bkgd,
                  sample_name, output_dir, padding=0):
 
         self.segmented_image = segmented_image
-        self.path_image_original = Path(path_image_original)
+        self.path_raw_image = Path(path_raw_image)
         self.path_image_no_bkgd = Path(path_image_no_bkgd)
         self.sample_name = sample_name
         self.output_dir = Path(output_dir)
@@ -98,7 +98,7 @@ class CropImageAndWriteBox:
     def load_original_image(self):
         """Load the original image for cropping."""
         try:
-            self.image_original = Image.open(self.path_image_original)
+            self.image_original = Image.open(self.path_raw_image)
             self.image_no_bkgd  = Image.open(self.path_image_no_bkgd)
         except Exception as e:
             raise Exception(f"Failed to load original image: {e}")
@@ -191,7 +191,7 @@ class CropImageAndWriteBox:
         return {
             "image": [{
                 "sample_name": self.sample_name,
-                "file_name": self.path_image_original.name,
+                "file_name": self.path_raw_image.name,
                 "width": self.image_original.width,
                 "height": self.image_original.height
             }],
@@ -237,7 +237,7 @@ class CropImageAndWriteBox:
             cropped_image_no_bkgd = self.image_no_bkgd.crop(crop_coords)
 
             # Generate output image filenames
-            base_name = self.path_image_original.stem
+            base_name = self.path_raw_image.stem
             base_no_bkgd_name = self.path_image_no_bkgd.stem
             crop_filename         = f"crop_{group_number}_{base_name}.{extension}"
             crop_no_bkgd_filename = f"crop_{group_number}_{base_no_bkgd_name}.{extension}"
@@ -338,4 +338,4 @@ class CropImageAndWriteBox:
             self.crop_and_write_bbox(int(group_number), image_format)
 
         if combine_json_data:
-            self.combine_json_metadata(output_filename=f"{self.path_image_original.stem}_combined_metadata.json")
+            self.combine_json_metadata(output_filename=f"{self.path_raw_image.stem}_combined_metadata.json")

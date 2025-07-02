@@ -439,11 +439,11 @@ print("\nWriting statistics: done.")
 
 # Crop and write the bounding box
 
-from utils.crop_and_write_bounding_box_info import CropImageAndWriteBox
+from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
 
-processor = CropImageAndWriteBox(
+processor = CropImageAndWriteBBox(
     segmented_image = segmented_image,
-    path_image_original = path_image_original,
+    path_raw_image= path_image_original,
     path_image_no_bkgd  = path_image_no_bkground,
     sample_name = sample_name,
     output_dir = output_dir,
