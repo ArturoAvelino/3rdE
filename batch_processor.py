@@ -1,13 +1,13 @@
 import logging
 from pathlib import Path
-import json
 
 from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
 
 from utils.background_remover import ImageSegmentationProcessor
-from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
 from utils.instance_segmentator import InstanceSegmentation
+from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
+
 
 def setup_logging(input_dir):
     """
@@ -431,7 +431,7 @@ def process_crop_objects(input_dir, image_pattern="capt*.jpg",
         except Exception as e:
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
-
+# v1
 def main():
 
     # Define input directory
@@ -541,5 +541,8 @@ def main():
         logger.error(f"An unexpected error occurred: {str(e)}")
         raise
 
+
+
 if __name__ == "__main__":
     main()
+
