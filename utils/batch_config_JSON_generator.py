@@ -1,131 +1,227 @@
 import json
-import glob
-import os
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Tuple, Dict
 
 
-def generate_batch_config_files(
-        sample_name: str,
-        raw_image_pattern: str,
-        raw_image_batch_path: str,
-        no_background_image_pattern: str,
-        no_background_image_batch_path: str,
-        max_distance: float,
-        min_pixels: int,
-        padding: int,
-        cropping: bool,
-        output_path: str
-    ) -> List[str]:
+class BatchConfigGenerator:
     """
-    Generate configuration JSON files for batch processing of images.
-    
-    This function creates individual JSON configuration files for each image pair
-    (raw image and no-background image) found in the specified directories.
-    Each configuration file contains all the parameters needed for image processing.
-    
-    Args:
-        sample_name (str): Name identifier for the sample batch
-        raw_image_pattern (str): Glob pattern to match raw image files (e.g., "*.jpg")
-        raw_image_batch_path (str): Path to directory containing raw images
-        no_background_image_pattern (str): Glob pattern to match no-background images (e.g., "*_no_bkgd.png")
-        no_background_image_batch_path (str): Path to directory containing no-background images
-        max_distance (float): Maximum distance between pixels for grouping
-        min_pixels (int): Minimum number of pixels for valid objects
-        padding (int): Padding value for cropping operations
-        cropping (bool): Whether to enable cropping functionality
-        output_path (str): Directory path where configuration files will be saved
-    
+    A utility class for generating JSON configuration files for batch image processing workflows.
+
+    This class automates the creation of individual configuration files for image processing tasks
+    by matching pairs of raw images and their corresponding no-background (processed) images.
+    It's designed to facilitate batch processing of large image datasets where each image pair
+    requires the same processing parameters but separate configuration files.
+
+    Purpose:
+    --------
+    The BatchConfigGenerator streamlines the workflow for image processing pipelines by:
+    - Automatically discovering and pairing raw images with their no-background counterparts
+    - Generating standardized JSON configuration files for each image pair
+    - Ensuring consistent processing parameters across all images in a batch
+    - Handling file naming conventions and directory structure validation
+
+    Key Features:
+    -------------
+    - Intelligent image pairing based on filename matching with suffix removal
+    - Flexible file pattern matching using glob patterns
+    - Robust error handling with informative error messages
+    - Automatic output directory creation
+    - Comprehensive validation of input directories and file existence
+    - Support for various no-background image naming conventions
+
+    Workflow:
+    ---------
+    1. Initialize with processing parameters and directory paths
+    2. Validate that input directories exist and contain matching images
+    3. Discover and pair raw images with their no-background counterparts
+    4. Generate individual JSON configuration files for each matched pair
+    5. Return list of generated configuration file paths for further processing
+
+    Configuration File Structure:
+    ----------------------------
+    Each generated JSON file contains:
+    - image_info: Paths to raw and no-background images, sample name
+    - processing_parameters: Algorithm settings (max_distance, min_pixels, padding, cropping)
+    - output: Directory path for processing results
+
+    Supported Naming Conventions:
+    ----------------------------
+    The class automatically handles common no-background image suffixes:
+    - "_no_bkgd", "_no_background", "_nobkgd", "_nobackground"
+
+    Example Usage:
+    --------------
+    ```python
+    # Initialize the generator
+    generator = BatchConfigGenerator(
+        sample_name="BM4_E",
+        raw_image_pattern="*.jpg",
+        raw_image_batch_path="/path/to/raw/images/",
+        no_background_image_pattern="*_no_bkgd.png",
+        no_background_image_batch_path="/path/to/processed/images/",
+        max_distance=4.0,
+        min_pixels=1000,
+        padding=35,
+        cropping=True,
+        output_path="/path/to/output/configs/"
+    )
+
+    # Generate configuration files
+    config_files = generator.generate_config_files()
+    print(f"Generated {len(config_files)} configuration files")
+
+    # Use the generated config files with your processing pipeline
+    for config_file in config_files:
+        # Process using your image processing classes
+        processor = YourImageProcessor(config_path=config_file)
+        processor.process()
+    ```
+
+    Error Handling:
+    ---------------
+    The class provides comprehensive error handling for common issues:
+    - FileNotFoundError: When specified directories don't exist
+    - ValueError: When no matching images are found or patterns don't match any files
+    - Detailed warning messages for unmatched images
+    - Graceful handling of file I/O errors during config generation
+
+    Integration:
+    ------------
+    This class is designed to work seamlessly with image processing pipelines that
+    accept JSON configuration files. It's particularly useful for:
+    - Computer vision batch processing workflows
+    - Scientific image analysis pipelines
+    - Automated image segmentation and analysis tasks
+    - Quality control and validation processes
+
+    Parameters:
+    -----------
+    sample_name (str): Identifier for the sample batch
+    raw_image_pattern (str): Glob pattern for raw image files (e.g., "*.jpg", "*.png")
+    raw_image_batch_path (str): Directory path containing raw images
+    no_background_image_pattern (str): Glob pattern for no-background images
+    no_background_image_batch_path (str): Directory path containing no-background images
+    max_distance (float): Maximum distance parameter for image processing algorithms
+    min_pixels (int): Minimum pixel count threshold for object detection
+    padding (int): Padding value for cropping operations
+    cropping (bool): Enable/disable cropping functionality
+    output_path (str): Directory where configuration files will be saved
+
     Returns:
-        List[str]: List of paths to the generated configuration files
-    
+    --------
+    List[str]: Paths to generated configuration files
+
     Raises:
-        FileNotFoundError: If any of the specified directories don't exist
-        ValueError: If no matching images are found in the directories
-    
-    Example:
-        >>> config_files = generate_batch_config_files(
-        ...     sample_name="BM4_E",
-        ...     raw_image_pattern="*.jpg",
-        ...     raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/",
-        ...     no_background_image_pattern="*_no_bkgd.png",
-        ...     no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/",
-        ...     max_distance=4.0,
-        ...     min_pixels=1000,
-        ...     padding=35,
-        ...     cropping=True,
-        ...     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/segmentation/"
-        ... )
-        >>> print(f"Generated {len(config_files)} configuration files")
+    -------
+    FileNotFoundError: If input directories don't exist
+    ValueError: If no matching image pairs are found
     """
     
-    # Convert paths to Path objects for easier manipulation
-    raw_image_path = Path(raw_image_batch_path)
-    no_background_path = Path(no_background_image_batch_path)
-    output_dir = Path(output_path)
+    def __init__(self, sample_name: str, raw_image_pattern: str, raw_image_batch_path: str,
+                 no_background_image_pattern: str, no_background_image_batch_path: str,
+                 max_distance: float, min_pixels: int, padding: int, cropping: bool, output_path: str):
+        """Initialize the batch config generator with processing parameters."""
+        self.sample_name = sample_name
+        self.raw_image_pattern = raw_image_pattern
+        self.raw_image_batch_path = Path(raw_image_batch_path)
+        self.no_background_image_pattern = no_background_image_pattern
+        self.no_background_image_batch_path = Path(no_background_image_batch_path)
+        self.max_distance = max_distance
+        self.min_pixels = min_pixels
+        self.padding = padding
+        self.cropping = cropping
+        self.output_path = Path(output_path)
     
-    # Validate that directories exist
-    if not raw_image_path.exists():
-        raise FileNotFoundError(f"Raw image directory not found: {raw_image_batch_path}")
+    def generate_config_files(self) -> List[str]:
+        """Generate configuration JSON files for batch processing of images."""
+        self._validate_directories()
+        self.output_path.mkdir(parents=True, exist_ok=True)
+        
+        matched_pairs = self._find_matching_image_pairs()
+        return self._create_config_files(matched_pairs)
     
-    if not no_background_path.exists():
-        raise FileNotFoundError(f"No-background image directory not found: {no_background_image_batch_path}")
+    def _validate_directories(self) -> None:
+        """Validate that required directories exist."""
+        if not self.raw_image_batch_path.exists():
+            raise FileNotFoundError(f"Raw image directory not found: {self.raw_image_batch_path}")
+        
+        if not self.no_background_image_batch_path.exists():
+            raise FileNotFoundError(f"No-background image directory not found: {self.no_background_image_batch_path}")
     
-    # Create output directory if it doesn't exist
-    output_dir.mkdir(parents=True, exist_ok=True)
+    def _find_matching_image_pairs(self) -> List[Tuple[str, Path, Path]]:
+        """Find and return matching pairs of raw and no-background images."""
+        raw_images_dict = self._get_raw_images_dict()
+        no_background_dict = self._get_no_background_images_dict()
+        
+        matched_pairs = []
+        for base_name, raw_file in raw_images_dict.items():
+            if base_name in no_background_dict:
+                matched_pairs.append((base_name, raw_file, no_background_dict[base_name]))
+            else:
+                print(f"Warning: No matching no-background image found for {raw_file.name}")
+        
+        if not matched_pairs:
+            raise ValueError("No matching image pairs found between raw and no-background images")
+        
+        print(f"Found {len(matched_pairs)} matching image pairs")
+        return matched_pairs
     
-    # Find all raw images matching the pattern
-    raw_image_files = list(raw_image_path.glob(raw_image_pattern))
+    def _get_raw_images_dict(self) -> Dict[str, Path]:
+        """Get dictionary of raw images indexed by base name."""
+        raw_image_files = list(self.raw_image_batch_path.glob(self.raw_image_pattern))
+        
+        if not raw_image_files:
+            raise ValueError(f"No raw images found matching pattern '{self.raw_image_pattern}' in {self.raw_image_batch_path}")
+        
+        return {file.stem: file for file in raw_image_files}
     
-    if not raw_image_files:
-        raise ValueError(f"No raw images found matching pattern '{raw_image_pattern}' in {raw_image_batch_path}")
-    
-    # Find all no-background images matching the pattern
-    no_background_files = list(no_background_path.glob(no_background_image_pattern))
-    
-    if not no_background_files:
-        raise ValueError(f"No no-background images found matching pattern '{no_background_image_pattern}' in {no_background_image_batch_path}")
-    
-    # Create dictionaries for quick lookup by base name
-    raw_images_dict = {file.stem: file for file in raw_image_files}
-    no_background_dict = {}
-    
-    # Process no-background images to extract base names
-    # Handle the case where no-background images have suffixes like "_no_bkgd"
-    for file in no_background_files:
-        # Extract base name by removing common suffixes
-        base_name = file.stem
-        # Remove common suffixes like "_no_bkgd", "_no_background", etc.
+    def _get_no_background_images_dict(self) -> Dict[str, Path]:
+        """Get dictionary of no-background images indexed by base name."""
+        no_background_files = list(self.no_background_image_batch_path.glob(self.no_background_image_pattern))
+        
+        if not no_background_files:
+            raise ValueError(f"No no-background images found matching pattern '{self.no_background_image_pattern}' in {self.no_background_image_batch_path}")
+        
+        no_background_dict = {}
         suffixes_to_remove = ["_no_bkgd", "_no_background", "_nobkgd", "_nobackground"]
-        for suffix in suffixes_to_remove:
-            if base_name.endswith(suffix):
-                base_name = base_name[:-len(suffix)]
-                break
-        no_background_dict[base_name] = file
+        
+        for file in no_background_files:
+            base_name = file.stem
+            for suffix in suffixes_to_remove:
+                if base_name.endswith(suffix):
+                    base_name = base_name[:-len(suffix)]
+                    break
+            no_background_dict[base_name] = file
+        
+        return no_background_dict
     
-    generated_config_files = []
-    matched_pairs = []
+    def _create_config_files(self, matched_pairs: List[Tuple[str, Path, Path]]) -> List[str]:
+        """Create configuration files for matched image pairs."""
+        generated_config_files = []
+        
+        for base_name, raw_file, no_background_file in matched_pairs:
+            config_data = self._create_config_data(base_name, raw_file, no_background_file)
+            config_filepath = self.output_path / f"{base_name}_config.json"
+            
+            try:
+                with open(config_filepath, 'w') as f:
+                    json.dump(config_data, f, indent=2)
+                
+                generated_config_files.append(str(config_filepath))
+                print(f"Generated config file: {config_filepath.name}")
+                
+            except Exception as e:
+                print(f"Error writing config file {config_filepath.name}: {str(e)}")
+                continue
+        
+        print(f"\nSuccessfully generated {len(generated_config_files)} configuration files")
+        return generated_config_files
     
-    print(f"Found {len(raw_image_files)} raw images and {len(no_background_files)} no-background images")
-    
-    # Find matching pairs of raw and no-background images
-    for base_name, raw_file in raw_images_dict.items():
-        if base_name in no_background_dict:
-            matched_pairs.append((base_name, raw_file, no_background_dict[base_name]))
-        else:
-            print(f"Warning: No matching no-background image found for {raw_file.name}")
-    
-    if not matched_pairs:
-        raise ValueError("No matching image pairs found between raw and no-background images")
-    
-    print(f"Found {len(matched_pairs)} matching image pairs")
-    
-    # Generate configuration files for each matched pair
-    for base_name, raw_file, no_background_file in matched_pairs:
-        # Create configuration dictionary
-        config_data = {
+    def _create_config_data(self, base_name: str, raw_file: Path, no_background_file: Path) -> Dict:
+        """Create configuration data dictionary for a single image pair."""
+        return {
             "image_info": {
-                "sample_name": sample_name,
+                "sample_name": self.sample_name,
                 "raw_image": {
                     "path": str(raw_file.absolute())
                 },
@@ -134,159 +230,35 @@ def generate_batch_config_files(
                 }
             },
             "processing_parameters": {
-                "max_distance": max_distance,
-                "min_pixels": min_pixels,
-                "padding": padding,
-                "cropping": "TRUE" if cropping else "FALSE"
+                "max_distance": self.max_distance,
+                "min_pixels": self.min_pixels,
+                "padding": self.padding,
+                "cropping": "true" if self.cropping else "false"
             },
             "output": {
-                "directory": str(output_dir.absolute())
+                "directory": f"{self.output_path}/{base_name}_segm/"
             }
         }
-        
-        # Create output filename based on the base name
-        config_filename = f"{base_name}_config.json"
-        config_filepath = output_dir / config_filename
-        
-        # Write configuration file
-        try:
-            with open(config_filepath, 'w') as f:
-                json.dump(config_data, f, indent=2)
-            
-            generated_config_files.append(str(config_filepath))
-            print(f"Generated config file: {config_filename}")
-            
-        except Exception as e:
-            print(f"Error writing config file {config_filename}: {str(e)}")
-            continue
-    
-    print(f"\nSuccessfully generated {len(generated_config_files)} configuration files")
-    return generated_config_files
 
 
-def process_batch_with_configs(config_files: List[str]) -> None:
-    """
-    Process a batch of images using the generated configuration files.
-    
-    This function takes a list of configuration file paths and processes each one
-    using the InstanceSegmentation class, similar to the single image processing
-    shown in the main() function.
-    
-    Args:
-        config_files (List[str]): List of paths to configuration JSON files
-    
-    Example:
-        >>> config_files = generate_batch_config_files(...)
-        >>> process_batch_with_configs(config_files)
-    """
-    
-    logger = logging.getLogger(__name__)
-    
-    for config_file in config_files:
-        try:
-            logger.info(f"Processing configuration: {config_file}")
-            
-            # Initialize and process using the configuration file
-            processor = InstanceSegmentation(config_path=config_file)
-            processor.process()  # This will run all steps
-            
-            # Extract the computed values from the processor
-            segmented_image = processor.segmented_image
-            
-            # Get other required values from the processor's configuration
-            path_raw_image = processor.raw_image_path
-            path_no_bkground_image = processor.image_path
-            sample_name = processor.sample_name
-            output_dir = processor.output_dir
-            padding = processor.padding
-            
-            # Check if cropping is enabled
-            cropping = bool(processor.cropping)
-            
-            if cropping:
-                try:
-                    processor_crop = CropImageAndWriteBBox(
-                        segmented_image=segmented_image,
-                        path_raw_image=path_raw_image,
-                        path_image_no_bkgd=path_no_bkground_image,
-                        sample_name=sample_name,
-                        output_dir=output_dir,
-                        padding=padding
-                    )
-                    
-                    # Process all groups
-                    processor_crop.process_all_groups(combine_json_data=True)
-                    
-                except Exception as e:
-                    logger.error(f"Error in cropping process for {config_file}: {str(e)}")
-                    continue
-            
-            logger.info(f"Successfully processed: {config_file}")
-            
-        except Exception as e:
-            logger.error(f"Error processing {config_file}: {str(e)}")
-            continue
-
-
-# Example 1: Generate configuration files and then process them.
-config_files = generate_batch_config_files(
-    sample_name="BM4_E",
-    raw_image_pattern="*.jpg",
-    raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
-    no_background_image_pattern="*_no_bkgd.png",
-    no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
-    max_distance=4.0,
-    min_pixels=1000,
-    padding=35,
-    cropping=True,
-    output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/segmentation/"
-)
-
-# Process all generated configurations
-# process_batch_with_configs(config_files)
-
-
-# Example 2: Everything packed in a single function
-def example_batch_processing():
-    """
-    Example function showing how to use the batch configuration generator.
-    """
-    
-    # Example parameters
-    sample_name = "BM4_E"
-    raw_image_pattern = "*.jpg"
-    raw_image_batch_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/"
-    no_background_image_pattern = "*_no_bkgd.png"
-    no_background_image_batch_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/"
-    max_distance = 4.0
-    min_pixels = 1000
-    padding = 35
-    cropping = True
-    output_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/segmentation/"
-    
-    try:
-        # Generate configuration files
-        config_files = generate_batch_config_files(
-            sample_name=sample_name,
-            raw_image_pattern=raw_image_pattern,
-            raw_image_batch_path=raw_image_batch_path,
-            no_background_image_pattern=no_background_image_pattern,
-            no_background_image_batch_path=no_background_image_batch_path,
-            max_distance=max_distance,
-            min_pixels=min_pixels,
-            padding=padding,
-            cropping=cropping,
-            output_path=output_path
-        )
-        
-        print(f"Generated {len(config_files)} configuration files")
-        
-        # Optionally process all generated configurations
-        # process_batch_with_configs(config_files)
-        
-    except Exception as e:
-        print(f"Error in batch processing: {str(e)}")
-
-# example_batch_processing()
-# -----------------
-
+# For backward compatibility, but I don't actually need it.
+#
+# def generate_batch_config_files(
+#         sample_name: str,
+#         raw_image_pattern: str,
+#         raw_image_batch_path: str,
+#         no_background_image_pattern: str,
+#         no_background_image_batch_path: str,
+#         max_distance: float,
+#         min_pixels: int,
+#         padding: int,
+#         cropping: bool,
+#         output_path: str
+#     ) -> List[str]:
+#     """Generate configuration JSON files for batch processing of images."""
+#     generator = BatchConfigGenerator(
+#         sample_name, raw_image_pattern, raw_image_batch_path,
+#         no_background_image_pattern, no_background_image_batch_path,
+#         max_distance, min_pixels, padding, cropping, output_path
+#     )
+#     return generator.generate_config_files()
