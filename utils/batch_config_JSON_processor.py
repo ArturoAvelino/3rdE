@@ -10,14 +10,89 @@ from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
 
 class BatchConfigProcessor:
     """
-    A class for finding and processing batch configuration JSON files.
-    
-    This class processes configuration JSON files for image segmentation and cropping
-    operations using the InstanceSegmentation and CropImageAndWriteBBox classes.
-    
+    A comprehensive batch processing system for image segmentation and cropping operations.
+
+    The BatchConfigProcessor class provides a robust framework for processing multiple JSON
+    configuration files that define image segmentation and cropping tasks. It automates the
+    entire pipeline from configuration file discovery to final processing results.
+
+    ## Purpose
+    This class is designed to:
+    - Discover and validate JSON configuration files in a specified directory
+    - Process images through instance segmentation using the InstanceSegmentation class
+    - Optionally crop segmented objects and compute bounding boxes using CropImageAndWriteBBox
+    - Provide comprehensive error handling and logging for batch operations
+    - Generate detailed reports of processing results
+
+    ## Processing Pipeline
+    The class orchestrates a two-stage processing pipeline:
+    1. **Instance Segmentation**: Uses InstanceSegmentation to process images and identify objects
+    2. **Cropping & Bounding Box Generation**: Optionally crops individual objects and generates
+       bounding box data using CropImageAndWriteBBox
+
+    ## Configuration File Structure
+    Expected JSON configuration files should contain:
+    - `image_info`: Contains image paths and sample information
+      - `no_background_image.path`: Path to the source image
+      - `sample_name`: Identifier for the sample
+    - `processing_parameters`: Processing settings
+      - `max_distance`: Maximum distance parameter for segmentation
+      - `min_pixels`: Minimum pixel count for object detection
+      - `cropping`: Boolean flag to enable/disable cropping operations
+    - `output`: Output directory specifications
+
+    ## Key Features
+    - **Automatic File Discovery**: Finds all JSON files matching a specified pattern
+    - **Validation**: Validates configuration files before processing to catch errors early
+    - **Robust Error Handling**: Continues processing even if individual files fail
+    - **Comprehensive Logging**: Detailed logging for troubleshooting and monitoring
+    - **Batch Results**: Returns detailed success/failure reports for all processed files
+    - **File Information**: Can extract and summarize configuration file contents
+
+    ## Usage Example
+    ```python
+    # Initialize processor for a directory containing configuration files
+    processor = BatchConfigProcessor(
+        json_path="/path/to/config/files",
+        filename_pattern="*.json"
+    )
+
+    # Process all configuration files with validation
+    results = processor.process_all_configs(validate_before_processing=True)
+
+    # Check results
+    print(f"Successfully processed: {len(results['successful'])} files")
+    print(f"Failed to process: {len(results['failed'])} files")
+
+    # Get detailed information about all configuration files
+    files_info = processor.get_config_files_info()
+    ```
+
+    ## Error Handling
+    The class provides multiple layers of error handling:
+    - Directory validation during initialization
+    - Configuration file validation before processing
+    - Individual file processing error isolation
+    - Comprehensive logging of all errors and warnings
+
+    ## Dependencies
+    - `InstanceSegmentation`: Handles the core image segmentation processing
+    - `CropImageAndWriteBBox`: Handles object cropping and bounding box generation
+    - Standard libraries: `pathlib`, `json`, `logging`, `glob`
+
     Args:
         json_path (str or Path): Path to the directory containing JSON configuration files
-        filename_pattern (str): Pattern to match configuration files (default: "*.json")
+        filename_pattern (str): Glob pattern to match configuration files (default: "*.json")
+
+    Raises:
+        FileNotFoundError: If the specified directory doesn't exist
+        NotADirectoryError: If the specified path is not a directory
+
+    Attributes:
+        json_path (Path): Path object for the configuration directory
+        filename_pattern (str): Pattern used to match configuration files
+        config_files (List[Path]): List of discovered configuration files
+        logger (logging.Logger): Logger instance for the class
     """
     
     def __init__(self, json_path: str, filename_pattern: str = "*.json"):
