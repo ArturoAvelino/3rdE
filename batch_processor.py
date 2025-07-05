@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import List
 
 from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
@@ -8,6 +9,7 @@ from utils.background_remover import ImageSegmentationProcessor
 from utils.instance_segmentator import InstanceSegmentation
 from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
 from utils.batch_config_JSON_generator import BatchConfigGenerator
+from utils.batch_config_JSON_processor import BatchConfigProcessor
 
 def setup_logging(input_dir):
     """
@@ -372,71 +374,376 @@ def process_background_remover(input_dir, image_pattern="capt*.jpg"):
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
 
-# Not ready yet:
-def process_crop_objects(input_dir, image_pattern="capt*.jpg",
-                        sample_name="sample_name"):
+def generate_configuration_files_only(
+        sample_name: str,
+        raw_image_pattern: str,
+        raw_image_batch_path: str,
+        no_background_image_pattern: str,
+        no_background_image_batch_path: str,
+        max_distance: float = 4.0,
+        min_pixels: int = 1000,
+        padding: int = 35,
+        cropping: bool = True,
+        config_output_path: str = None
+) -> List[str]:
     """
-    Process a batch of images.
+    Generate configuration JSON files only using the BatchConfigGenerator class.
+
+    This function creates configuration files for batch processing without actually
+    processing the images. Useful for preparing configurations that will be processed
+    later or for reviewing configuration parameters before processing.
+
+    Args:
+        sample_name (str): Name of the sample
+        raw_image_pattern (str): Pattern for raw images (e.g., "*.jpg")
+        raw_image_batch_path (str): Path to raw images directory
+        no_background_image_pattern (str): Pattern for no-background images
+        no_background_image_batch_path (str): Path to no-background images directory
+        max_distance (float): Maximum distance for segmentation
+        min_pixels (int): Minimum pixels for valid objects
+        padding (int): Padding for cropping
+        cropping (bool): Enable/disable cropping
+        config_output_path (str): Where to save config files (if None, uses no_background path)
+
+    Returns:
+        List[str]: List of paths to generated configuration files
     """
     logger = logging.getLogger(__name__)
-    input_dir = Path(input_dir)
 
-    # Find all image files matching the pattern
-    image_files = list(input_dir.glob(image_pattern))
+    try:
+        # Set the default config output path if not provided
+        if config_output_path is None:
+            config_output_path = str(
+                Path(no_background_image_batch_path) / "configs")
 
-    if not image_files:
-        logger.warning(
-            f"No image files found matching pattern '{image_pattern}' in {input_dir}")
-        return
+        logger.info("=== GENERATING CONFIGURATION FILES ONLY ===")
+        logger.info(f"Sample name: {sample_name}")
+        logger.info(f"Raw images pattern: {raw_image_pattern}")
+        logger.info(f"Raw images path: {raw_image_batch_path}")
+        logger.info(
+            f"No-background images pattern: {no_background_image_pattern}")
+        logger.info(
+            f"No-background images path: {no_background_image_batch_path}")
+        logger.info(f"Configuration output path: {config_output_path}")
+        logger.info(
+            f"Processing parameters: max_distance={max_distance}, min_pixels={min_pixels}, padding={padding}, cropping={cropping}")
 
-    logger.info(f"Found {len(image_files)} image files to process")
+        # Initialize the BatchConfigGenerator
+        generator = BatchConfigGenerator(
+            sample_name=sample_name,
+            raw_image_pattern=raw_image_pattern,
+            raw_image_batch_path=raw_image_batch_path,
+            no_background_image_pattern=no_background_image_pattern,
+            no_background_image_batch_path=no_background_image_batch_path,
+            max_distance=max_distance,
+            min_pixels=min_pixels,
+            padding=padding,
+            cropping=cropping,
+            output_path=config_output_path
+        )
 
-    for image_file in image_files:
-        try:
-            # Construct an image file path
-            image_path = input_dir / image_file
+        # Generate configuration files
+        config_files = generator.generate_config_files()
+
+        if config_files:
+            logger.info(
+                f"Successfully generated {len(config_files)} configuration files:")
+            for config_file in config_files:
+                logger.info(f"  - {Path(config_file).name}")
+
+            logger.info(f"Configuration files saved to: {config_output_path}")
+            logger.info(
+                "These configuration files can be processed later using the BatchConfigProcessor class.")
+        else:
+            logger.warning(
+                "No configuration files were generated. Check your input parameters and image files.")
+
+        return config_files
+
+    except FileNotFoundError as e:
+        logger.error(f"Directory not found: {str(e)}")
+        return []
+    except ValueError as e:
+        logger.error(f"Configuration error: {str(e)}")
+        return []
+    except Exception as e:
+        logger.error(f"Error generating configuration files: {str(e)}")
+        return []
 
 
-            if not image_path.exists():
-                logger.warning(
-                    f"Image file not found for image {image_file.name}, skipping")
-                continue
+def process_batch_with_config_files(config_directory: str, filename_pattern: str = "*_config.json") -> dict:
+    """
+    Process a batch of images using configuration JSON files with the BatchConfigProcessor.
 
-            # Create output directory with same name as the image file
-            output_dir = input_dir / image_file.stem
-            output_dir.mkdir(exist_ok=True)
+    This function replaces the previous process_batch_with_configs function and uses
+    the new BatchConfigProcessor class to find and process configuration files.
 
-            # Construct an image file path of the image without a background.
-            image_no_bkgd_path = output_dir / f"{image_file.stem}_no_bkgd.png"
+    Args:
+        config_directory (str): Directory containing configuration JSON files
+        filename_pattern (str): Pattern to match configuration files (default: "*_config.json")
 
-            logger.info(f"Processing {image_file.name}")
+    Returns:
+        dict: Processing results with 'successful' and 'failed' lists
+    """
+    logger = logging.getLogger(__name__)
 
-            # -----------
-            # Crop objects from the image.
+    try:
+        logger.info(f"Starting batch processing with config files from: {config_directory}")
 
-            processor = CropImageAndWriteBBox(
-                segmented_image = image_no_bkgd_path,
-                path_raw_image= image_path,
-                sample_name = sample_name,
-                output_dir = output_dir
-            )
+        # Initialize the BatchConfigProcessor
+        processor = BatchConfigProcessor(
+            json_path=config_directory,
+            filename_pattern=filename_pattern
+        )
 
-            # Process all groups and save them as PNG
-            processor.process_all_groups(image_format='PNG')
+        # Get information about found config files (optional - for logging)
+        files_info = processor.get_config_files_info()
+        logger.info(f"Found {len(files_info)} configuration files")
 
-            # -----------
+        # Log details about each file
+        for info in files_info:
+            if info['valid']:
+                logger.info(f"Valid config: {info['file_name']} - Sample: {info.get('sample_name', 'N/A')}")
+            else:
+                logger.warning(f"Invalid config: {info['file_name']} - Error: {info.get('error', 'Unknown error')}")
 
-            logger.info(f"Successfully processed {image_file.name}")
+        # Process all configuration files
+        results = processor.process_all_configs(validate_before_processing=True)
 
-        except Exception as e:
-            logger.error(f"Error processing {image_file.name}: {str(e)}")
+        # Log summary
+        logger.info(f"Batch processing completed:")
+        logger.info(f"  - Successfully processed: {len(results['successful'])} files")
+        logger.info(f"  - Failed to process: {len(results['failed'])} files")
+
+        if results['failed']:
+            logger.warning("Failed files:")
+            for failed_file in results['failed']:
+                logger.warning(f"  - {failed_file}")
+
+        return results
+
+    except Exception as e:
+        logger.error(f"Error in batch processing: {str(e)}")
+        return {'successful': [], 'failed': []}
+
+
+def generate_and_process_batch_configs(
+    sample_name: str,
+    raw_image_pattern: str,
+    raw_image_batch_path: str,
+    no_background_image_pattern: str,
+    no_background_image_batch_path: str,
+    max_distance: float = 4.0,
+    min_pixels: int = 1000,
+    padding: int = 35,
+    cropping: bool = True,
+    config_output_path: str = None
+) -> dict:
+    """
+    Complete workflow: Generate configuration files and then process them.
+
+    This function combines the BatchConfigGenerator and BatchConfigProcessor
+    to provide a complete end-to-end processing workflow.
+
+    Args:
+        sample_name (str): Name of the sample
+        raw_image_pattern (str): Pattern for raw images (e.g., "*.jpg")
+        raw_image_batch_path (str): Path to raw images directory
+        no_background_image_pattern (str): Pattern for no-background images
+        no_background_image_batch_path (str): Path to no-background images directory
+        max_distance (float): Maximum distance for segmentation
+        min_pixels (int): Minimum pixels for valid objects
+        padding (int): Padding for cropping
+        cropping (bool): Enable/disable cropping
+        config_output_path (str): Where to save config files (if None, uses no_background path)
+
+    Returns:
+        dict: Processing results
+    """
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Set default config output path if not provided
+        if config_output_path is None:
+            config_output_path = str(Path(no_background_image_batch_path) / "configs")
+
+        logger.info("Step 1: Generating configuration files...")
+
+        # Generate configuration files
+        generator = BatchConfigGenerator(
+            sample_name=sample_name,
+            raw_image_pattern=raw_image_pattern,
+            raw_image_batch_path=raw_image_batch_path,
+            no_background_image_pattern=no_background_image_pattern,
+            no_background_image_batch_path=no_background_image_batch_path,
+            max_distance=max_distance,
+            min_pixels=min_pixels,
+            padding=padding,
+            cropping=cropping,
+            output_path=config_output_path
+        )
+
+        config_files = generator.generate_config_files()
+        logger.info(f"Generated {len(config_files)} configuration files")
+
+        if not config_files:
+            logger.warning("No configuration files were generated")
+            return {'successful': [], 'failed': []}
+
+        logger.info("Step 2: Processing generated configuration files...")
+
+        # Process the generated configuration files
+        results = process_batch_with_config_files(
+            config_directory=config_output_path,
+            filename_pattern="*_config.json"
+        )
+
+        return results
+
+    except Exception as e:
+        logger.error(f"Error in generate_and_process_batch_configs: {str(e)}")
+        return {'successful': [], 'failed': []}
 
 # v1
-def main():
+    #old def main():
+    #old
+    #old     # Define input directory
+    #old     # input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
+    #old     input_dir = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation")
+    #old
+    #old     if not input_dir.exists():
+    #old         print(f"Error: Input directory not found: {input_dir}")
+    #old         return
+    #old
+    #old     # Setup logging (will create processing.log in the input directory)
+    #old     setup_logging(input_dir)
+    #old     logger = logging.getLogger(__name__)
+    #old
+    #old     logger.info("Starting batch processing of images ...")
+    #old
+    #old     # =========================================
+    #old     # Remove color background from a batch of images, using clustering. OK
+    #old     # Comment these lines if you don't want to remove background from the images.
+    #old     # try:
+    #old     #     process_background_remover(input_dir, image_pattern="F40_A_*.jpg")
+    #old     #     logger.info("Successfully completed batch processing")
+    #old
+    #old     # =========================================
+    #old     # Generate configuration JSON files for a batch of images, suitable for
+    #old     # object segmentation and cropping.
+    #old
+    #old     # try:
+    #old     #
+    #old     #     generator = BatchConfigGenerator(
+    #old     #         sample_name="BM4_E",
+    #old     #         raw_image_pattern="capt*.jpg",
+    #old     #         raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
+    #old     #         no_background_image_pattern="*_no_bkgd.png",
+    #old     #         no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
+    #old     #         max_distance=4.0,
+    #old     #         min_pixels=1000,
+    #old     #         padding=35,
+    #old     #         cropping=True,
+    #old     #         output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
+    #old     #         )
+    #old     #
+    #old     #     generator.generate_config_files()
+    #old
+    #old         # Process all generated configurations
+    #old         # process_batch_with_configs(config_files)
+    #old
+    #old     # =========================================
+    #old     # SINGLE image
+    #old
+    #old     # Grouping pixels to segment the objects present in a SINGLE image and then
+    #old     # plotting the map of these objects.
+    #old
+    #old     try: # OK!
+    #old         # Path to the JSON config file
+    #old         config_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
+    #old
+    #old         # Initialize and process
+    #old         processor = InstanceSegmentation(config_path=config_path)
+    #old         processor.process()  # This will run all steps
+    #old
+    #old         # Extract the computed values from the processor
+    #old         segmented_image = processor.segmented_image
+    #old
+    #old         # Get other required values from the processor's configuration
+    #old         path_raw_image = processor.raw_image_path  # This should be the original raw image path
+    #old         path_no_bkground_image = processor.image_path  # This is the no-background image from config
+    #old         sample_name = processor.sample_name
+    #old         output_dir = processor.output_dir
+    #old
+    #old         padding = processor.padding
+    #old
+    #old         # ----------------------------
+    #old         # Crop and compute the bounding boxes for each object in the image
+    #old
+    #old         cropping = bool(processor.cropping)
+    #old
+    #old         # Debugging lines
+    #old         # print(f"- Raw cropping value: {repr(processor.cropping)}")
+    #old         # print(f"- Type of cropping value: {type(processor.cropping)}")
+    #old         # print(f"- Boolean conversion result: {cropping}")
+    #old
+    #old         if cropping == True:
+    #old
+    #old             try:
+    #old                 processor_crop = CropImageAndWriteBBox(
+    #old                     segmented_image=segmented_image,
+    #old                     path_raw_image=path_raw_image,
+    #old                     path_image_no_bkgd=path_no_bkground_image,
+    #old                     sample_name=sample_name,
+    #old                     output_dir=output_dir,
+    #old                     padding=padding  # pixel units.
+    #old                 )
+    #old
+    #old                 # Process all groups
+    #old                 processor_crop.process_all_groups(combine_json_data=True)
+    #old             except Exception as e:
+    #old                 raise Exception(f"Error processing info defined in the config file: {str(e)}")
+    #old
+    #old     # =========================================
+    #old     # Not ready yet:
+    #old
+    #old     # Crop objects from a batch of images.
+    #old     # try:
+    #old     #     process_crop_objects(input_dir, padding=1, sample_name="BM4_E")
+    #old     #     logger.info("Successfully completed batch processing")
+    #old
+    #old     # --------------------------30
+    #old     # Not ready yet:
+    #old
+    #old     # Crop and write JSON metadata from a single image
+    #old     # try:
+    #old     #     processor = CropImageAndWriteBox()
+    #old
+    #old     # =========================================
+    #old     # # Plot CONTOURS based on the JSON files.
+    #old     # # Comment these 3 lines if you don't want to plot contours.
+    #old     # try:
+    #old     #     process_json_plot_contours(input_dir)
+    #old     #     logger.info("Successfully completed batch processing")
+    #old
+    #old     # =========================================
+    #old     # # Create CROP images based on the JSON files.
+    #old     # # Comment these 3 lines if you don't want to crop.
+    #old     # try:
+    #old     #     process_json_crop(input_dir, padding=1)
+    #old     #     logger.info("Successfully completed batch processing")
+    #old
+    #old     # =========================================
+    #old
+    #old     except Exception as e:
+    #old         logger.error(f"An unexpected error occurred: {str(e)}")
+    #old         raise
 
+# v2
+def main():
     # Define input directory
-    # input_dir = Path("/Volumes/ARTURO_USB/Guillaume/2025_06_04/BM4_E/images")
-    input_dir = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation")
+    input_dir = Path(
+        "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation")
 
     if not input_dir.exists():
         print(f"Error: Input directory not found: {input_dir}")
@@ -448,37 +755,14 @@ def main():
 
     logger.info("Starting batch processing of images ...")
 
-    # =========================================
-    # Remove color background from a batch of images, using clustering. OK
-    # Comment these lines if you don't want to remove background from the images.
-    # try:
-    #     process_background_remover(input_dir, image_pattern="F40_A_*.jpg")
-    #     logger.info("Successfully completed batch processing")
-
-    # =========================================
-    # Generate batch configuration JSON files for object segmentation and cropping.
-
     try:
-
-        generator = BatchConfigGenerator(
-            sample_name="BM4_E",
-            raw_image_pattern="capt*.jpg",
-            raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
-            no_background_image_pattern="*_no_bkgd.png",
-            no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
-            max_distance=4.0,
-            min_pixels=1000,
-            padding=35,
-            cropping=True,
-            output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
-            )
-
-        generator.generate_config_files()
-
-        # tmp:
-        # config_files = BatchConfigGenerator.generate_batch_config_files(
+        # # =========================================
+        # # Option 1 (OK): Generate Configuration Files Only.
+        # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
+        #
+        # config_files = generate_configuration_files_only(
         #     sample_name="BM4_E",
-        #     raw_image_pattern="*.jpg",
+        #     raw_image_pattern="capt*.jpg",
         #     raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
         #     no_background_image_pattern="*_no_bkgd.png",
         #     no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
@@ -486,94 +770,102 @@ def main():
         #     min_pixels=1000,
         #     padding=35,
         #     cropping=True,
-        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
+        #     config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
         # )
+        #
+        # if config_files:
+        #     logger.info(
+        #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
+        #     logger.info(
+        #         "You can now process these configurations using the other options below.")
+        # else:
+        #     logger.error(
+        #         "No configuration files were generated. Please check your parameters.")
+        #
 
-        # Process all generated configurations
-        # process_batch_with_configs(config_files)
+        # =========================================
+        # # Option 2 (OK): Process existing configuration files only
+        # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
+        #
+        # # If you already have configuration files and just want to process them
+        # config_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
+        # if Path(config_directory).exists():
+        #     results_existing = process_batch_with_config_files(
+        #         config_directory=config_directory,
+        #         filename_pattern="*_config.json"
+        #     )
+        #
+        #     logger.info(
+        #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
+        # else:
+        #     logger.info(f"Config directory not found: {config_directory}")
 
-    # =========================================
-    # SINGLE image
+        # =========================================
+        # # Option 3 (OK): Complete workflow - Generate configs and process them
+        # logger.info(
+        #     "=== OPTION 3: Generate and Process Configuration Files ===")
+        #
+        # results = generate_and_process_batch_configs(
+        #     sample_name="BM4_E",
+        #     raw_image_pattern="capt*.jpg",
+        #     raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
+        #     no_background_image_pattern="*_no_bkgd.png",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
+        #     max_distance=4.0,
+        #     min_pixels=1000,
+        #     padding=35,
+        #     cropping=True,
+        #     config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/configs/"
+        # )
+        #
+        # logger.info(
+        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
-    # Grouping pixels to segment the objects present in a SINGLE image and then
-    # plotting the map of these objects.
+        # # =========================================
+        # OLD but OK. This is redundant with option 2.
+        #old # Option 4: Process specific configuration files
+        #old logger.info("=== OPTION 4: Process Specific Configuration Files ===")
+        #old
+        #old specific_config_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
+        #old if Path(specific_config_dir).exists():
+        #old     # Initialize processor for specific files
+        #old     processor = BatchConfigProcessor(
+        #old         json_path=specific_config_dir,
+        #old         filename_pattern="capt*_config.json"  # More specific pattern
+        #old     )
+        #old
+        #old     # Get file information first
+        #old     files_info = processor.get_config_files_info()
+        #old     logger.info(f"Found {len(files_info)} specific config files")
+        #old
+        #old     # Process only valid files
+        #old     valid_files = [info for info in files_info if info['valid']]
+        #old     if valid_files:
+        #old         results_specific = processor.process_all_configs()
+        #old         logger.info(
+        #old             f"Specific processing results: {len(results_specific['successful'])} successful, {len(results_specific['failed'])} failed")
+        #old     else:
+        #old         logger.warning(
+        #old             "No valid configuration files found for specific processing")
 
-    # try: # OK!
-    #     # Path to the JSON config file
-    #     config_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/capt0011/capt0011_config.json'
-    #
-    #     # Initialize and process
-    #     processor = InstanceSegmentation(config_path=config_path)
-    #     processor.process()  # This will run all steps
-    #
-    #     # Extract the computed values from the processor
-    #     segmented_image = processor.segmented_image
-    #
-    #     # Get other required values from the processor's configuration
-    #     path_raw_image = processor.raw_image_path  # This should be the original raw image path
-    #     path_no_bkground_image = processor.image_path  # This is the no-background image from config
-    #     sample_name = processor.sample_name
-    #     output_dir = processor.output_dir
-    #
-    #     padding = processor.padding
-    #
-    #     # ----------------------------
-    #     # Crop and compute the bounding boxes for each object in the image
-    #
-    #     cropping = bool(processor.cropping)
-    #
-    #     # Debugging lines
-    #     print(f"- Raw cropping value: {repr(processor.cropping)}")
-    #     print(f"- Type of cropping value: {type(processor.cropping)}")
-    #     print(f"- Boolean conversion result: {cropping}")
-    #
-    #     if cropping == True:
-    #
-    #         try:
-    #             processor_crop = CropImageAndWriteBBox(
-    #                 segmented_image=segmented_image,
-    #                 path_raw_image=path_raw_image,
-    #                 path_image_no_bkgd=path_no_bkground_image,
-    #                 sample_name=sample_name,
-    #                 output_dir=output_dir,
-    #                 padding=padding  # pixel units.
-    #             )
-    #
-    #             # Process all groups
-    #             processor_crop.process_all_groups(combine_json_data=True)
-    #         except Exception as e:
-    #             raise Exception(f"Error processing info defined in the config file: {str(e)}")
+        # # =========================================
+        # Option 4 (OK): Process individual configuration file (for testing/debugging)
+        logger.info("=== OPTION 4: Single Configuration File Processing ===")
 
-    # =========================================
-    # Not ready yet:
+        single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
+        if Path(single_config_path).exists():
+            processor_single = BatchConfigProcessor(
+                json_path=str(Path(single_config_path).parent),
+                filename_pattern=Path(single_config_path).name
+            )
 
-    # Crop objects from a batch of images.
-    # try:
-    #     process_crop_objects(input_dir, padding=1, sample_name="BM4_E")
-    #     logger.info("Successfully completed batch processing")
-
-    # --------------------------30
-    # Not ready yet:
-
-    # Crop and write JSON metadata from a single image
-    # try:
-    #     processor = CropImageAndWriteBox()
-
-    # =========================================
-    # # Plot CONTOURS based on the JSON files.
-    # # Comment these 3 lines if you don't want to plot contours.
-    # try:
-    #     process_json_plot_contours(input_dir)
-    #     logger.info("Successfully completed batch processing")
-
-    # =========================================
-    # # Create CROP images based on the JSON files.
-    # # Comment these 3 lines if you don't want to crop.
-    # try:
-    #     process_json_crop(input_dir, padding=1)
-    #     logger.info("Successfully completed batch processing")
-
-    # =========================================
+            # Process just this one file
+            single_result = processor_single.process_single_config(
+                Path(single_config_path))
+            if single_result:
+                logger.info("Single file processing successful")
+            else:
+                logger.error("Single file processing failed")
 
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
@@ -583,3 +875,27 @@ def main():
 if __name__ == "__main__":
     main()
 
+# ########################################################60
+
+# Simple usage - process all configs in a directory
+#c results = process_batch_with_config_files(
+#c     config_directory="/path/to/configs",
+#c     filename_pattern="*.json"
+#c )
+
+# Complete workflow
+#c results = generate_and_process_batch_configs(
+#c     sample_name="BM4_E",
+#c     raw_image_pattern="*.jpg",
+#c     raw_image_batch_path="/path/to/raw/images/",
+#c     no_background_image_pattern="*_no_bkgd.png",
+#c     no_background_image_batch_path="/path/to/processed/images/",
+#c     cropping=True
+#c )
+
+# Custom processor for specific needs
+#c processor = BatchConfigProcessor(
+#c     json_path="/path/to/configs",
+#c     filename_pattern="experiment_*_config.json"
+#c )
+#c results = processor.process_all_configs()

@@ -167,7 +167,7 @@ class BatchConfigGenerator:
         return matched_pairs
     
     def _get_raw_images_dict(self) -> Dict[str, Path]:
-        """Get dictionary of raw images indexed by base name."""
+        """Get a dictionary of raw images indexed by base name."""
         raw_image_files = list(self.raw_image_batch_path.glob(self.raw_image_pattern))
         
         if not raw_image_files:
@@ -176,7 +176,7 @@ class BatchConfigGenerator:
         return {file.stem: file for file in raw_image_files}
     
     def _get_no_background_images_dict(self) -> Dict[str, Path]:
-        """Get dictionary of no-background images indexed by base name."""
+        """Get a dictionary of no-background images indexed by base name."""
         no_background_files = list(self.no_background_image_batch_path.glob(self.no_background_image_pattern))
         
         if not no_background_files:
@@ -218,7 +218,7 @@ class BatchConfigGenerator:
         return generated_config_files
     
     def _create_config_data(self, base_name: str, raw_file: Path, no_background_file: Path) -> Dict:
-        """Create configuration data dictionary for a single image pair."""
+        """Create a configuration data dictionary for a single image pair."""
         return {
             "image_info": {
                 "sample_name": self.sample_name,
@@ -241,7 +241,7 @@ class BatchConfigGenerator:
         }
 
 
-# For backward compatibility, but I don't actually need it.
+# For backward compatibility, but I don't need it.
 #
 # def generate_batch_config_files(
 #         sample_name: str,
