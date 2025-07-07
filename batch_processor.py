@@ -10,6 +10,7 @@ from utils.instance_segmentator import InstanceSegmentation
 from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
 from utils.batch_config_JSON_generator import BatchConfigGenerator
 from utils.batch_config_JSON_processor import BatchConfigProcessor
+from utils.read_sizes_of_bounding_boxes import BatchBoundingBoxProcessor
 
 def setup_logging(input_dir):
     """
@@ -850,22 +851,51 @@ def main():
 
         # # =========================================
         # Option 4 (OK): Process individual configuration file (for testing/debugging)
-        logger.info("=== OPTION 4: Single Configuration File Processing ===")
+        # logger.info("=== OPTION 4: Single Configuration File Processing ===")
+        #
+        # single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
+        # if Path(single_config_path).exists():
+        #     processor_single = BatchConfigProcessor(
+        #         json_path=str(Path(single_config_path).parent),
+        #         filename_pattern=Path(single_config_path).name
+        #     )
+        #
+        #     # Process just this one file
+        #     single_result = processor_single.process_single_config(
+        #         Path(single_config_path))
+        #     if single_result:
+        #         logger.info("Single file processing successful")
+        #     else:
+        #         logger.error("Single file processing failed")
 
-        single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
-        if Path(single_config_path).exists():
-            processor_single = BatchConfigProcessor(
-                json_path=str(Path(single_config_path).parent),
-                filename_pattern=Path(single_config_path).name
-            )
+        # # =========================================
+        # Read the width and height of bounding boxes from a batch of JSON files
+        # and save them in a single comma-separated values (.CSV) text file. This
+        # processing is useful for unsupervised clustering techniques to determine
+        # the most common bounding box sizes of objects. Based on this information,
+        # I can crop individual objects to a fixed size using the most common sizes
+        # to obtain images of the same pixel size as required for clustering and
+        # label propagation.
 
-            # Process just this one file
-            single_result = processor_single.process_single_config(
-                Path(single_config_path))
-            if single_result:
-                logger.info("Single file processing successful")
-            else:
-                logger.error("Single file processing failed")
+        processor = BatchBoundingBoxProcessor(
+            json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+            filename_pattern="*_metadata.json",
+            output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+            output_filename="extracted_bounding_boxes.csv"
+        )
+
+        # Get processing summary
+        summary = processor.get_processing_summary()
+        print(f"Will process {summary['total_files']} files")
+        print(f"Output will be saved to: {summary['full_output_path']}")
+
+        # Process all files
+        success = processor.process_all_files()
+
+        if success:
+            print("Processing completed successfully!")
+        else:
+            print("Processing failed or no data was extracted.")
 
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")

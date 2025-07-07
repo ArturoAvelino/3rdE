@@ -130,7 +130,7 @@ class BatchConfigProcessor:
             self.logger.warning(f"No configuration files found matching pattern '{self.filename_pattern}' in {self.json_path}")
             return []
         
-        # Sort files for consistent processing order
+        # Sort files for a consistent processing order
         self.config_files.sort()
         self.logger.info(f"Found {len(self.config_files)} configuration files")
         
