@@ -11,6 +11,7 @@ from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
 from utils.batch_config_JSON_generator import BatchConfigGenerator
 from utils.batch_config_JSON_processor import BatchConfigProcessor
 from utils.read_sizes_of_bounding_boxes import BatchBoundingBoxProcessor
+from utils.bounding_box_sizes_clustering import BoundingBoxClusteringProcessor
 
 def setup_logging(input_dir):
     """
@@ -869,33 +870,72 @@ def main():
         #         logger.error("Single file processing failed")
 
         # # =========================================
+        # OK!
         # Read the width and height of bounding boxes from a batch of JSON files
         # and save them in a single comma-separated values (.CSV) text file. This
         # processing is useful for unsupervised clustering techniques to determine
         # the most common bounding box sizes of objects. Based on this information,
         # I can crop individual objects to a fixed size using the most common sizes
-        # to obtain images of the same pixel size as required for clustering and
+        # to get images of the same pixel size as required for clustering and
         # label propagation.
 
-        processor = BatchBoundingBoxProcessor(
-            json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
-            filename_pattern="*_metadata.json",
+        # processor = BatchBoundingBoxProcessor(
+        #     json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        #     filename_pattern="*_metadata.json",
+        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        #     output_filename="extracted_bounding_boxes.csv"
+        # )
+        #
+        # # Get processing summary
+        # summary = processor.get_processing_summary()
+        # print(f"Will process {summary['total_files']} files")
+        # print(f"Output will be saved to: {summary['full_output_path']}")
+        #
+        # # Process all files
+        # success = processor.process_all_files()
+        #
+        # if success:
+        #     print("Processing completed successfully!")
+        # else:
+        #     print("Processing failed or no data was extracted.")
+
+        # # =========================================
+        # OK!
+        # K-means clustering on the bounding-boxes sizes to determine the most
+        # common bbox sizes.
+
+        processor = BoundingBoxClusteringProcessor(
+            cluster_number=6,
+            input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
             output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
-            output_filename="extracted_bounding_boxes.csv"
+            output_filename="clustering_results"
         )
 
-        # Get processing summary
-        summary = processor.get_processing_summary()
-        print(f"Will process {summary['total_files']} files")
-        print(f"Output will be saved to: {summary['full_output_path']}")
+        # Execute the complete workflow
+        summary = processor.process_complete_workflow(
+            algorithm='kmeans',
+            redefine_dims=True,
+            random_state=42
+        )
 
-        # Process all files
-        success = processor.process_all_files()
+        print("Clustering Summary:")
+        for key, value in summary.items():
+            print(f"  {key}: {value}")
 
-        if success:
-            print("Processing completed successfully!")
-        else:
-            print("Processing failed or no data was extracted.")
+        # # Example with DBSCAN
+        # processor_dbscan = BoundingBoxClusteringProcessor(
+        #     cluster_number=5,  # Not used for DBSCAN but required for initialization
+        #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
+        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        #     output_filename="clustering_results_dbscan"
+        # )
+        #
+        # summary_dbscan = processor_dbscan.process_complete_workflow(
+        #     algorithm='dbscan',
+        #     redefine_dims=True,
+        #     eps=0.5,
+        #     min_samples=5
+        # )
 
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
