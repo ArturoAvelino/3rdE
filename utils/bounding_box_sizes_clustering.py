@@ -204,6 +204,10 @@ class BoundingBoxClusteringProcessor:
 
     ## Output Files Generated
 
+      - **Raw Data Plot**: `{output_filename}_raw_data_scatter.png`
+      - **Clustered Data Plot**: `{output_filename}_scatter_plot.png`
+      - **Cluster Centers**: `{output_filename}_cluster_centers.txt`
+
     ### Visualization Files
     - **Scatter Plot**: `{output_filename}_scatter_plot.png`
       - High-resolution 2D scatter plot with cluster coloring
@@ -266,7 +270,6 @@ class BoundingBoxClusteringProcessor:
     with comprehensive documentation, error handling, and flexible configuration options.
     """
 
-    
     def __init__(self, 
                  cluster_number: int,
                  input_file_path: Union[str, Path],
@@ -409,7 +412,74 @@ class BoundingBoxClusteringProcessor:
         self.logger.info(f"Prepared clustering data with shape: {self.clustering_data.shape}")
         
         return self.clustering_data
-    
+
+    def create_raw_data_scatter_plot(self,
+                                     save_plot: bool = True,
+                                     plot_filename: Optional[str] = None,
+                                     figure_size: Tuple[int, int] = (12, 8),
+                                     dpi: int = 200,
+                                     color: str = 'steelblue',
+                                     alpha: float = 0.6,
+                                     marker_size: int = 50) -> None:
+        """
+        Create a 2D scatter plot of the raw data before clustering.
+
+        This method generates a scatter plot showing all bounding box data points
+        in a single color, providing a visual overview of the data distribution
+        before any clustering analysis is applied.
+
+        Args:
+            save_plot (bool): Whether to save the plot to file
+            plot_filename (Optional[str]): Custom filename for the plot (without extension)
+            figure_size (Tuple[int, int]): Figure size in inches (width, height)
+            dpi (int): DPI resolution for saved plot
+            color (str): Color for all data points (matplotlib color name or hex code)
+            alpha (float): Transparency level (0.0 to 1.0)
+            marker_size (int): Size of scatter plot markers
+
+        Raises:
+            ValueError: If no clustering data is available
+        """
+        if self.clustering_data is None:
+            raise ValueError(
+                "No clustering data prepared. Call prepare_clustering_data() first.")
+
+        plt.figure(figsize=figure_size)
+
+        # Create scatter plot with all points in the same color
+        plt.scatter(self.clustering_data[:, 0], self.clustering_data[:, 1],
+                    c=color, s=marker_size, alpha=alpha, edgecolors='none')
+
+        # Calculate basic statistics for the title
+        n_points = len(self.clustering_data)
+        width_range = (self.clustering_data[:, 0].min(),
+                       self.clustering_data[:, 0].max())
+        height_range = (self.clustering_data[:, 1].min(),
+                        self.clustering_data[:, 1].max())
+
+        # Set labels and title
+        plt.xlabel('Box Width (pixels)')
+        plt.ylabel('Box Height (pixels)')
+        plt.title(f'Bounding Box Data Distribution (Before Clustering)\n'
+                  f'Total data points: {n_points}\n'
+                  f'Width range: {width_range[0]:.0f} - {width_range[1]:.0f} pixels, '
+                  f'Height range: {height_range[0]:.0f} - {height_range[1]:.0f} pixels')
+
+        # Add grid for better readability
+        plt.grid(True, alpha=0.3)
+
+        # Adjust layout
+        plt.tight_layout()
+
+        # Save plot if requested
+        if save_plot:
+            plot_name = plot_filename or f"{self.output_filename}_raw_data_scatter.png"
+            plot_path = self.output_path / plot_name
+            plt.savefig(plot_path, dpi=dpi, bbox_inches='tight')
+            self.logger.info(f"Raw data scatter plot saved to: {plot_path}")
+
+        plt.show()
+
     def apply_kmeans_clustering(self, random_state: int = 42) -> Tuple[np.ndarray, KMeans]:
         """
         Apply K-means clustering to the bounding box data.
@@ -620,33 +690,39 @@ class BoundingBoxClusteringProcessor:
                 summary['cluster_sizes'][f'cluster_{label}'] = int(np.sum(self.cluster_labels == label))
         
         return summary
-    
-    def process_complete_workflow(self, 
-                                 algorithm: str = 'kmeans',
-                                 redefine_dims: bool = False,
-                                 **algorithm_params) -> Dict[str, Any]:
+
+    def process_complete_workflow(self,
+                                  algorithm: str = 'kmeans',
+                                  redefine_dims: bool = False,
+                                  create_raw_plot: bool = True,
+                                  **algorithm_params) -> Dict[str, Any]:
         """
         Execute the complete clustering workflow.
-        
+
         Args:
             algorithm (str): Clustering algorithm ('kmeans' or 'dbscan')
             redefine_dims (bool): Whether to redefine dimensions
+            create_raw_plot (bool): Whether to create raw data scatter plot before clustering
             **algorithm_params: Additional parameters for the clustering algorithm
-            
+
         Returns:
             Dict[str, Any]: Summary of the clustering results
         """
         try:
             # Load data
             self.load_csv_data()
-            
+
             # Redefine dimensions if requested
             if redefine_dims:
                 self.redefine_dimensions()
-            
+
             # Prepare clustering data
             self.prepare_clustering_data()
-            
+
+            # Create raw data plot if requested
+            if create_raw_plot:
+                self.create_raw_data_scatter_plot()
+
             # Apply clustering
             if algorithm.lower() == 'kmeans':
                 self.apply_kmeans_clustering(**algorithm_params)
@@ -654,21 +730,20 @@ class BoundingBoxClusteringProcessor:
                 self.apply_dbscan_clustering(**algorithm_params)
             else:
                 raise ValueError(f"Unsupported algorithm: {algorithm}")
-            
+
             # Create visualizations and save results
             self.create_scatter_plot()
             self.save_cluster_centers()
-            
+
             # Return summary
             summary = self.get_clustering_summary()
             self.logger.info("Complete workflow executed successfully")
-            
+
             return summary
-            
+
         except Exception as e:
             self.logger.error(f"Error in complete workflow: {e}")
             raise
-
 
 # # Example usage
 # if __name__ == "__main__":
@@ -711,3 +786,41 @@ class BoundingBoxClusteringProcessor:
 #         eps=0.5,
 #         min_samples=5
 #     )
+#
+#
+# ## **Usage Examples:**
+# ### **Standalone Usage**
+
+# # After loading and preparing data
+# processor.load_csv_data()
+# processor.prepare_clustering_data()
+
+# # Create raw data plot with default settings
+# processor.create_raw_data_scatter_plot()
+
+# # Or with custom settings
+# processor.create_raw_data_scatter_plot(
+#     color='darkgreen',
+#     alpha=0.7,
+#     marker_size=30,
+#     figure_size=(10, 6)
+# )
+
+
+# ### **As Part of Complete Workflow:**
+
+# # Include raw data plot in complete workflow
+# summary = processor.process_complete_workflow(
+#     algorithm='kmeans',
+#     redefine_dims=True,
+#     create_raw_plot=True,  # This will generate the raw data plot
+#     random_state=42
+# )
+
+# # Or disable raw data plot
+# summary = processor.process_complete_workflow(
+#     algorithm='kmeans',
+#     create_raw_plot=False,  # Skip raw data plot
+#     random_state=42
+# )
+
