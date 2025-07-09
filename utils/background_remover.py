@@ -240,7 +240,7 @@ class ImageSegmentationProcessor:
             self.logger.info(
                 f"Removing background clusters: {background_clusters}")
 
-        # Create mask for non-background pixels
+        # Create a mask for non-background pixels
         mask = ~np.isin(self.cluster_labels, background_clusters)
         mask = mask.reshape(self.image.size[::-1])
 

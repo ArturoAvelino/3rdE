@@ -99,7 +99,6 @@ def setup_logging(input_dir):
     logger.addHandler(file_handler)
 
     # Log initial information
-    logger.info(f"Input directory: {input_dir}")
     logger.info(f"Log file location: {log_file}")
 
 
@@ -324,57 +323,60 @@ def process_json_crop(input_dir, image_pattern="capt*.jpg", padding = 0):
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
 
-def process_background_remover(input_dir, image_pattern="capt*.jpg"):
+def process_background_remover(input_dir, output_dir=None,
+                               image_pattern="capt*.jpg"):
     """
     Process a batch of images, creating
     visualization plots and organizing outputs in dedicated directories.
     """
+    # Configuration constants
+    DEFAULT_N_CLUSTERS = 5
+    DEFAULT_BACKGROUND_CLUSTERS = [0, 4]
+
     logger = logging.getLogger(__name__)
-    input_dir = Path(input_dir)
+    input_path = Path(input_dir)
+
+    if output_dir is None:
+        output_dir = input_path
+    else:
+        output_dir = Path(output_dir)
 
     # Find all image files matching the pattern
-    image_files = list(input_dir.glob(image_pattern))
-
+    image_files = list(input_path.glob(image_pattern))
     if not image_files:
         logger.warning(
-            f"No image files found matching pattern '{image_pattern}' in {input_dir}")
+            f"No image files found matching pattern '{image_pattern}' in {input_path}")
         return
 
     logger.info(f"Found {len(image_files)} image files to process")
 
     for image_file in image_files:
         try:
-            # Construct the image file path
-            image_path = input_dir / image_file
-
-            if not image_path.exists():
+            # Validate image file existence
+            if not image_file.exists():
                 logger.warning(
                     f"Image file not found for image {image_file.name}, skipping")
                 continue
 
             # Create output directory with same name as the image file
-            output_dir = input_dir / image_file.stem
-            output_dir.mkdir(exist_ok=True)
-
+            image_output_dir = output_dir / image_file.stem
+            image_output_dir.mkdir(exist_ok=True)
             logger.info(f"Processing {image_file.name}")
 
             # -----------
             # Remove color background from the images.
-
-            processor = ImageSegmentationProcessor(image_path, output_dir)
-            processor.cluster_rgb_colors(n_clusters=5)
+            processor = ImageSegmentationProcessor(image_file, image_output_dir)
+            processor.cluster_rgb_colors(n_clusters=DEFAULT_N_CLUSTERS)
             processor.plot_rgb_rawdata()
             processor.plot_rgb_clusters()
             processor.plot_rgb_clusters_colorful()
-            processor.remove_background(background_clusters=[0, 4])
-
+            processor.remove_background(
+                background_clusters=DEFAULT_BACKGROUND_CLUSTERS)
             # -----------
 
             logger.info(f"Successfully processed {image_file.name}")
-
         except Exception as e:
             logger.error(f"Error processing {image_file.name}: {str(e)}")
-
 
 def generate_configuration_files_only(
         sample_name: str,
@@ -473,7 +475,7 @@ def generate_configuration_files_only(
         return []
 
 
-def process_batch_with_config_files(config_directory: str, filename_pattern: str = "*_config.json") -> dict:
+def process_batch_of_config_files(config_directory: str, filename_pattern: str = "*_config.json") -> dict:
     """
     Process a batch of images using configuration JSON files with the BatchConfigProcessor.
 
@@ -595,7 +597,7 @@ def generate_and_process_batch_configs(
         logger.info("Step 2: Processing generated configuration files...")
 
         # Process the generated configuration files
-        results = process_batch_with_config_files(
+        results = process_batch_of_config_files(
             config_directory=config_output_path,
             filename_pattern="*_config.json"
         )
@@ -743,21 +745,36 @@ def generate_and_process_batch_configs(
 
 # v2
 def main():
-    # Define input directory
-    input_dir = Path(
-        "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation")
-
-    if not input_dir.exists():
-        print(f"Error: Input directory not found: {input_dir}")
-        return
 
     # Setup logging (will create processing.log in the input directory)
-    setup_logging(input_dir)
-    logger = logging.getLogger(__name__)
+    log_output_dir = Path(
+        "/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/")
+    if not log_output_dir.exists():
+        print(f"Error: Input directory not found: {log_output_dir}")
+        return
 
+    setup_logging(log_output_dir)
+    logger = logging.getLogger(__name__)
     logger.info("Starting batch processing of images ...")
 
     try:
+
+        # =========================================
+        # Remove the color background from a batch of images using clustering (OK).
+        #
+        # Comment these lines if you don't want to remove background from the images.
+
+        # input_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/"
+        # output_dir = Path("/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/")
+        # logger.info(f"Input directory: {input_dir}")
+        # logger.info(f"Output directory: {output_dir}")
+        #
+        # process_background_remover(input_dir=input_dir,
+        #                            output_dir=output_dir,
+        #                            image_pattern="capt*.jpg")
+        #
+        # logger.info("Successfully completed batch processing")
+
         # # =========================================
         # # Option 1 (OK): Generate Configuration Files Only.
         # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
@@ -787,6 +804,7 @@ def main():
 
         # =========================================
         # # Option 2 (OK): Process existing configuration files only
+
         # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
         #
         # # If you already have configuration files and just want to process them
@@ -804,51 +822,25 @@ def main():
 
         # =========================================
         # # Option 3 (OK): Complete workflow - Generate configs and process them
-        # logger.info(
-        #     "=== OPTION 3: Generate and Process Configuration Files ===")
-        #
-        # results = generate_and_process_batch_configs(
-        #     sample_name="BM4_E",
-        #     raw_image_pattern="capt*.jpg",
-        #     raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
-        #     no_background_image_pattern="*_no_bkgd.png",
-        #     no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
-        #     max_distance=4.0,
-        #     min_pixels=1000,
-        #     padding=35,
-        #     cropping=True,
-        #     config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/configs/"
-        # )
-        #
-        # logger.info(
-        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
-        # # =========================================
-        # OLD but OK. This is redundant with option 2.
-        #old # Option 4: Process specific configuration files
-        #old logger.info("=== OPTION 4: Process Specific Configuration Files ===")
-        #old
-        #old specific_config_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
-        #old if Path(specific_config_dir).exists():
-        #old     # Initialize processor for specific files
-        #old     processor = BatchConfigProcessor(
-        #old         json_path=specific_config_dir,
-        #old         filename_pattern="capt*_config.json"  # More specific pattern
-        #old     )
-        #old
-        #old     # Get file information first
-        #old     files_info = processor.get_config_files_info()
-        #old     logger.info(f"Found {len(files_info)} specific config files")
-        #old
-        #old     # Process only valid files
-        #old     valid_files = [info for info in files_info if info['valid']]
-        #old     if valid_files:
-        #old         results_specific = processor.process_all_configs()
-        #old         logger.info(
-        #old             f"Specific processing results: {len(results_specific['successful'])} successful, {len(results_specific['failed'])} failed")
-        #old     else:
-        #old         logger.warning(
-        #old             "No valid configuration files found for specific processing")
+        logger.info(
+            "=== OPTION 3: Generate and Process Configuration Files ===")
+
+        results = generate_and_process_batch_configs(
+            sample_name="BM4_E",
+            raw_image_pattern="capt*.jpg",
+            raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
+            no_background_image_pattern="*_no_bkgd.png",
+            no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
+            max_distance=4.0,
+            min_pixels=1000,
+            padding=35,
+            cropping=True,
+            config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/configs/"
+        )
+
+        logger.info(
+            f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
         # # =========================================
         # Option 4 (OK): Process individual configuration file (for testing/debugging)
@@ -904,23 +896,23 @@ def main():
         # K-means clustering on the bounding-boxes sizes to determine the most
         # common bbox sizes.
 
-        processor = BoundingBoxClusteringProcessor(
-            cluster_number=6,
-            input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
-            output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
-            output_filename="clustering_results"
-        )
-
-        # Execute the complete workflow
-        summary = processor.process_complete_workflow(
-            algorithm='kmeans',
-            redefine_dims=True,
-            random_state=42
-        )
-
-        print("Clustering Summary:")
-        for key, value in summary.items():
-            print(f"  {key}: {value}")
+        # processor = BoundingBoxClusteringProcessor(
+        #     cluster_number=6,
+        #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
+        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        #     output_filename="clustering_results"
+        # )
+        #
+        # # Execute the complete workflow
+        # summary = processor.process_complete_workflow(
+        #     algorithm='kmeans',
+        #     redefine_dims=True,
+        #     random_state=42
+        # )
+        #
+        # print("Clustering Summary:")
+        # for key, value in summary.items():
+        #     print(f"  {key}: {value}")
 
         # # Example with DBSCAN
         # processor_dbscan = BoundingBoxClusteringProcessor(
