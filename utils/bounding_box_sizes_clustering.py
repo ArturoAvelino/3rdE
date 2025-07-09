@@ -204,7 +204,7 @@ class BoundingBoxClusteringProcessor:
 
     ## Output Files Generated
 
-      - **Raw Data Plot**: `{output_filename}_raw_data_scatter.png`
+      - **Raw Data Plot**: `{output_filename}_scatter_raw_data.png`
       - **Clustered Data Plot**: `{output_filename}_scatter_plot.png`
       - **Cluster Centers**: `{output_filename}_cluster_centers.txt`
 
@@ -473,7 +473,7 @@ class BoundingBoxClusteringProcessor:
 
         # Save plot if requested
         if save_plot:
-            plot_name = plot_filename or f"{self.output_filename}_raw_data_scatter.png"
+            plot_name = plot_filename or f"{self.output_filename}_scatter_raw_data.png"
             plot_path = self.output_path / plot_name
             plt.savefig(plot_path, dpi=dpi, bbox_inches='tight')
             self.logger.info(f"Raw data scatter plot saved to: {plot_path}")

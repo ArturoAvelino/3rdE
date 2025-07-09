@@ -608,6 +608,7 @@ def generate_and_process_batch_configs(
         logger.error(f"Error in generate_and_process_batch_configs: {str(e)}")
         return {'successful': [], 'failed': []}
 
+
 # v1
     #old def main():
     #old
@@ -776,7 +777,9 @@ def main():
         # logger.info("Successfully completed batch processing")
 
         # # =========================================
-        # # Option 1 (OK): Generate Configuration Files Only.
+        # Segmentation and cropping
+        #
+        # Option 1 (OK): Generate Configuration Files Only.
         # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
         #
         # config_files = generate_configuration_files_only(
@@ -823,24 +826,24 @@ def main():
         # =========================================
         # # Option 3 (OK): Complete workflow - Generate configs and process them
 
-        logger.info(
-            "=== OPTION 3: Generate and Process Configuration Files ===")
-
-        results = generate_and_process_batch_configs(
-            sample_name="BM4_E",
-            raw_image_pattern="capt*.jpg",
-            raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
-            no_background_image_pattern="*_no_bkgd.png",
-            no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
-            max_distance=4.0,
-            min_pixels=1000,
-            padding=35,
-            cropping=True,
-            config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/configs/"
-        )
-
-        logger.info(
-            f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
+        # logger.info(
+        #     "=== OPTION 3: Generate and Process Configuration Files ===")
+        #
+        # results = generate_and_process_batch_configs(
+        #     sample_name="BM4_E",
+        #     raw_image_pattern="capt*.jpg",
+        #     raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/",
+        #     no_background_image_pattern="*_no_bkgd.png",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/",
+        #     max_distance=4.0,
+        #     min_pixels=1000,
+        #     padding=35,
+        #     cropping=True,
+        #     config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/"
+        # )
+        #
+        # logger.info(
+        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
         # # =========================================
         # Option 4 (OK): Process individual configuration file (for testing/debugging)
@@ -864,17 +867,17 @@ def main():
         # # =========================================
         # OK!
         # Read the width and height of bounding boxes from a batch of JSON files
-        # and save them in a single comma-separated values (.CSV) text file. This
-        # processing is useful for unsupervised clustering techniques to determine
+        # and save them in a single comma-separated value (.CSV) text file.
+        # This processing is useful for unsupervised clustering techniques to determine
         # the most common bounding box sizes of objects. Based on this information,
         # I can crop individual objects to a fixed size using the most common sizes
         # to get images of the same pixel size as required for clustering and
         # label propagation.
 
         # processor = BatchBoundingBoxProcessor(
-        #     json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        #     json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
         #     filename_pattern="*_metadata.json",
-        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
         #     output_filename="extracted_bounding_boxes.csv"
         # )
         #
@@ -896,38 +899,39 @@ def main():
         # K-means clustering on the bounding-boxes sizes to determine the most
         # common bbox sizes.
 
-        # processor = BoundingBoxClusteringProcessor(
-        #     cluster_number=6,
-        #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
-        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
-        #     output_filename="clustering_results"
-        # )
-        #
-        # # Execute the complete workflow
-        # summary = processor.process_complete_workflow(
-        #     algorithm='kmeans',
-        #     redefine_dims=True,
-        #     random_state=42
-        # )
-        #
-        # print("Clustering Summary:")
-        # for key, value in summary.items():
-        #     print(f"  {key}: {value}")
+        processor = BoundingBoxClusteringProcessor(
+            cluster_number=6,
+            input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/extracted_bounding_boxes.csv",
+            output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
+            output_filename="clustering_results"
+        )
+
+        # Execute the complete workflow
+        summary = processor.process_complete_workflow(
+            algorithm='kmeans',
+            redefine_dims=False,
+            create_raw_plot=True,
+            random_state=42
+        )
+
+        print("Clustering Summary:")
+        for key, value in summary.items():
+            print(f"  {key}: {value}")
 
         # # Example with DBSCAN
-        # processor_dbscan = BoundingBoxClusteringProcessor(
-        #     cluster_number=5,  # Not used for DBSCAN but required for initialization
-        #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
-        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
-        #     output_filename="clustering_results_dbscan"
-        # )
-        #
-        # summary_dbscan = processor_dbscan.process_complete_workflow(
-        #     algorithm='dbscan',
-        #     redefine_dims=True,
-        #     eps=0.5,
-        #     min_samples=5
-        # )
+        # # processor_dbscan = BoundingBoxClusteringProcessor(
+        # #     cluster_number=5,  # Not used for DBSCAN but required for initialization
+        # #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
+        # #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        # #     output_filename="clustering_results_dbscan"
+        # # )
+        # #
+        # # summary_dbscan = processor_dbscan.process_complete_workflow(
+        # #     algorithm='dbscan',
+        # #     redefine_dims=True,
+        # #     eps=0.5,
+        # #     min_samples=5
+        # # )
 
     except Exception as e:
         logger.error(f"An unexpected error occurred: {str(e)}")
