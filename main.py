@@ -1,4 +1,4 @@
-from tools.read_json_crop_objects import CropIndividualObjects
+from tools.read_json_and_crop_objects import CropIndividualObjects
 import logging
 from pathlib import Path
 

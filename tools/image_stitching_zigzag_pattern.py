@@ -26,20 +26,20 @@ def stitch_row(image_paths, horizontal_overlap, direction='rtl'):
         final_width = width1 + width2 - horizontal_overlap
         final_height = max(height1, height2)
         
-        # Create new blank image
+        # Create a new blank image
         merged = Image.new('RGB', (final_width, final_height))
         
         # Paste first image
         merged.paste(result, (0, 0))
         
-        # Paste second image with overlap
+        # Paste the second image with overlap
         merged.paste(img, (width1 - horizontal_overlap, 0))
         
         result = merged
     
     return result
 
-def stitch_images(filename_list_path, rows=13, cols=8, h_overlap=300, v_overlap=400, output_path='stitched_result.jpg'):
+def stitch_images(filename_list_path, rows=13, cols=8, h_overlap=300, v_overlap=400, output_path='stitched_image.jpg'):
     """
     Stitch multiple images in a zigzag pattern with specified overlaps.
     """
@@ -55,7 +55,7 @@ def stitch_images(filename_list_path, rows=13, cols=8, h_overlap=300, v_overlap=
     # Stitch rows first
     stitched_rows = []
     for row_idx, row_images in enumerate(image_grid):
-        # Determine direction based on row index
+        # Determine a direction based on row index
         direction = 'ltr' if row_idx % 2 else 'rtl'
         stitched_row = stitch_row(row_images, h_overlap, direction)
         stitched_rows.append(stitched_row)
@@ -71,24 +71,24 @@ def stitch_images(filename_list_path, rows=13, cols=8, h_overlap=300, v_overlap=
         final_width = max(width1, width2)
         final_height = height1 + height2 - v_overlap
         
-        # Create new blank image
+        # Create a new blank image
         merged = Image.new('RGB', (final_width, final_height))
         
         # Paste first image
         merged.paste(final_result, (0, 0))
         
-        # Paste second image with vertical overlap
+        # Paste the second image with vertical overlap
         merged.paste(next_row, (0, height1 - v_overlap))
         
         final_result = merged
     
-    # Save final result
+    # Save the final result
     final_result.save(output_path)
     return final_result
 
 # Example usage
 if __name__ == "__main__":
-    filename_list_path = "/Users/aavelino/Downloads/images/BM4_G/image_filenames.txt"  # Your text file with image filenames
+    filename_list_path = "/Users/aavelino/Downloads/images_biigle/Archives biigle Arthuro-2/Images/BM13_B_margo/image_to_stitch.txt"  # Your text file with image filenames
     output_path = "final_stitched_image.jpg"
     
     stitched_image = stitch_images(
