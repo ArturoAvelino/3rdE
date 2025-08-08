@@ -947,10 +947,10 @@ def generate_and_process_batch_configs(
 if __name__ == "__main__":
     # Initialize the processor
     processor = CSVObjectProcessor(
-        csv_file="/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_arranged.csv",
-        images_path="/Users/aavelino/Downloads/images_biigle/Archives biigle Arthuro-2/Images/BM4_E",
+        csv_file="/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_arranged.csv",
+        images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
         filename_pattern="capt*.jpg",
-        output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/test_1",
+        output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/test_2",
         prefix_filename=""  # Optional prefix
     )
 
