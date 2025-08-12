@@ -379,6 +379,7 @@ def process_background_remover(input_dir, output_dir=None,
         except Exception as e:
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
+
 def generate_configuration_files_only(
         sample_name: str,
         raw_image_pattern: str,
@@ -390,7 +391,7 @@ def generate_configuration_files_only(
         padding: int = 35,
         cropping: bool = True,
         config_output_path: str = None
-) -> List[str]:
+    ) -> List[str]:
     """
     Generate configuration JSON files only using the BatchConfigGenerator class.
 
@@ -533,17 +534,17 @@ def process_batch_of_config_files(config_directory: str, filename_pattern: str =
 
 
 def generate_and_process_batch_configs(
-    sample_name: str,
-    raw_image_pattern: str,
-    raw_image_batch_path: str,
-    no_background_image_pattern: str,
-    no_background_image_batch_path: str,
-    max_distance: float = 4.0,
-    min_pixels: int = 1000,
-    padding: int = 35,
-    cropping: bool = True,
-    config_output_path: str = None
-) -> dict:
+        sample_name: str,
+        raw_image_pattern: str,
+        raw_image_batch_path: str,
+        no_background_image_pattern: str,
+        no_background_image_batch_path: str,
+        max_distance: float = 4.0,
+        min_pixels: int = 1000,
+        padding: int = 35,
+        cropping: bool = True,
+        config_output_path: str = None
+    ) -> dict:
     """
     Complete workflow: Generate configuration files and then process them.
 
@@ -945,9 +946,19 @@ def generate_and_process_batch_configs(
 
 # Example usage
 if __name__ == "__main__":
-    # Initialize the processor
+    # From the CSV file containing the bounding boxes
+    # and the output path for the extracted images
+    # and the output filename for the extracted images
+    # from the JSON file containing the metadata
+    # for the bounding boxes.
+    # The processor will extract the bounding boxes
+    # and save them in a single comma-separated value (.CSV) text file.
+    # This file will be used for the next processing step.
+    # The processor will then extract the bounding boxes
+    # and save them in a single comma-separated value (.CSV) text file.
     processor = CSVObjectProcessor(
-        csv_file="/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_arranged.csv",
+        csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_arranged_subsample_tmp.csv",
+        # csv_file="/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_arranged.csv",
         images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
         filename_pattern="capt*.jpg",
         output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/test_2",
