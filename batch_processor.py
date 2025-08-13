@@ -959,6 +959,7 @@ if __name__ == "__main__":
     # and save them in a single comma-separated value (.CSV) text file.
     processor = CSVObjectProcessor(
         csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_unsure_removed.csv",
+        labels_json_path = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/label_trees_arranged_all.json",
         images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
         filename_pattern="capt*.jpg",
         output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/5",
