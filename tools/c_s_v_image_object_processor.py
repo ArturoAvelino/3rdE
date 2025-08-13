@@ -389,6 +389,7 @@ class CSVObjectProcessor:
         # Create output directory
         self.output_crops_path.mkdir(parents=True, exist_ok=True)
 
+
     def _setup_logging(self):
         """Setup logging configuration."""
         logging.basicConfig(
@@ -396,6 +397,7 @@ class CSVObjectProcessor:
             format='%(asctime)s - %(levelname)s - %(message)s'
         )
         return logging.getLogger(__name__)
+
 
     def _create_image_mapping(self):
         """
@@ -520,6 +522,7 @@ class CSVObjectProcessor:
         except Exception as e:
             self.logger.error(f"Error loading CSV file: {e}")
             raise
+
 
     def parse_pixel_coordinates(self, points_list):
         """
@@ -662,6 +665,207 @@ class CSVObjectProcessor:
         }
 
         return json_data
+
+    def group_objects_by_image_id(self, csv_data=None):
+        """
+        Group CSV objects by their image_id.
+
+        Args:
+            csv_data (list): List of CSV row dictionaries. If None, loads from file.
+
+        Returns:
+            dict: Dictionary where keys are image_ids and values are lists of objects
+        """
+        try:
+            if csv_data is None:
+                csv_data = self.load_csv_data()
+
+            grouped_objects = {}
+
+            for row_data in csv_data:
+                image_id = int(row_data['image_id'])
+
+                if image_id not in grouped_objects:
+                    grouped_objects[image_id] = []
+
+                grouped_objects[image_id].append(row_data)
+
+            self.logger.info(
+                f"Grouped {len(csv_data)} objects into {len(grouped_objects)} image groups")
+            return grouped_objects
+
+        except Exception as e:
+            self.logger.error(f"Error grouping objects by image_id: {e}")
+            raise
+
+    def create_merged_json_metadata(self, image_id, objects_list,
+                                    output_path=None):
+        """
+        Create a merged JSON metadata file for all objects belonging to the same image_id.
+
+        Args:
+            image_id (int): The image ID for grouping objects
+            objects_list (list): List of object dictionaries from CSV
+            output_path (Path): Optional output path. If None, uses default location.
+
+        Returns:
+            dict: The merged JSON metadata structure
+        """
+        try:
+            # Get image information
+            filename = self.image_mapping.get(image_id,
+                                              f"unknown_{image_id}.jpg")
+            sample_name = Path(filename).stem
+            image_path = self.images_path / filename
+
+            # Get image dimensions
+            if image_path.exists():
+                try:
+                    width, height = self.get_image_dimensions(image_path)
+                except Exception as e:
+                    self.logger.warning(
+                        f"Could not get dimensions for {image_path}, using defaults: {e}")
+                    width, height = 6000, 4000
+            else:
+                width, height = 6000, 4000
+
+            current_time = datetime.now().isoformat() + "-01:00"
+
+            # Create an annotation list
+            annotations = []
+            categories_dict = {}  # Use dict to avoid duplicates
+
+            for obj_data in objects_list:
+                # Calculate a bounding box for each object
+                bbox_info = self.calculate_bounding_box(obj_data['points'])
+
+                # Create annotation entry
+                annotation = {
+                    "id": int(obj_data['id']),
+                    "image_id": image_id,
+                    "category_id": int(obj_data['label_id']),
+                    "bbox": [
+                        bbox_info['min_x'],
+                        bbox_info['min_y'],
+                        bbox_info['box_width'],
+                        bbox_info['box_height']
+                    ],
+                    "area": bbox_info['box_area'],
+                    "segmentation": [],
+                    "iscrowd": 0
+                }
+                annotations.append(annotation)
+
+                # Add a category (using dict to avoid duplicates)
+                category_id = int(obj_data['label_id'])
+                if category_id not in categories_dict:
+                    categories_dict[category_id] = {
+                        "id": category_id,
+                        "name": "arthropod",
+                        "supercategory": "none"
+                    }
+
+            # Convert categories dict to list
+            categories = list(categories_dict.values())
+
+            # Create the merged JSON structure
+            merged_json = {
+                "info": {
+                    "year": "2025",
+                    "version": "1",
+                    "description": "arthropods bounding boxes",
+                    "contributor": "Arturo_Avelino",
+                    "url": "https://www.unine.ch/biolsol",
+                    "date_created": current_time
+                },
+                "licenses": [
+                    {
+                        "id": 1,
+                        "url": "https://www.unine.ch/biolsol",
+                        "name": "Research"
+                    }
+                ],
+                "categories": categories,
+                "images": [
+                    {
+                        "id": image_id,
+                        "license": 1,
+                        "file_name": filename,
+                        "height": height,
+                        "width": width,
+                        "date_captured": objects_list[0][
+                            'created_at'] if objects_list else current_time
+                    }
+                ],
+                "annotations": annotations
+            }
+
+            # Save to file if output_path is provided
+            if output_path:
+                output_path.mkdir(parents=True, exist_ok=True)
+                json_filename = f"{sample_name}_image_{image_id}_merged.json"
+                json_file_path = output_path / json_filename
+
+                with open(json_file_path, 'w', encoding='utf-8') as f:
+                    json.dump(merged_json, f, indent=4)
+
+                self.logger.info(
+                    f"Saved merged JSON for image_id {image_id} with {len(annotations)} objects to {json_file_path}")
+
+            return merged_json
+
+        except Exception as e:
+            self.logger.error(
+                f"Error creating merged JSON for image_id {image_id}: {e}")
+            raise
+
+    def merge_json_files_by_image_id(self, output_merged_path=None):
+        """
+        Main method to merge all individual JSON files by image_id into consolidated files.
+
+        Args:
+            output_merged_path (str): Output directory for merged JSON files.
+                                    If None, creates 'merged_json' subdirectory in output_crops_path.
+        """
+        try:
+            # Set default output path if none provided
+            if output_merged_path is None:
+                output_merged_path = self.output_crops_path / "merged_json"
+            else:
+                output_merged_path = Path(output_merged_path)
+
+            # Load CSV data and group by image_id
+            csv_data = self.load_csv_data()
+            grouped_objects = self.group_objects_by_image_id(csv_data)
+
+            if not grouped_objects:
+                self.logger.warning("No grouped objects found")
+                return
+
+            # Process each image group
+            total_images = len(grouped_objects)
+            processed_images = 0
+
+            for image_id, objects_list in grouped_objects.items():
+                try:
+                    # Create merged JSON for this image_id
+                    self.create_merged_json_metadata(image_id, objects_list,
+                                                     output_merged_path)
+                    processed_images += 1
+
+                except Exception as e:
+                    self.logger.error(
+                        f"Failed to merge JSON for image_id {image_id}: {e}")
+                    continue
+
+            self.logger.info(
+                f"JSON merging complete: {processed_images}/{total_images} image groups processed successfully")
+            self.logger.info(
+                f"Merged JSON files saved to: {output_merged_path}")
+
+        except Exception as e:
+            self.logger.error(f"Error in merge_json_files_by_image_id: {e}")
+            raise
 
 
     def generate_output_filename(self, row_data, extension):
@@ -841,3 +1045,18 @@ class CSVObjectProcessor:
 #
 #     # Process all objects
 #     processor.process_all_objects()
+
+
+# # Basic usage - merge all JSON files
+# processor = CSVObjectProcessor(
+#     csv_file="annotations.csv",
+#     images_path="images/",
+#     filename_pattern="capt*.jpg",
+#     output_crops_path="output/"
+# )
+
+# # Merge JSON files (saves to output/merged_json/)
+# processor.merge_json_files_by_image_id()
+
+# # Or specify custom output path
+# processor.merge_json_files_by_image_id("custom/merged/path")

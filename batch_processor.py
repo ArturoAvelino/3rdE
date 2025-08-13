@@ -746,6 +746,7 @@ def generate_and_process_batch_configs(
     #old         logger.error(f"An unexpected error occurred: {str(e)}")
     #old         raise
 
+# ########################################################60
 # v2. OK
 # def main():
 #
@@ -957,17 +958,18 @@ if __name__ == "__main__":
     # The processor will then extract the bounding boxes
     # and save them in a single comma-separated value (.CSV) text file.
     processor = CSVObjectProcessor(
-        csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_arranged_subsample_tmp.csv",
-        # csv_file="/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_arranged.csv",
+        csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_unsure_removed.csv",
         images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
         filename_pattern="capt*.jpg",
-        output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/test_2",
+        output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/5",
         prefix_filename=""  # Optional prefix
     )
 
     # Process all objects
     processor.process_all_objects()
 
+    # Merge JSON files (saves to output/merged_json/)
+    processor.merge_json_files_by_image_id()
 
 # ########################################################60
 
