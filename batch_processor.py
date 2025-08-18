@@ -4,15 +4,13 @@ from typing import List
 
 from tools.read_json_and_plot_contour_objects import read_json_plot_contours
 from tools.read_json_and_crop_objects import CropIndividualObjects
-from tools.c_s_v_image_object_processor import CSVObjectProcessor
+from tools.csv_image_object_processor import CSVObjectProcessor
+from tools.bounding_box_drawer_image_annotation import BoundingBoxDrawer
 
-from utils.background_remover import ImageSegmentationProcessor
-from utils.instance_segmentator import InstanceSegmentation
-from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
-from utils.batch_config_JSON_generator import BatchConfigGenerator
-from utils.batch_config_JSON_processor import BatchConfigProcessor
-from utils.read_sizes_of_bounding_boxes import BatchBoundingBoxProcessor
-from utils.bounding_box_sizes_clustering import BoundingBoxClusteringProcessor
+from autosegmentation.background_remover import ImageSegmentationProcessor
+from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
+from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
+
 
 def setup_logging(input_dir):
     """
@@ -945,32 +943,33 @@ def generate_and_process_batch_configs(
 
 # ########################################################60
 
-# Example usage
-if __name__ == "__main__":
-    # From the CSV file containing the bounding boxes
-    # and the output path for the extracted images
-    # and the output filename for the extracted images
-    # from the JSON file containing the metadata
-    # for the bounding boxes.
-    # The processor will extract the bounding boxes
-    # and save them in a single comma-separated value (.CSV) text file.
-    # This file will be used for the next processing step.
-    # The processor will then extract the bounding boxes
-    # and save them in a single comma-separated value (.CSV) text file.
-    processor = CSVObjectProcessor(
-        csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_unsure_removed.csv",
-        labels_json_path = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/label_trees_arranged_all.json",
-        images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
-        filename_pattern="capt*.jpg",
-        output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/5",
-        prefix_filename=""  # Optional prefix
-    )
+# OK!
 
-    # Process all objects
-    processor.process_all_objects()
-
-    # Merge JSON files (saves to output/merged_json/)
-    processor.merge_json_files_by_image_id()
+# if __name__ == "__main__":
+#     # From the CSV file containing the bounding boxes
+#     # and the output path for the extracted images
+#     # and the output filename for the extracted images
+#     # from the JSON file containing the metadata
+#     # for the bounding boxes.
+#     # The processor will extract the bounding boxes
+#     # and save them in a single comma-separated value (.CSV) text file.
+#     # This file will be used for the next processing step.
+#     # The processor will then extract the bounding boxes
+#     # and save them in a single comma-separated value (.CSV) text file.
+#     processor = CSVObjectProcessor(
+#         csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_unsure_removed.csv",
+#         labels_json_path = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/label_trees_arranged_all.json",
+#         images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
+#         filename_pattern="capt*.jpg",
+#         output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/5",
+#         prefix_filename=""  # Optional prefix
+#     )
+#
+#     # Process all objects
+#     processor.process_all_objects()
+#
+#     # Merge JSON files (saves to output/merged_json/)
+#     processor.merge_json_files_by_image_id()
 
 # ########################################################60
 
@@ -996,3 +995,44 @@ if __name__ == "__main__":
 #c     filename_pattern="experiment_*_config.json"
 #c )
 #c results = processor.process_all_configs()
+
+# ########################################################60
+
+# OK!
+
+if __name__ == "__main__":
+    # Draw bounding boxes on top of images using the info from JSON files.
+
+    # Setup logging
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # Example 1: Process single COCO format file
+    coco_drawer = BoundingBoxDrawer(
+        json_format="coco",
+        output_directory="/Users/aavelino/Downloads/bbox_tmp/"
+    )
+    success = coco_drawer.process_image_with_annotations(
+        "/Users/aavelino/Downloads/bbox_tmp/capt0044.jpg",
+        "/Users/aavelino/Downloads/bbox_tmp/capt0044_image_114_merged.json",
+        output_filename = "capt0044_bboxes.jpg",
+        custom_font_size = 50
+    )
+
+    # # Example 2: Process single Roboflow format file
+    # roboflow_drawer = BoundingBoxDrawer(
+    #     json_format="roboflow",
+    #     output_directory="output/roboflow_results"
+    # )
+
+    # # Example 3: Batch processing
+    # batch_drawer = BoundingBoxDrawer(
+    #     json_format="coco",
+    #     output_directory="/Users/aavelino/Downloads/bbox_tmp/",
+    #     image_path="/Users/aavelino/Downloads/bbox_tmp/capt0044.jpg",
+    #     json_path="/Users/aavelino/Downloads/bbox_tmp/capt0044_image_114_merged.json"
+    # )
+
+    # Process batch
+    # results = batch_drawer.process_batch(image_pattern="*.jpg", json_pattern="*.json")
+    # print(f"Batch processing: {len(results['successful'])} successful, {len(results['failed'])} failed")

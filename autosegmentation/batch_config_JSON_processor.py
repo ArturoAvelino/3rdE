@@ -4,8 +4,8 @@ from pathlib import Path
 import glob
 import json
 from typing import List, Optional
-from utils.instance_segmentator import InstanceSegmentation
-from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
+from autosegmentation.instance_segmentator import InstanceSegmentation
+from autosegmentation.crop_and_compute_boundingbox import CropImageAndWriteBBox
 
 
 class BatchConfigProcessor:

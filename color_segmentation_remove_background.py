@@ -1,13 +1,13 @@
 # Color segmentation using unsupervised machine-learning / clustering, to
 # remove the background color of each image
 
-from utils.figure_saving_utils import IMAGES_PATH, save_fig
+from autosegmentation.figure_saving_utils import IMAGES_PATH, save_fig
 from pathlib import Path
 
 filename = Path("capt0044.jpg")
 filepath = IMAGES_PATH / filename
 
-from utils.rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot
+from autosegmentation.rgb_scatter_plotter import create_rgb_scatter_plot, create_cluster_scatter_plot
 import matplotlib.pyplot as plt
 
 from PIL import Image

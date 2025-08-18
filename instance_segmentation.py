@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-from utils.figure_saving_utils import save_fig
+from autosegmentation.figure_saving_utils import save_fig
 import json
 from pathlib import Path
 from contextlib import redirect_stdout
@@ -439,7 +439,7 @@ print("\nWriting statistics: done.")
 
 # Crop and write the bounding box
 
-from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
+from autosegmentation.crop_and_compute_boundingbox import CropImageAndWriteBBox
 
 processor = CropImageAndWriteBBox(
     segmented_image = segmented_image,

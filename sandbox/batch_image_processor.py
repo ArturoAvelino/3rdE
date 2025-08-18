@@ -3,14 +3,12 @@ import logging
 from pathlib import Path
 import json
 from typing import List, Dict, Optional, Union
-import shutil
 
 from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
 
-from utils.background_remover import ImageSegmentationProcessor
-from utils.crop_and_compute_boundingbox import CropImageAndWriteBBox
-from utils.instance_segmentator import InstanceSegmentation
+from autosegmentation.crop_and_compute_boundingbox import CropImageAndWriteBBox
+from autosegmentation.instance_segmentator import InstanceSegmentation
 
 
 class BatchImageProcessor:
