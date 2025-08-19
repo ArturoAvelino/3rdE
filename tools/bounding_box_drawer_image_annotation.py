@@ -20,6 +20,8 @@ class BoundingBoxDrawer:
     - Configurable output directory creation
     - Custom output filename specification
     - Adjustable font size for text labels
+    - Custom color options for bounding boxes and text
+    - Configurable text positioning (top or bottom of bounding box)
     - Flexible file path handling for images and JSON files
     - Text labels with object IDs on bounding boxes
     - Error handling and logging
@@ -30,7 +32,10 @@ class BoundingBoxDrawer:
                  output_directory: str = "output",
                  image_path: Optional[str] = None,
                  json_path: Optional[str] = None,
-                 font_size: int = 16):
+                 font_size: int = 16,
+                 bbox_color: Optional[str] = None,
+                 text_color: Optional[str] = None,
+                 text_position: str = "top"):
         """
         Initialize the BoundingBoxDrawer.
 
@@ -40,12 +45,18 @@ class BoundingBoxDrawer:
             image_path (str, optional): Path to the directory containing images
             json_path (str, optional): Path to the directory containing JSON files
             font_size (int): Font size for text labels (default: 16)
+            bbox_color (str, optional): Single color for all bounding boxes. If None, uses cycling colors
+            text_color (str, optional): Single color for all text. If None, uses white text on colored backgrounds
+            text_position (str): Position of text - either "top" or "bottom" (default: "top")
 
         Raises:
-            ValueError: If json_format is not "coco" or "roboflow"
+            ValueError: If json_format is not "coco" or "roboflow" or text_position is invalid
         """
         if json_format.lower() not in ["coco", "roboflow"]:
             raise ValueError("json_format must be either 'coco' or 'roboflow'")
+
+        if text_position.lower() not in ["top", "bottom"]:
+            raise ValueError("text_position must be either 'top' or 'bottom'")
 
         self.json_format = json_format.lower()
         self.output_directory = Path(output_directory)
@@ -53,6 +64,9 @@ class BoundingBoxDrawer:
         self.json_path = Path(json_path) if json_path else None
         self.font_size = max(8,
                              min(72, font_size))  # Clamp font size between 8-72
+        self.bbox_color = bbox_color
+        self.text_color = text_color
+        self.text_position = text_position.lower()
 
         # Create output directory if it doesn't exist
         self.output_directory.mkdir(parents=True, exist_ok=True)
@@ -69,8 +83,11 @@ class BoundingBoxDrawer:
     def process_image_with_annotations(self, image_file_path: Union[str, Path],
                                        json_file_path: Union[str, Path],
                                        output_filename: Optional[str] = None,
-                                       custom_font_size: Optional[
-                                           int] = None) -> bool:
+                                       custom_font_size: Optional[int] = None,
+                                       custom_bbox_color: Optional[str] = None,
+                                       custom_text_color: Optional[str] = None,
+                                       custom_text_position: Optional[
+                                           str] = None) -> bool:
         """
         Process a single image with its corresponding JSON annotation file.
 
@@ -78,8 +95,11 @@ class BoundingBoxDrawer:
             image_file_path (Union[str, Path]): Path to the image file
             json_file_path (Union[str, Path]): Path to the JSON annotation file
             output_filename (str, optional): Custom output filename. If None, generates automatically
-            custom_font_size (int, optional): Custom font size for this specific image. 
+            custom_font_size (int, optional): Custom font size for this specific image.
                                            If None, uses instance font_size
+            custom_bbox_color (str, optional): Custom bounding box color for this image
+            custom_text_color (str, optional): Custom text color for this image
+            custom_text_position (str, optional): Custom text position for this image ("top" or "bottom")
 
         Returns:
             bool: True if processing was successful, False otherwise
@@ -115,12 +135,23 @@ class BoundingBoxDrawer:
                     f"No bounding box data found in {json_file_path}")
                 return False
 
-            # Use custom font size if provided, otherwise use instance font size
+            # Use custom parameters if provided, otherwise use instance defaults
             font_size = custom_font_size if custom_font_size is not None else self.font_size
+            bbox_color = custom_bbox_color if custom_bbox_color is not None else self.bbox_color
+            text_color = custom_text_color if custom_text_color is not None else self.text_color
+            text_position = custom_text_position if custom_text_position is not None else self.text_position
+
+            # Validate custom text position
+            if text_position and text_position.lower() not in ["top", "bottom"]:
+                self.logger.warning(
+                    f"Invalid text_position '{text_position}', using 'top'")
+                text_position = "top"
 
             # Draw bounding boxes
             annotated_image = self._draw_bounding_boxes(image, bbox_data,
-                                                        font_size)
+                                                        font_size,
+                                                        bbox_color, text_color,
+                                                        text_position)
 
             # Generate output filename if not provided
             if output_filename is None:
@@ -141,7 +172,10 @@ class BoundingBoxDrawer:
     def process_batch(self, image_pattern: str = "*.jpg",
                       json_pattern: str = "*.json",
                       output_filename_template: Optional[str] = None,
-                      custom_font_size: Optional[int] = None) -> Dict[
+                      custom_font_size: Optional[int] = None,
+                      custom_bbox_color: Optional[str] = None,
+                      custom_text_color: Optional[str] = None,
+                      custom_text_position: Optional[str] = None) -> Dict[
         str, List[str]]:
         """
         Process a batch of images with their corresponding JSON files.
@@ -153,6 +187,9 @@ class BoundingBoxDrawer:
                                                     Use {stem} for original filename without extension.
                                                     Example: "annotated_{stem}.jpg"
             custom_font_size (int, optional): Custom font size for batch processing
+            custom_bbox_color (str, optional): Custom bounding box color for batch processing
+            custom_text_color (str, optional): Custom text color for batch processing
+            custom_text_position (str, optional): Custom text position for batch processing
 
         Returns:
             Dict[str, List[str]]: Dictionary with 'successful' and 'failed' lists
@@ -186,7 +223,8 @@ class BoundingBoxDrawer:
 
             # Process the image-JSON pair
             success = self.process_image_with_annotations(
-                image_file, json_file, output_filename, custom_font_size
+                image_file, json_file, output_filename, custom_font_size,
+                custom_bbox_color, custom_text_color, custom_text_position
             )
 
             if success:
@@ -209,6 +247,39 @@ class BoundingBoxDrawer:
         """
         self.font_size = max(8, min(72, font_size))
         self.logger.info(f"Font size updated to: {self.font_size}")
+
+    def set_colors(self, bbox_color: Optional[str] = None,
+                   text_color: Optional[str] = None) -> None:
+        """
+        Update the default colors for bounding boxes and text.
+
+        Args:
+            bbox_color (str, optional): New default bounding box color
+            text_color (str, optional): New default text color
+        """
+        if bbox_color is not None:
+            self.bbox_color = bbox_color
+            self.logger.info(f"Bounding box color updated to: {bbox_color}")
+
+        if text_color is not None:
+            self.text_color = text_color
+            self.logger.info(f"Text color updated to: {text_color}")
+
+    def set_text_position(self, position: str) -> None:
+        """
+        Update the default text position.
+
+        Args:
+            position (str): New text position ("top" or "bottom")
+
+        Raises:
+            ValueError: If position is not "top" or "bottom"
+        """
+        if position.lower() not in ["top", "bottom"]:
+            raise ValueError("Text position must be either 'top' or 'bottom'")
+
+        self.text_position = position.lower()
+        self.logger.info(f"Text position updated to: {position}")
 
     def _generate_output_filename(self, image_file_path: Path) -> str:
         """Generate automatic output filename based on input image name."""
@@ -257,9 +328,12 @@ class BoundingBoxDrawer:
         return None
 
     def _draw_bounding_boxes(self, image: Image.Image,
-                             bbox_data: List[Dict],
-                             font_size: int) -> Image.Image:
-        """Draw bounding boxes and labels on the image with specified font size."""
+                           bbox_data: List[Dict],
+                           font_size: int,
+                           bbox_color: Optional[str] = None,
+                           text_color: Optional[str] = None,
+                           text_position: str = "top") -> Image.Image:
+        """Draw bounding boxes and labels on the image with specified parameters."""
         # Create a copy of the image to draw on
         annotated_image = image.copy()
         draw = ImageDraw.Draw(annotated_image)
@@ -267,16 +341,19 @@ class BoundingBoxDrawer:
         # Try to load font with specified size
         font = self._get_font(font_size)
 
-        # Colors for bounding boxes (cycling through different colors)
-        colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'pink',
-                  'gray',
-                  'cyan', 'magenta', 'yellow', 'lime', 'navy', 'maroon',
-                  'olive', 'teal']
+        # Default colors for cycling if no single color is specified
+        default_colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown',
+                         'pink', 'gray', 'cyan', 'magenta', 'yellow', 'lime',
+                         'navy', 'maroon', 'olive', 'teal']
 
         for i, bbox in enumerate(bbox_data):
-            color = colors[i % len(colors)]
+            # Determine color to use
+            if bbox_color:
+                color = bbox_color
+            else:
+                color = default_colors[i % len(default_colors)]
 
-            # Extract coordinates
+            # Extract coordinates and data
             x1, y1, x2, y2 = bbox['coordinates']
             label = bbox['label']
             object_id = bbox['id']
@@ -287,34 +364,64 @@ class BoundingBoxDrawer:
             # Draw bounding box rectangle
             draw.rectangle([x1, y1, x2, y2], outline=color, width=line_width)
 
-            # Prepare label text
+            # Prepare label text (object_id already contains detection_id + confidence for Roboflow)
             label_text = f"{label} {object_id}"
 
-            # Calculate text position (above the bounding box)
+            # Calculate text position based on preference
             text_x = x1
-            text_y = max(0, y1 - font_size - 5)  # Position based on font size
+            if text_position.lower() == "top":
+                text_y = max(0, y1 - font_size - 5)  # Above the box
+            else:  # bottom
+                text_y = min(image.height - font_size, y2 + 5)  # Below the box
+
+            # Determine text fill color
+            if text_color:
+                fill_color = text_color
+                # Use complementary background for better visibility
+                bg_color = self._get_complementary_color(
+                    text_color) if not bbox_color else color
+            else:
+                fill_color = 'white'
+                bg_color = color
 
             # Draw text background for better visibility
             if font:
                 # Get text bounding box
                 bbox_text = draw.textbbox((text_x, text_y), label_text,
                                           font=font)
-                # Add padding to background
+                # Add padding to the background
                 padding = 2
                 bg_bbox = (bbox_text[0] - padding, bbox_text[1] - padding,
                            bbox_text[2] + padding, bbox_text[3] + padding)
-                draw.rectangle(bg_bbox, fill=color)
-                draw.text((text_x, text_y), label_text, fill='white', font=font)
+                draw.rectangle(bg_bbox, fill=bg_color)
+                draw.text((text_x, text_y), label_text, fill=fill_color,
+                          font=font)
             else:
                 # Fallback without font - estimate text size
                 text_width = len(label_text) * (font_size // 2)
                 text_height = font_size
                 bg_bbox = (text_x, text_y, text_x + text_width,
                            text_y + text_height)
-                draw.rectangle(bg_bbox, fill=color)
-                draw.text((text_x, text_y), label_text, fill='white')
+                draw.rectangle(bg_bbox, fill=bg_color)
+                draw.text((text_x, text_y), label_text, fill=fill_color)
 
         return annotated_image
+
+
+    def _get_complementary_color(self, color: str) -> str:
+        """Get a complementary color for better text visibility."""
+        # Simple mapping for common colors
+        light_colors = ['white', 'yellow', 'cyan', 'lime', 'pink', 'lightblue',
+                        'lightgreen']
+        dark_colors = ['black', 'navy', 'maroon', 'purple', 'brown',
+                       'darkgreen', 'darkblue']
+
+        if color.lower() in light_colors:
+            return 'black'
+        elif color.lower() in dark_colors:
+            return 'white'
+        else:
+            return 'black'  # Default fallback
 
     def _get_font(self, font_size: int) -> Optional[ImageFont.ImageFont]:
         """Get font with specified size, with fallback options."""
@@ -396,7 +503,7 @@ class COCOProcessor:
                 bbox_data.append({
                     'coordinates': (x1, y1, x2, y2),
                     'label': category_name,
-                    'id': str(annotation_id)
+                    'id': f"({annotation_id})"
                 })
 
             except Exception as e:
@@ -432,8 +539,7 @@ class COCOProcessor:
 class RoboflowProcessor:
     """Processor for Roboflow format JSON files."""
 
-    def extract_bbox_data(self, json_data: Dict, image_size: Tuple[int, int]) -> \
-    List[Dict]:
+    def extract_bbox_data(self, json_data: Dict, image_size: Tuple[int, int]) -> List[Dict]:
         """
         Extract bounding box data from Roboflow format JSON.
 
@@ -470,10 +576,24 @@ class RoboflowProcessor:
                 if len(detection_id) > 8:
                     detection_id = detection_id[:8]
 
+                # Get confidence value and format it to one decimal place
+                confidence = prediction.get('confidence', None)
+                confidence_str = ""
+                if confidence is not None:
+                    # Transform confidence to percentage
+                    confidence = confidence * 100
+                    # Round to an integer
+                    confidence = int(round(confidence, 0))
+                    # Convert to string with percent sign
+                    confidence_str = f"{confidence}%"
+
+                # Combine detection ID and confidence for display
+                id_with_confidence = f"{confidence_str} ({detection_id})".strip()
+
                 bbox_data.append({
                     'coordinates': (x1, y1, x2, y2),
                     'label': class_name,
-                    'id': detection_id
+                    'id': id_with_confidence
                 })
 
             except Exception as e:
@@ -488,7 +608,10 @@ class RoboflowProcessor:
 def draw_coco_bounding_boxes(image_path: str, json_path: str,
                              output_dir: str = "output",
                              output_filename: Optional[str] = None,
-                             font_size: int = 16) -> bool:
+                             font_size: int = 16,
+                             bbox_color: Optional[str] = None,
+                             text_color: Optional[str] = None,
+                             text_position: str = "top") -> bool:
     """
     Convenience function to draw bounding boxes from COCO format JSON.
 
@@ -498,12 +621,17 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
         output_dir (str): Output directory for the annotated image
         output_filename (str, optional): Custom output filename
         font_size (int): Font size for text labels
+        bbox_color (str, optional): Single color for all bounding boxes
+        text_color (str, optional): Single color for all text
+        text_position (str): Position of text ("top" or "bottom")
 
     Returns:
         bool: True if successful, False otherwise
     """
     drawer = BoundingBoxDrawer(json_format="coco", output_directory=output_dir,
-                               font_size=font_size)
+                               font_size=font_size, bbox_color=bbox_color,
+                               text_color=text_color,
+                               text_position=text_position)
     return drawer.process_image_with_annotations(image_path, json_path,
                                                  output_filename)
 
@@ -511,7 +639,10 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
 def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
                                  output_dir: str = "output",
                                  output_filename: Optional[str] = None,
-                                 font_size: int = 16) -> bool:
+                                 font_size: int = 16,
+                                 bbox_color: Optional[str] = None,
+                                 text_color: Optional[str] = None,
+                                 text_position: str = "top") -> bool:
     """
     Convenience function to draw bounding boxes from Roboflow format JSON.
 
@@ -521,89 +652,115 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
         output_dir (str): Output directory for the annotated image
         output_filename (str, optional): Custom output filename
         font_size (int): Font size for text labels
+        bbox_color (str, optional): Single color for all bounding boxes
+        text_color (str, optional): Single color for all text
+        text_position (str): Position of text ("top" or "bottom")
 
     Returns:
         bool: True if successful, False otherwise
     """
     drawer = BoundingBoxDrawer(json_format="roboflow",
                                output_directory=output_dir,
-                               font_size=font_size)
+                               font_size=font_size, bbox_color=bbox_color,
+                               text_color=text_color,
+                               text_position=text_position)
     return drawer.process_image_with_annotations(image_path, json_path,
                                                  output_filename)
 
-
+#
 # # Example usage
 # if __name__ == "__main__":
 #     # Setup logging
 #     logging.basicConfig(level=logging.INFO,
 #                         format='%(asctime)s - %(levelname)s - %(message)s')
 #
-#     # Example 1: Process single COCO format file with custom output name and font size
-#     coco_drawer = BoundingBoxDrawer(
+#     # Example 1: Single color for all bounding boxes and text on bottom
+#     drawer = BoundingBoxDrawer(
 #         json_format="coco",
-#         output_directory="output/coco_results",
-#         font_size=20  # Larger font
+#         output_directory="output/custom_colors",
+#         font_size=20,
+#         bbox_color="red",  # All boxes will be red
+#         text_color="yellow",  # All text will be yellow
+#         text_position="bottom"  # Text below bounding boxes
 #     )
 #
-#     success = coco_drawer.process_image_with_annotations(
+#     # Example 2: Process Roboflow format with confidence values
+#     roboflow_drawer = BoundingBoxDrawer(
+#         json_format="roboflow",
+#         output_directory="output/roboflow_custom",
+#         font_size=16,
+#         bbox_color="blue",  # Single color for all boxes
+#         text_position="top"  # Text above boxes
+#     )
+#
+#     success = roboflow_drawer.process_image_with_annotations(
 #         "path/to/image.jpg",
-#         "path/to/annotations.json",
-#         output_filename="my_custom_annotated_image.jpg",
-#         custom_font_size=24  # Even larger font for this specific image
+#         "path/to/roboflow.json",
+#         output_filename="custom_result.jpg"
 #     )
 #
-#     # Example 2: Batch processing with template and custom font
+#     # Example 3: Batch processing with custom colors
 #     batch_drawer = BoundingBoxDrawer(
 #         json_format="coco",
-#         output_directory="output/batch_results",
+#         output_directory="output/batch_custom",
 #         image_path="path/to/images",
 #         json_path="path/to/json_files",
-#         font_size=18
+#         bbox_color="green",
+#         text_position="bottom"
 #     )
 #
 #     results = batch_drawer.process_batch(
-#         image_pattern="*.jpg",
-#         json_pattern="*.json",
-#         output_filename_template="bbox_{stem}_processed.jpg",
-#         custom_font_size=22
+#         custom_bbox_color="purple",  # Override for batch
+#         custom_text_position="top"  # Override for batch
 #     )
 #
-#     # Example 3: Using convenience functions
-#     success = draw_coco_bounding_boxes(
+#     # Example 4: Dynamic color and position changes
+#     drawer.set_colors(bbox_color="orange", text_color="black")
+#     drawer.set_text_position("bottom")
+#
+#     # Example 5: Using convenience functions with custom options
+#     success = draw_roboflow_bounding_boxes(
 #         "image.jpg",
-#         "annotations.json",
+#         "predictions.json",
 #         "output_dir",
-#         output_filename="result.jpg",
-#         font_size=14
+#         output_filename="result_with_confidence.jpg",
+#         font_size=18,
+#         bbox_color="cyan",
+#         text_color="black",
+#         text_position="bottom"
 #     )
 #
-#     # Example 4: Change font size dynamically
-#     drawer = BoundingBoxDrawer(json_format="roboflow")
-#     drawer.set_font_size(28)  # Update font size
-
-# # Custom output filename and font size
-# drawer = BoundingBoxDrawer(json_format="coco", font_size=20)
-# drawer.process_image_with_annotations(
-#     "input.jpg",
-#     "annotations.json",
-#     output_filename="my_results.jpg",
-#     custom_font_size=24
+# -----------
+# Usage Examples:
+#
+# # Single color for all objects
+# drawer = BoundingBoxDrawer(
+#     json_format="roboflow",
+#     bbox_color="red",         # All boxes red
+#     text_color="white",       # All text white
+#     text_position="bottom"    # Text below boxes
 # )
 #
-# # Batch with template and custom font
-# results = drawer.process_batch(
-#     output_filename_template="annotated_{stem}_final.jpg",
-#     custom_font_size=18
-# )
-#
-# # Convenience function with custom options
-# draw_coco_bounding_boxes(
+# # Process with custom overrides
+# success = drawer.process_image_with_annotations(
 #     "image.jpg",
 #     "data.json",
-#     "output/",
-#     output_filename="custom_name.jpg",
-#     font_size=22
+#     custom_bbox_color="blue",      # Override to blue for this image
+#     custom_text_position="top"     # Override to top for this image
 # )
 #
-# # Dynamic font size adjustment
-# drawer.set_font_size(28)
+# # Batch processing with consistent colors
+# results = drawer.process_batch(
+#     custom_bbox_color="green",     # All images use green boxes
+#     custom_text_color="yellow"     # All images use yellow text
+# )
+#
+# # Dynamic updates
+# drawer.set_colors(bbox_color="purple", text_color="black")
+# drawer.set_text_position("bottom")
+#
+# # Convenience function with all options
+# draw_roboflow_bounding_boxes(
+#     "image.jpg", "predictions.json", "output/",
+#     bbox_color="orange", text_position="bottom"
+# )

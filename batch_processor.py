@@ -1010,25 +1010,33 @@ if __name__ == "__main__":
     # # Example 1: Process a single COCO format file. OK!
     # coco_drawer = BoundingBoxDrawer(
     #     json_format="coco",
-    #     output_directory="/Users/aavelino/Downloads/bbox_tmp/"
+    #     output_directory="/Users/aavelino/Downloads/bbox_tmp/",
+    #     font_size = 50,
+    #     bbox_color = "red",  # All boxes will be red
+    #     text_color = "white",  # All text will be yellow
+    #     text_position = "top"  # Text below bounding boxes
     # )
+    #
     # success = coco_drawer.process_image_with_annotations(
     #     "/Users/aavelino/Downloads/bbox_tmp/capt0044.jpg",
-    #     "/Users/aavelino/Downloads/bbox_tmp/capt0044_image_114_merged.json",
-    #     output_filename = "capt0044_bboxes.jpg",
-    #     custom_font_size = 50
+    #     "/Users/aavelino/Downloads/bbox_tmp/capt0044.json",
+    #     output_filename = "capt0044_bboxes.jpg"
     # )
+
 
     # # Example 2: Process a single Roboflow format file. OK!
     roboflow_drawer = BoundingBoxDrawer(
         json_format="roboflow",
-        output_directory="/Users/aavelino/Downloads/bbox_tmp/"
+        output_directory="/Users/aavelino/Downloads/bbox_tmp/",
+        font_size = 18,
+        bbox_color="green",  # All boxes will be red
+        text_color="white",  # All text will be yellow
+        text_position="bottom"  # Text below bounding boxes
     )
     success = roboflow_drawer.process_image_with_annotations(
-        "/Users/aavelino/Downloads/bbox_tmp/capt0044_width_2056.jpg",
-        "/Users/aavelino/Downloads/bbox_tmp/capt0044_width_2000_roboflow.json",
-        output_filename = "capt0044_bboxes_roboflow_prediction.jpg",
-        custom_font_size = 20
+        "/Users/aavelino/Downloads/bbox_tmp/capt0044_width_2056_with_truth_copy.jpg",
+        "/Users/aavelino/Downloads/bbox_tmp/capt0044_roboflow_prediction.json",
+        output_filename = "capt0044_bboxes_roboflow_prediction.jpg"
     )
 
 
