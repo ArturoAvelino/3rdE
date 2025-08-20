@@ -1024,19 +1024,23 @@ if __name__ == "__main__":
     # )
 
 
-    # # Example 2: Process a single Roboflow format file. OK!
+    # # # Example 2: Process a single Roboflow format file. OK!
     roboflow_drawer = BoundingBoxDrawer(
         json_format="roboflow",
         output_directory="/Users/aavelino/Downloads/bbox_tmp/",
-        font_size = 18,
+        font_size = 14,
         bbox_color="green",  # All boxes will be red
         text_color="white",  # All text will be yellow
-        text_position="bottom"  # Text below bounding boxes
+        text_position="bottom",  # Text below bounding boxes
+        confidence_range = (0.5, 1.0),  # Only show objects within a given confidence range.
+        show_summary = True,  # Show object count summary
+        summary_position = "bottom_right",  # Position summary: "top_left"
+        show_id = False  # Hide ID and confidence on boxes
     )
     success = roboflow_drawer.process_image_with_annotations(
-        "/Users/aavelino/Downloads/bbox_tmp/capt0044_width_2056_with_truth_copy.jpg",
-        "/Users/aavelino/Downloads/bbox_tmp/capt0044_roboflow_prediction.json",
-        output_filename = "capt0044_bboxes_roboflow_prediction.jpg"
+        "/Users/aavelino/Downloads/bbox_tmp/capt0044_width_2056_with_truth.jpg",
+        "/Users/aavelino/Downloads/bbox_tmp/capt0044_predict_confidence_1_overlap_50.json",
+        output_filename = "capt0044_predict_confidence_1_overlap_50.jpg"
     )
 
 
