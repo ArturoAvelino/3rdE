@@ -1012,15 +1012,16 @@ if __name__ == "__main__":
     #     json_format="coco",
     #     output_directory="/Users/aavelino/Downloads/bbox_tmp/",
     #     font_size = 50,
-    #     bbox_color = "red",  # All boxes will be red
+    #     bbox_color = "green",  # All boxes will be red
     #     text_color = "white",  # All text will be yellow
-    #     text_position = "top"  # Text below bounding boxes
+    #     text_position = "bottom",  # Text below bounding boxes
+    #     show_id = False
     # )
     #
     # success = coco_drawer.process_image_with_annotations(
     #     "/Users/aavelino/Downloads/bbox_tmp/capt0044.jpg",
     #     "/Users/aavelino/Downloads/bbox_tmp/capt0044.json",
-    #     output_filename = "capt0044_bboxes.jpg"
+    #     output_filename = "capt0044_truth_.jpg"
     # )
 
 
@@ -1028,19 +1029,20 @@ if __name__ == "__main__":
     roboflow_drawer = BoundingBoxDrawer(
         json_format="roboflow",
         output_directory="/Users/aavelino/Downloads/bbox_tmp/",
-        font_size = 14,
-        bbox_color="green",  # All boxes will be red
+        font_size = 16,
+        bbox_color="red",  # All boxes will be red
         text_color="white",  # All text will be yellow
-        text_position="bottom",  # Text below bounding boxes
-        confidence_range = (0.5, 1.0),  # Only show objects within a given confidence range.
+        text_position="top",  # Text below bounding boxes
+        confidence_range = (0.12, 1.0),  # Only show objects within a given confidence range.
+        show_confidence = True,
         show_summary = True,  # Show object count summary
         summary_position = "bottom_right",  # Position summary: "top_left"
-        show_id = False  # Hide ID and confidence on boxes
+        show_id = False  # ID on boxes
     )
     success = roboflow_drawer.process_image_with_annotations(
-        "/Users/aavelino/Downloads/bbox_tmp/capt0044_width_2056_with_truth.jpg",
+        "/Users/aavelino/Downloads/bbox_tmp/capt0044_truth_width_2056.jpg",
         "/Users/aavelino/Downloads/bbox_tmp/capt0044_predict_confidence_1_overlap_50.json",
-        output_filename = "capt0044_predict_confidence_1_overlap_50.jpg"
+        output_filename = "capt0044_predict_confidence_.jpg"
     )
 
 

@@ -42,28 +42,30 @@ class BoundingBoxDrawer:
                  confidence_range: Optional[Tuple[float, float]] = None,
                  show_summary: bool = False,
                  summary_position: str = "bottom_right",
-                 show_id: bool = True):
+                 show_id: bool = True,
+                 show_confidence: bool = True):
         """
-        Initialize the BoundingBoxDrawer.
+            Initialize the BoundingBoxDrawer.
 
-        Args:
-            json_format (str): Format type - either "coco" or "roboflow"
-            output_directory (str): Directory path where output images will be saved
-            image_path (str, optional): Path to the directory containing images
-            json_path (str, optional): Path to the directory containing JSON files
-            font_size (int): Font size for text labels (default: 16)
-            bbox_color (str, optional): Single color for all bounding boxes. If None, uses cycling colors
-            text_color (str, optional): Single color for all text. If None, uses white text on colored backgrounds
-            text_position (str): Position of text - either "top" or "bottom" (default: "top")
-            confidence_range (Tuple[float, float], optional): Min and max confidence levels (e.g., (0.5, 0.8))
-            show_summary (bool): Whether to show object count summary on image
-            summary_position (str): Position for summary text - "bottom_left", "bottom_right",
-                                  "top_left", "top_right", "center"
-            show_id (bool): Whether to show object ID and confidence in bounding box labels
+            Args:
+                json_format (str): Format type - either "coco" or "roboflow"
+                output_directory (str): Directory path where output images will be saved
+                image_path (str, optional): Path to the directory containing images
+                json_path (str, optional): Path to the directory containing JSON files
+                font_size (int): Font size for text labels (default: 16)
+                bbox_color (str, optional): Single color for all bounding boxes. If None, uses cycling colors
+                text_color (str, optional): Single color for all text. If None, uses white text on colored backgrounds
+                text_position (str): Position of text - either "top" or "bottom" (default: "top")
+                confidence_range (Tuple[float, float], optional): Min and max confidence levels (e.g., (0.5, 0.8))
+                show_summary (bool): Whether to show object count summary on image
+                summary_position (str): Position for summary text - "bottom_left", "bottom_right",
+                                      "top_left", "top_right", "center"
+                show_id (bool): Whether to show object ID in bounding box labels
+                show_confidence (bool): Whether to show confidence in bounding box labels
 
-        Raises:
-            ValueError: If json_format is not "coco" or "roboflow" or text_position is invalid
-        """
+            Raises:
+                ValueError: If json_format is not "coco" or "roboflow" or text_position is invalid
+            """
         if json_format.lower() not in ["coco", "roboflow"]:
             raise ValueError("json_format must be either 'coco' or 'roboflow'")
 
@@ -89,6 +91,7 @@ class BoundingBoxDrawer:
         self.show_summary = show_summary
         self.summary_position = summary_position.lower()
         self.show_id = show_id
+        self.show_confidence = show_confidence
 
         # Create output directory if it doesn't exist
         self.output_directory.mkdir(parents=True, exist_ok=True)
@@ -117,26 +120,29 @@ class BoundingBoxDrawer:
                                        custom_summary_position: Optional[
                                            str] = None,
                                        custom_show_id: Optional[
+                                           bool] = None,
+                                       custom_show_confidence: Optional[
                                            bool] = None) -> bool:
         """
-        Process a single image with its corresponding JSON annotation file.
+            Process a single image with its corresponding JSON annotation file.
 
-        Args:
-            image_file_path (Union[str, Path]): Path to the image file
-            json_file_path (Union[str, Path]): Path to the JSON annotation file
-            output_filename (str, optional): Custom output filename. If None, generates automatically
-            custom_font_size (int, optional): Custom font size for this specific image
-            custom_bbox_color (str, optional): Custom bounding box color for this image
-            custom_text_color (str, optional): Custom text color for this image
-            custom_text_position (str, optional): Custom text position for this image ("top" or "bottom")
-            custom_confidence_range (Tuple[float, float], optional): Custom confidence range for filtering
-            custom_show_summary (bool, optional): Whether to show summary for this image
-            custom_summary_position (str, optional): Custom summary position for this image
-            custom_show_id (bool, optional): Whether to show IDs for this image
+            Args:
+                image_file_path (Union[str, Path]): Path to the image file
+                json_file_path (Union[str, Path]): Path to the JSON annotation file
+                output_filename (str, optional): Custom output filename. If None, generates automatically
+                custom_font_size (int, optional): Custom font size for this specific image
+                custom_bbox_color (str, optional): Custom bounding box color for this image
+                custom_text_color (str, optional): Custom text color for this image
+                custom_text_position (str, optional): Custom text position for this image ("top" or "bottom")
+                custom_confidence_range (Tuple[float, float], optional): Custom confidence range for filtering
+                custom_show_summary (bool, optional): Whether to show summary for this image
+                custom_summary_position (str, optional): Custom summary position for this image
+                custom_show_id (bool, optional): Whether to show IDs for this image
+                custom_show_confidence (bool, optional): Whether to show confidence for this image
 
-        Returns:
-            bool: True if processing was successful, False otherwise
-        """
+            Returns:
+                bool: True if processing was successful, False otherwise
+            """
         try:
             # Convert to Path objects
             image_file_path = Path(image_file_path)
@@ -161,14 +167,6 @@ class BoundingBoxDrawer:
             if not image:
                 return False
 
-            # Extract bounding box data
-            all_bbox_data = self.processor.extract_bbox_data(json_data,
-                                                             image.size)
-            if not all_bbox_data:
-                self.logger.warning(
-                    f"No bounding box data found in {json_file_path}")
-                return False
-
             # Use custom parameters if provided, otherwise use instance defaults
             font_size = custom_font_size if custom_font_size is not None else self.font_size
             bbox_color = custom_bbox_color if custom_bbox_color is not None else self.bbox_color
@@ -178,6 +176,17 @@ class BoundingBoxDrawer:
             show_summary = custom_show_summary if custom_show_summary is not None else self.show_summary
             summary_position = custom_summary_position if custom_summary_position is not None else self.summary_position
             show_id = custom_show_id if custom_show_id is not None else self.show_id
+            show_confidence = custom_show_confidence if custom_show_confidence is not None else self.show_confidence
+
+            # Extract bounding box data
+            all_bbox_data = self.processor.extract_bbox_data(json_data,
+                                                             image.size,
+                                                             show_id,
+                                                             show_confidence)
+            if not all_bbox_data:
+                self.logger.warning(
+                    f"No bounding box data found in {json_file_path}")
+                return False
 
             # Validate custom text position
             if text_position and text_position.lower() not in ["top", "bottom"]:
@@ -203,7 +212,8 @@ class BoundingBoxDrawer:
             # Draw bounding boxes and summary
             annotated_image = self._draw_bounding_boxes(
                 image, filtered_bbox_data, font_size, bbox_color, text_color,
-                text_position, show_id, class_summary, summary_position
+                text_position, show_id, show_confidence, class_summary,
+                summary_position
             )
 
             # Generate output filename if not provided
@@ -255,6 +265,7 @@ class BoundingBoxDrawer:
         # Sort by count (descending) then by name
         return dict(sorted(class_counts.items(), key=lambda x: (-x[1], x[0])))
 
+
     def _draw_bounding_boxes(self, image: Image.Image,
                              bbox_data: List[Dict],
                              font_size: int,
@@ -262,6 +273,7 @@ class BoundingBoxDrawer:
                              text_color: Optional[str] = None,
                              text_position: str = "top",
                              show_id: bool = True,
+                             show_confidence: bool = True,
                              class_summary: Optional[Dict[str, int]] = None,
                              summary_position: str = "bottom_right") -> Image.Image:
         """Draw bounding boxes, labels, and summary on the image."""
@@ -288,7 +300,6 @@ class BoundingBoxDrawer:
             # Extract coordinates and data
             x1, y1, x2, y2 = bbox['coordinates']
             label = bbox['label']
-            object_id = bbox['id']
 
             # Calculate line width based on font size (proportional scaling)
             line_width = max(2, font_size // 6)
@@ -296,11 +307,16 @@ class BoundingBoxDrawer:
             # Draw bounding box rectangle
             draw.rectangle([x1, y1, x2, y2], outline=color, width=line_width)
 
-            # Prepare label text based on show_id setting
-            if show_id:
-                label_text = f"{label} {object_id}"
-            else:
-                label_text = label
+            # Prepare label text based on show_id and show_confidence settings
+            label_parts = [label]
+
+            if show_confidence and 'confidence' in bbox:
+                label_parts.append(bbox['confidence'])
+
+            if show_id and 'id' in bbox:
+                label_parts.append(f"({bbox['id']})")
+
+            label_text = " ".join(label_parts)
 
             # Calculate text position based on preference
             text_x = x1
@@ -359,7 +375,7 @@ class BoundingBoxDrawer:
             return
 
         # Calculate text dimensions
-        line_height = font.size if font else 16
+        line_height = font.size if font else 20
         max_width = 0
 
         for line in summary_lines:
@@ -411,7 +427,6 @@ class BoundingBoxDrawer:
             else:
                 draw.text((text_x, text_y), line, fill='white')
 
-    # ... rest of the existing methods remain unchanged ...
     def set_font_size(self, font_size: int) -> None:
         """Update the default font size for the drawer."""
         self.font_size = max(8, min(72, font_size))
@@ -539,7 +554,8 @@ class BoundingBoxDrawer:
 class COCOProcessor:
     """Processor for COCO format JSON files."""
 
-    def extract_bbox_data(self, json_data: Dict, image_size: Tuple[int, int]) -> \
+    def extract_bbox_data(self, json_data: Dict, image_size: Tuple[int, int],
+                          show_id: bool = True, show_confidence: bool = True) -> \
     List[Dict]:
         """
         Extract bounding box data from COCO format JSON.
@@ -547,6 +563,8 @@ class COCOProcessor:
         Args:
             json_data (Dict): Loaded JSON data in COCO format
             image_size (Tuple[int, int]): (width, height) of the image
+            show_id (bool): Whether to include ID information
+            show_confidence (bool): Whether to include confidence information
 
         Returns:
             List[Dict]: List of bounding box data dictionaries
@@ -582,14 +600,24 @@ class COCOProcessor:
                 category_name = category_mapping.get(category_id,
                                                      f"Unknown_{category_id}")
 
-                # Get annotation ID
-                annotation_id = annotation.get('id', 'N/A')
-
-                bbox_data.append({
+                bbox_dict = {
                     'coordinates': (x1, y1, x2, y2),
-                    'label': category_name,
-                    'id': f"({annotation_id})"
-                })
+                    'label': category_name
+                }
+
+                # Add ID if requested
+                if show_id:
+                    annotation_id = annotation.get('id', 'N/A')
+                    bbox_dict['id'] = str(annotation_id)
+
+                # COCO format doesn't typically have confidence scores
+                # But if they exist in the annotation, include them if requested
+                if show_confidence and 'score' in annotation:
+                    confidence_percent = int(
+                        round(annotation['score'] * 100, 0))
+                    bbox_dict['confidence'] = f"{confidence_percent}%"
+
+                bbox_data.append(bbox_dict)
 
             except Exception as e:
                 logging.getLogger(__name__).warning(
@@ -624,13 +652,17 @@ class COCOProcessor:
 class RoboflowProcessor:
     """Processor for Roboflow format JSON files."""
 
-    def extract_bbox_data(self, json_data: Dict, image_size: Tuple[int, int]) -> List[Dict]:
+    def extract_bbox_data(self, json_data: Dict, image_size: Tuple[int, int],
+                          show_id: bool = True, show_confidence: bool = True) -> \
+    List[Dict]:
         """
         Extract bounding box data from Roboflow format JSON.
 
         Args:
             json_data (Dict): Loaded JSON data in Roboflow format
             image_size (Tuple[int, int]): (width, height) of the image
+            show_id (bool): Whether to include ID information
+            show_confidence (bool): Whether to include confidence information
 
         Returns:
             List[Dict]: List of bounding box data dictionaries
@@ -656,28 +688,27 @@ class RoboflowProcessor:
                 # Get class information
                 class_name = prediction.get('class', 'Unknown')
 
-                # Get detection ID (first 8 characters)
-                detection_id = prediction.get('detection_id', 'N/A')
-                if len(detection_id) > 8:
-                    detection_id = detection_id[:8]
-
-                # Get confidence value and format it
-                raw_confidence = prediction.get('confidence', 1.0)
-                confidence_str = ""
-                if raw_confidence is not None:
-                    # Transform confidence to percentage and round to integer
-                    confidence_percent = int(round(raw_confidence * 100, 0))
-                    confidence_str = f"{confidence_percent}%"
-
-                # Combine detection ID and confidence for display
-                id_with_confidence = f"{confidence_str} ({detection_id})".strip()
-
-                bbox_data.append({
+                bbox_dict = {
                     'coordinates': (x1, y1, x2, y2),
                     'label': class_name,
-                    'id': id_with_confidence,
-                    'raw_confidence': raw_confidence  # Store raw confidence for filtering
-                })
+                    'raw_confidence': prediction.get('confidence', 1.0)
+                    # Store raw confidence for filtering
+                }
+
+                # Add confidence if requested
+                if show_confidence:
+                    raw_confidence = prediction.get('confidence', 1.0)
+                    confidence_percent = int(round(raw_confidence * 100, 0))
+                    bbox_dict['confidence'] = f"{confidence_percent}%"
+
+                # Add ID if requested
+                if show_id:
+                    detection_id = prediction.get('detection_id', 'N/A')
+                    if len(detection_id) > 8:
+                        detection_id = detection_id[:8]
+                    bbox_dict['id'] = detection_id
+
+                bbox_data.append(bbox_dict)
 
             except Exception as e:
                 logging.getLogger(__name__).warning(
@@ -696,7 +727,8 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
                              text_position: str = "top",
                              show_summary: bool = False,
                              summary_position: str = "bottom_right",
-                             show_id: bool = True) -> bool:
+                             show_id: bool = True,
+                             show_confidence: bool = True) -> bool:
     """
     Convenience function to draw bounding boxes from COCO format JSON.
 
@@ -712,6 +744,7 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
         show_summary (bool): Whether to show object count summary
         summary_position (str): Position of summary text
         show_id (bool): Whether to show object IDs
+        show_confidence (bool): Whether to show confidence scores
 
     Returns:
         bool: True if successful, False otherwise
@@ -721,9 +754,10 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
         font_size=font_size, bbox_color=bbox_color,
         text_color=text_color, text_position=text_position,
         show_summary=show_summary, summary_position=summary_position,
-        show_id=show_id
+        show_id=show_id, show_confidence=show_confidence
     )
-    return drawer.process_image_with_annotations(image_path, json_path, output_filename)
+    return drawer.process_image_with_annotations(image_path, json_path,
+                                                 output_filename)
 
 
 def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
@@ -733,10 +767,12 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
                                  bbox_color: Optional[str] = None,
                                  text_color: Optional[str] = None,
                                  text_position: str = "top",
-                                 confidence_range: Optional[Tuple[float, float]] = None,
+                                 confidence_range: Optional[
+                                     Tuple[float, float]] = None,
                                  show_summary: bool = False,
                                  summary_position: str = "bottom_right",
-                                 show_id: bool = True) -> bool:
+                                 show_id: bool = True,
+                                 show_confidence: bool = True) -> bool:
     """
     Convenience function to draw bounding boxes from Roboflow format JSON.
 
@@ -752,7 +788,8 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
         confidence_range (Tuple[float, float], optional): Min and max confidence (e.g., (0.5, 0.8))
         show_summary (bool): Whether to show object count summary
         summary_position (str): Position of summary text
-        show_id (bool): Whether to show object IDs and confidence
+        show_id (bool): Whether to show object IDs
+        show_confidence (bool): Whether to show confidence scores
 
     Returns:
         bool: True if successful, False otherwise
@@ -762,9 +799,12 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
         font_size=font_size, bbox_color=bbox_color,
         text_color=text_color, text_position=text_position,
         confidence_range=confidence_range, show_summary=show_summary,
-        summary_position=summary_position, show_id=show_id
+        summary_position=summary_position, show_id=show_id,
+        show_confidence=show_confidence
     )
-    return drawer.process_image_with_annotations(image_path, json_path, output_filename)
+    return drawer.process_image_with_annotations(image_path, json_path,
+                                                 output_filename)
+
 
 
 # Example usage
@@ -782,7 +822,8 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
 #         confidence_range=(0.5, 0.8),  # Only show objects with 50-80% confidence
 #         show_summary=True,             # Show object count summary
 #         summary_position="top_left",   # Position summary at top-left
-#         show_id=False                  # Hide ID and confidence on boxes
+#         show_id=False,                  # Hide ID and confidence on boxes
+#         show_confidence=False          # Hide confidence on boxes
 #     )
 
 #     success = drawer.process_image_with_annotations(
@@ -797,7 +838,8 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
 #         output_directory="output/coco_summary",
 #         show_summary=True,
 #         summary_position="bottom_right",
-#         show_id=True
+#         show_id=True,
+#         show_confidence=False          # Hide confidence on boxes
 #     )
 
 #     # Example 3: Using convenience function with all options
