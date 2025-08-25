@@ -8,27 +8,190 @@ import logging
 
 class BoundingBoxDrawer:
     """
-    A comprehensive class for drawing bounding boxes on images using annotation data
-    from JSON files in either COCO or Roboflow format.
+    A comprehensive Python class for drawing bounding boxes on images with annotation data from JSON files.
 
-    This class supports two different JSON annotation formats:
-    1. COCO format: Standard COCO dataset annotation format
-    2. Roboflow format: Roboflow export format
+    OVERVIEW:
+    =========
+    The BoundingBoxDrawer class is a powerful tool for visualizing object detection results by overlaying
+    bounding boxes, labels, and metadata onto images. It supports two major annotation formats (COCO and Roboflow)
+    and provides extensive customization options for appearance, filtering, and output generation.
 
-    Features:
-    - Automatic format detection and processing
-    - Configurable output directory creation
-    - Custom output filename specification
-    - Adjustable font size for text labels
-    - Custom color options for bounding boxes and text
-    - Configurable text positioning (top or bottom of bounding box)
-    - Confidence level filtering for object selection
-    - Object counting and summary display
-    - Flexible summary text positioning
-    - Optional ID and confidence display
-    - Flexible file path handling for images and JSON files
-    - Error handling and logging
-    - Image dimension validation
+    KEY FEATURES:
+    =============
+    • Dual Format Support: Handles both COCO and Roboflow JSON annotation formats
+    • Smart Filtering: Filter objects by confidence levels (Roboflow format)
+    • Visual Customization: Configurable colors, fonts, text positioning, and box styles
+    • Object Summaries: Display object count summaries with flexible positioning
+    • Batch Processing: Process multiple images with consistent settings
+    • Error Handling: Robust error handling with detailed logging
+    • Flexible Output: Custom output directories and filename generation
+    • ID & Confidence Display: Optional display of object IDs and confidence scores
+
+    SUPPORTED ANNOTATION FORMATS:
+    ============================
+    1. COCO Format:
+       - Standard COCO dataset annotation format
+       - bbox format: [x, y, width, height] (top-left corner + dimensions)
+       - Categories defined separately with IDs
+
+    2. Roboflow Format:
+       - Roboflow export format with confidence scores
+       - bbox format: center coordinates (x, y) + width, height
+       - Built-in confidence scores for filtering
+
+    USAGE EXAMPLES:
+    ==============
+
+    # Example 1: Basic Usage - Simple COCO annotation processing
+    drawer = BoundingBoxDrawer(json_format="coco", output_directory="results")
+    success = drawer.process_image_with_annotations("image.jpg", "annotations.json")
+
+    # Example 2: Roboflow with Confidence Filtering
+    drawer = BoundingBoxDrawer(
+        json_format="roboflow",
+        confidence_range=(0.6, 0.9),     # Only show 60-90% confidence objects
+        bbox_color="blue",               # Use blue for all boxes
+        font_size=18,                    # Larger text
+        show_summary=True,               # Display object count summary
+        summary_position="top_left"      # Position summary at top-left
+    )
+    success = drawer.process_image_with_annotations("photo.jpg", "predictions.json")
+
+    # Example 3: Custom Visual Styling
+    drawer = BoundingBoxDrawer(
+        json_format="roboflow",
+        font_size=20,
+        bbox_color="red",                # Red bounding boxes
+        text_color="yellow",             # Yellow text
+        text_position="bottom",          # Text below boxes
+        show_id=False,                   # Hide object IDs
+        show_confidence=True             # Show confidence scores
+    )
+
+    # Example 4: Per-Image Custom Overrides
+    success = drawer.process_image_with_annotations(
+        "special_image.jpg",
+        "special_annotations.json",
+        custom_font_size=24,                    # Override font size for this image
+        custom_bbox_color="green",              # Override box color
+        custom_confidence_range=(0.8, 1.0),    # Override confidence filter
+        custom_show_summary=True,               # Override summary display
+        output_filename="special_result.jpg"    # Custom output name
+    )
+
+    # Example 5: Dynamic Configuration Changes
+    drawer.set_font_size(22)                   # Change font size
+    drawer.set_colors("purple", "white")       # Change box and text colors
+    drawer.set_confidence_range(0.7, 0.95)     # Update confidence filter
+    drawer.set_summary_options(True, "center") # Enable centered summary
+
+    # Example 6: Using Convenience Functions
+    from bounding_box_drawer_image_annotation import draw_roboflow_bounding_boxes
+
+    success = draw_roboflow_bounding_boxes(
+        image_path="image.jpg",
+        json_path="predictions.json",
+        output_dir="output",
+        confidence_range=(0.5, 0.8),
+        show_summary=True,
+        summary_position="bottom_right",
+        font_size=16
+    )
+
+    # Example 7: Batch Processing Setup
+    drawer = BoundingBoxDrawer(
+        json_format="roboflow",
+        output_directory="batch_results",
+        confidence_range=(0.6, 1.0),
+        show_summary=True,
+        show_id=False
+    )
+
+    # Process multiple images
+    image_files = ["img1.jpg", "img2.jpg", "img3.jpg"]
+    json_files = ["pred1.json", "pred2.json", "pred3.json"]
+
+    for img, json_file in zip(image_files, json_files):
+        success = drawer.process_image_with_annotations(img, json_file)
+        if success:
+            print(f"Successfully processed {img}")
+
+    CORE METHODS:
+    ============
+
+    __init__(parameters...):
+        Initialize the drawer with default settings for all processing operations.
+
+    process_image_with_annotations(image_path, json_path, **options):
+        Main method to process a single image with its annotation file.
+        Returns True if successful, False otherwise.
+
+    set_font_size(size):
+        Update the default font size (clamped between 8-72).
+
+    set_colors(bbox_color=None, text_color=None):
+        Update default colors for bounding boxes and text.
+
+    set_text_position(position):
+        Set text position relative to bounding boxes ("top" or "bottom").
+
+    set_confidence_range(min_conf, max_conf):
+        Set confidence filtering range for Roboflow format (0.0 to 1.0).
+
+    set_summary_options(show_summary, position):
+        Configure object count summary display and positioning.
+
+    CONFIGURATION OPTIONS:
+    =====================
+
+    Visual Appearance:
+    • font_size: Text size (8-72, default: 16)
+    • bbox_color: Single color for all boxes, or None for cycling colors
+    • text_color: Text color, or None for white text on colored backgrounds
+    • text_position: "top" (above boxes) or "bottom" (below boxes)
+
+    Filtering & Display:
+    • confidence_range: Tuple (min, max) for confidence filtering (Roboflow only)
+    • show_id: Display object IDs in labels (boolean)
+    • show_confidence: Display confidence scores in labels (boolean)
+
+    Summary Options:
+    • show_summary: Enable object count summary display (boolean)
+    • summary_position: "top_left", "top_right", "bottom_left", "bottom_right", "center"
+
+    Output Control:
+    • output_directory: Directory for saving annotated images
+    • Custom output filenames with automatic generation fallback
+
+    ERROR HANDLING:
+    ==============
+    The class provides comprehensive error handling:
+    • File existence validation for images and JSON files
+    • JSON parsing error detection
+    • Image loading and format validation
+    • Graceful handling of missing annotation data
+    • Detailed logging for debugging and monitoring
+
+    RETURN VALUES:
+    =============
+    • process_image_with_annotations(): Returns boolean success status
+    • Convenience functions: Return boolean success status
+    • Setter methods: No return value, log changes
+
+    DEPENDENCIES:
+    ============
+    • PIL (Pillow): Image processing and drawing
+    • json: JSON file parsing
+    • pathlib: Path handling
+    • typing: Type hints
+    • logging: Error and info logging
+
+    This class is ideal for:
+    • Computer vision result visualization
+    • Object detection pipeline debugging
+    • Dataset annotation review
+    • Batch processing of detection results
+    • Creating annotated images for presentations or reports
     """
 
     def __init__(self, json_format: str = "coco",
