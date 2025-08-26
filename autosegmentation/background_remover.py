@@ -244,9 +244,10 @@ class ImageSegmentationProcessor:
         mask = ~np.isin(self.cluster_labels, background_clusters)
         mask = mask.reshape(self.image.size[::-1])
 
-        # Create new image with white background (255, 255, 255)
+        # Create new image with a white background (255, 255, 255)
         img_array = np.array(self.image)
-        new_img = np.full_like(img_array, 255)  # Create white background
+        new_img = np.full_like(img_array, 255)  # Create a white background
+        # new_img = np.full_like(img_array, 95)  # Create a color background
         new_img[mask] = img_array[mask]  # Copy non-background pixels
 
         # Save the image
