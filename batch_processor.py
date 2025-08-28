@@ -1009,46 +1009,47 @@ if __name__ == "__main__":
                         format='%(asctime)s - %(levelname)s - %(message)s')
 
     # # Example 1: Process a single COCO format file. OK!
-    # coco_drawer = BoundingBoxDrawer(
-    #     json_format="coco",
-    #     output_directory="/Users/aavelino/Downloads/bbox_tmp/",
-    #     font_size = 80,
-    #     bbox_color = "green",  # All boxes will be red
-    #     text_color = "white",  # All text will be yellow
-    #     text_position = "bottom",  # Text below bounding boxes
-    #     show_id = False
-    # )
-    #
-    # success = coco_drawer.process_image_with_annotations(
-    #     "/Users/aavelino/Downloads/bbox_tmp/capt0044.jpg",
-    #     "/Users/aavelino/Downloads/bbox_tmp/capt0044.json",
-    #     output_filename = "capt0044_truth_.jpg"
-    # )
+    coco_drawer = BoundingBoxDrawer(
+        json_format="coco",
+        output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
+        font_size = 60,
+        bbox_color = "green",  # All boxes will be red
+        text_color = "white",  # All text will be yellow
+        text_position = "bottom",  # Text below bounding boxes
+        show_id = True
+    )
+
+    success = coco_drawer.process_image_with_annotations(
+        "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/capt0044.jpg",
+        "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/capt0044.json",
+        output_filename = "capt0044_truth_.jpg"
+    )
 
 
-    # # # # Example 2: Process a single Roboflow format file. OK!
-    roboflow_drawer = BoundingBoxDrawer(
-        json_format="roboflow",
-        output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
-        # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
-        font_size = 80,
-        bbox_color="red",  # All boxes will be red
-        text_color="white",  # All text will be yellow
-        text_position="bottom",  # Text below bounding boxes
-        confidence_range = (0.4, 1.0),  # Only show objects within a given confidence range.
-        show_confidence = True,
-        show_summary = True,  # Show object count summary
-        summary_position = "bottom_right",  # Position summary: "top_left"
-        show_id = False  # ID on boxes
-    )
-    success = roboflow_drawer.process_image_with_annotations(
-        # "/Users/aavelino/Downloads/images/BM4_F/capt0029.jpg",
-        # "/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/prediction_confidence_0.0.json",
-        # output_filename="capt0029_predict_confidence_.jpg"
-        "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
-        "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
-        output_filename = "capt0029_predict_confidence_.jpg"
-    )
+    # # Example 2: Process a single Roboflow format file. OK!
+    # roboflow_drawer = BoundingBoxDrawer(
+    #     json_format="roboflow",
+    #     output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
+    #     # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
+    #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
+    #     font_size = 60,
+    #     bbox_color="red",  # All boxes will be red
+    #     text_color="white",  # All text will be yellow
+    #     text_position="top",  # Text below bounding boxes
+    #     confidence_range = (0.4, 1.0),  # Only show objects within a given confidence range.
+    #     show_confidence = True,
+    #     show_summary = True,  # Show object count summary
+    #     summary_position = "bottom_right",  # Position summary: "top_left"
+    #     show_id = True  # ID on boxes
+    # )
+    # success = roboflow_drawer.process_image_with_annotations(
+    #     "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/capt0044.jpg",
+    #     "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/prediction_confidence_0.0_deploy.json",
+    #     output_filename="capt0044_predict_confidence_.jpg"
+    #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
+    #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
+    #     # output_filename = "capt0029_predict_confidence_.jpg"
+    # )
 
     # --------------------------------------------------------60
 
