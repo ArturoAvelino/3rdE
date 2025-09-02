@@ -320,9 +320,9 @@ class ImageSegmentationProcessor:
 
         return self
 
-    def plot_segmented_image(self,
-                             save: bool = True,
-                             output_suffix: str = "_segmented") -> 'ImageSegmentationProcessor':
+    def plot_replaced_colors_in_image(self,
+                                      save: bool = True,
+                                      output_suffix: str = "_segmented") -> 'ImageSegmentationProcessor':
         """
         Plot the input image with pixel colors replaced by their cluster center colors.
 

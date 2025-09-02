@@ -4,11 +4,11 @@ from typing import List
 
 from tools.read_json_and_plot_contour_objects import read_json_plot_contours
 from tools.read_json_and_crop_objects import CropIndividualObjects
-from computer_vision.bounding_box_drawer_image_annotation import BoundingBoxDrawer
 
 from autosegmentation.background_remover import ImageSegmentationProcessor
 from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
 from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
+from sandbox.instance_segmentation_bycolor import InstanceSegmentationByColor
 
 
 def setup_logging(input_dir):
@@ -752,7 +752,7 @@ def main():
 
     # Setup logging (will create processing.log in the input directory)
     log_output_dir = Path(
-        "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations")
+        "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation")
     if not log_output_dir.exists():
         print(f"Error: Input directory not found: {log_output_dir}")
         return
@@ -768,12 +768,11 @@ def main():
         #
         # Comment these lines if you don't want to remove background from the images.
 
-        # # SINGLE IMAGE PROCESSING
+        # # SINGLE IMAGE PROCESSING (OK!)
+
         import numpy as np
-
-
-        # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
-        # custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]
+        # # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
+        custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
 
         processor = ImageSegmentationProcessor(
             #"/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/capt0053_trimmed.jpg",
@@ -782,18 +781,20 @@ def main():
             n_clusters=5, # the white background is the 4th cluster
             # kmeans_init_centers=custom_centers
         )
+
         sampling_ratio = 10
         processor.cluster_rgb_colors()
         processor.plot_rgb_rawdata(sample_step=sampling_ratio)
         processor.plot_rgb_clusters(sample_step=sampling_ratio)
         processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-        processor.plot_segmented_image()
+        processor.plot_replaced_colors_in_image()
 
-        # # Optional. Remove (i.e., transform to white color) some specific colors.
-        # color_clusters_to_remove = [0, 4]
-        # processor.remove_background(background_clusters=color_clusters_to_remove)
+        # Optional. Remove (i.e., transform to white color) some specific colors.
+        color_clusters_to_remove = [0, 4]
+        processor.remove_background(background_clusters=color_clusters_to_remove)
 
 
+        # -----------------------------------------
         # BATCH PROCESSING (OK!)
 
         # input_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations"
@@ -810,6 +811,7 @@ def main():
         # =========================================
         # # Segmentation and cropping
         # #
+        # -----------------------------------------
         # # Option 1 (OK): Generate Configuration Files Only.
 
         # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
@@ -836,8 +838,7 @@ def main():
         #     logger.error(
         #         "No configuration files were generated. Please check your parameters.")
 
-
-        # =========================================
+        # -----------------------------------------
         # # Option 2 (OK): Process existing configuration files only
 
         # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
@@ -855,7 +856,7 @@ def main():
         # else:
         #     logger.info(f"Config directory not found: {config_directory}")
 
-        # =========================================
+        # -----------------------------------------
         # # Option 3 (OK): Complete workflow - Generate configs and process them
         # # generating the segmentation plot and the individual cropped images.
 
@@ -877,7 +878,7 @@ def main():
         # logger.info(
         #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
-        # # =========================================
+        # -----------------------------------------
         # Option 4 (OK): Process individual configuration file (for testing/debugging)
         # logger.info("=== OPTION 4: Single Configuration File Processing ===")
         #
@@ -895,6 +896,21 @@ def main():
         #         logger.info("Single file processing successful")
         #     else:
         #         logger.error("Single file processing failed")
+
+        # =========================================
+        # # Segmentation by color
+
+        processor = InstanceSegmentationByColor(
+            image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_trimmed_no_bkgd.png",
+            raw_image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/tmp_2/clustering_crops/capt0053_trimmed_segm/crop_45_capt0053_trimmed.png",
+            sample_name="BM4_E",
+            output_dir="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
+            n_clusters=5,
+            min_pixels=400,
+            padding=10
+        )
+
+        results = processor.process()
 
         # # =========================================
 
@@ -973,6 +989,7 @@ def main():
 if __name__ == "__main__":
     main()
 
+
 # ########################################################60
 
 # OK!
@@ -1039,48 +1056,49 @@ if __name__ == "__main__":
     #     logging.basicConfig(level=logging.INFO,
     #                         format='%(asctime)s - %(levelname)s - %(message)s')
 
-    #     # # Example 1: Process a single COCO format file. OK!
-    #     coco_drawer = BoundingBoxDrawer(
-    #         json_format="coco",
-    #         output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
-    #         font_size = 60,
-    #         bbox_color = "green",  # All boxes will be red
-    #         text_color = "white",  # All text will be yellow
-    #         text_position = "bottom",  # Text below bounding boxes
-    #         show_id = True
-    #     )
-
-    #     success = coco_drawer.process_image_with_annotations(
-    #         "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/capt0044.jpg",
-    #         "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/capt0044.json",
-    #         output_filename = "capt0044_truth_.jpg"
-    #     )
-
-
-    #     # # Example 2: Process a single Roboflow format file. OK!
-    #     # roboflow_drawer = BoundingBoxDrawer(
-    #     #     json_format="roboflow",
+    #     # # # Example 1: Process a single COCO format file. OK!
+    #     # coco_drawer = BoundingBoxDrawer(
+    #     #     json_format="coco",
     #     #     output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
-    #     #     # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
-    #     #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
     #     #     font_size = 60,
-    #     #     bbox_color="red",  # All boxes will be red
-    #     #     text_color="white",  # All text will be yellow
-    #     #     text_position="top",  # Text below bounding boxes
-    #     #     confidence_range = (0.4, 1.0),  # Only show objects within a given confidence range.
-    #     #     show_confidence = True,
-    #     #     show_summary = True,  # Show object count summary
-    #     #     summary_position = "bottom_right",  # Position summary: "top_left"
-    #     #     show_id = True  # ID on boxes
+    #     #     bbox_color = "green",  # All boxes will be red
+    #     #     text_color = "white",  # All text will be yellow
+    #     #     text_position = "bottom",  # Text below bounding boxes
+    #     #     show_id = True
     #     # )
-    #     # success = roboflow_drawer.process_image_with_annotations(
+
+    #     # success = coco_drawer.process_image_with_annotations(
     #     #     "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/capt0044.jpg",
-    #     #     "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/prediction_confidence_0.0_deploy.json",
-    #     #     output_filename="capt0044_predict_confidence_.jpg"
-    #     #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
-    #     #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
-    #     #     # output_filename = "capt0029_predict_confidence_.jpg"
+    #     #     "/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/capt0044.json",
+    #     #     output_filename = "capt0044_truth_.jpg"
     #     # )
+
+
+    #     # Example 2: Process a single Roboflow format file. OK!
+    #     roboflow_drawer = BoundingBoxDrawer(
+    #         json_format="roboflow",
+    #         output_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo",
+    #         # output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
+    #         # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
+    #         # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
+    #         font_size = 60,
+    #         bbox_color="red",  # All boxes will be red
+    #         text_color="white",  # All text will be yellow
+    #         text_position="top",  # Text below bounding boxes
+    #         confidence_range = (0.2, 1.0),  # Only show objects within a given confidence range.
+    #         show_confidence = True,
+    #         show_summary = True,  # Show object count summary
+    #         summary_position = "bottom_right",  # Position summary: "top_left"
+    #         show_id = True  # ID on boxes
+    #     )
+    #     success = roboflow_drawer.process_image_with_annotations(
+    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053.jpg",
+    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo/capt0053_deploy.json",
+    #         output_filename="capt0044_predict_confidence_.jpg"
+    #         # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
+    #         # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
+    #         # output_filename = "capt0029_predict_confidence_.jpg"
+    #     )
 
     #     # --------------------------------------------------------60
 
@@ -1095,5 +1113,7 @@ if __name__ == "__main__":
     #     # Process batch
     #     # results = batch_drawer.process_batch(image_pattern="*.jpg", json_pattern="*.json")
     #     # print(f"Batch processing: {len(results['successful'])} successful, {len(results['failed'])} failed")
+
+
 
 

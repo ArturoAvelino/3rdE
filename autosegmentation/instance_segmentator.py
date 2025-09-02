@@ -13,9 +13,11 @@ class InstanceSegmentation:
     """
     InstanceSegmentation - Image Processing and Object Detection Class
 
-    This class implements instance segmentation on images by grouping pixels based on spatial proximity
-    and connectivity. It is designed to process images containing multiple distinct objects and separate
-    them into individual instances using a KD-tree based spatial indexing approach.
+    This class implements instance segmentation on images by grouping
+    pixels based on spatial proximity and connectivity. It is designed
+    to process images containing multiple distinct objects and
+    separate them into individual instances using a KD-tree based
+    spatial indexing approach.
 
     Key Features:
     -------------
@@ -382,7 +384,6 @@ class InstanceSegmentation:
             new_label += 1
 
         self.segmented_image = np.column_stack((self.filtered_image, final_labels))
-        #old. self.total_groups = new_label
         self.total_groups = labels_all_groups
 
         end_time = time.time()

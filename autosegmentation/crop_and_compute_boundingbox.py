@@ -339,3 +339,7 @@ class CropImageAndWriteBBox:
 
         if combine_json_data:
             self.combine_json_metadata(output_filename=f"{self.path_raw_image.stem}_combined_metadata.json")
+
+    # ----------------------------------------
+    # Cluster by color instead of proximiy
+
