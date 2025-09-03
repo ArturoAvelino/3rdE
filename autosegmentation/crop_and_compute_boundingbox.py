@@ -6,7 +6,8 @@ import os
 
 class CropImageAndWriteBBox:
     """
-    CropImageAndWriteBBox - Class for processing segmented image data and creating bounding boxes around pixel groups.
+    CropImageAndWriteBBox - Class for processing segmented image data and
+    creating bounding boxes around pixel groups.
 
     CropImageAndWriteBBox is a class designed to process segmented image data
     and extract individual objects by creating bounding boxes around pixel

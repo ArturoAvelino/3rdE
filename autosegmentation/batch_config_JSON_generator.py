@@ -5,17 +5,21 @@ from typing import List, Tuple, Dict
 
 class BatchConfigGenerator:
     """
-    A utility class for generating JSON configuration files for batch image processing workflows.
+    A utility class for generating JSON configuration files for batch image
+    processing workflows.
 
-    This class automates the creation of individual configuration files for image processing tasks
-    by matching pairs of raw images and their corresponding no-background (processed) images.
-    It's designed to facilitate batch processing of large image datasets where each image pair
-    requires the same processing parameters but separate configuration files.
+    This class automates the creation of individual configuration files for
+    image processing tasks by matching pairs of raw images and their
+    corresponding no-background (processed) images. It's designed to
+    facilitate batch processing of large image datasets where each image pair
+    requires the same processing parameters but separate configuration
+    files.
 
     Purpose:
     --------
     The BatchConfigGenerator streamlines the workflow for image processing pipelines by:
-    - Automatically discovering and pairing raw images with their no-background counterparts
+    - Automatically discovering and pairing raw images with their no-background
+    counterparts
     - Generating standardized JSON configuration files for each image pair
     - Ensuring consistent processing parameters across all images in a batch
     - Handling file naming conventions and directory structure validation
@@ -115,6 +119,60 @@ class BatchConfigGenerator:
     -------
     FileNotFoundError: If input directories don't exist
     ValueError: If no matching image pairs are found
+
+    #--------------------------------------------------
+
+    Output Description
+    The class produces individual JSON configuration files for batch image processing workflows. Here's what it generates: `BatchConfigGenerator`
+    Primary Output
+    - Individual JSON configuration files: One separate configuration file per matched image pair
+    - File naming convention: (e.g., `image001_config.json`) `{base_name}_config.json`
+    - Return value: A list of strings containing the full file paths to all generated configuration files
+
+    JSON Configuration File Structure
+    #old. Each generated JSON file contains a standardized structure with three main sections:
+    #old. ``` json
+    #old. {
+    #old.   "image_info": {
+    #old.     "sample_name": "BM4_E",
+    #old.     "raw_image": {
+    #old.       "path": "/absolute/path/to/raw/image.jpg"
+    #old.     },
+    #old.     "no_background_image": {
+    #old.       "path": "/absolute/path/to/processed/image_no_bkgd.png"
+    #old.     }
+    #old.   },
+    #old.   "processing_parameters": {
+    #old.     "max_distance": 4.0,
+    #old.     "min_pixels": 1000,
+    #old.     "padding": 35,
+    #old.     "cropping": "true"
+    #old.   },
+    #old.   "output": {
+    #old.     "directory": "/output/path/image_base_name_segm/"
+    #old.   }
+    #old. }
+    ```
+    Output Characteristics
+    - Absolute file paths: All image paths are converted to absolute paths for reliable access
+    - Consistent formatting: JSON files are formatted with 2-space indentation for readability
+    - Individual processing directories: Each configuration specifies a unique output directory ending with `_segm/`
+    - String boolean values: The cropping parameter is stored as a string ("true"/"false") rather than a boolean
+    - Paired image references: Each configuration links exactly one raw image with its corresponding no-background counterpart
+
+    Batch Processing Benefits
+    The generated configuration files enable:
+    - Parallel processing: Each file can be processed independently
+    - Processing resumption: Individual files can be reprocessed without affecting others
+    - Parameter consistency: All files use the same processing parameters while maintaining unique image paths
+    - Integration compatibility: Files are ready for immediate use with downstream image processing pipelines that accept JSON configuration inputs
+
+    Console Output
+    Additionally, the class provides informative console output during generation:
+    - Progress messages for each generated file
+    - Summary of total files created
+    - Warning messages for unmatched images
+    - Error messages for file I/O issues
     """
     
     def __init__(self, sample_name: str, raw_image_pattern: str, raw_image_batch_path: str,

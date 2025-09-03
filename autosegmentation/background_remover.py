@@ -10,11 +10,14 @@ import matplotlib.pyplot as plt
 
 class ImageSegmentationProcessor:
     """
-    ImageSegmentationProcessor: A class for image segmentation and background removal using K-means clustering.
+    ImageSegmentationProcessor: A class for image segmentation and background
+    removal using K-means clustering.
 
-    This class provides a comprehensive solution for image segmentation using color-based clustering,
-    with support for background removal, visualization, and detailed analysis of color distributions.
-    It implements a fluent interface (method chaining) pattern and includes optional logging capabilities.
+    This class provides a comprehensive solution for image segmentation using
+    color-based clustering, with support for background removal,
+    visualization, and detailed analysis of color distributions. It
+    implements a fluent interface (method chaining) pattern and includes
+    optional logging capabilities.
 
     Key Features:
     ------------
@@ -87,6 +90,62 @@ class ImageSegmentationProcessor:
         FileNotFoundError: If image_path doesn't exist
         NotADirectoryError: If output_dir doesn't exist or can't be created
         ValueError: If kmeans_init_centers shape doesn't match n_clusters
+
+    --------------------------------------------------------
+
+    Output Description for ImageSegmentationProcessor
+
+    The class produces multiple types of outputs organized in a specified output
+    directory. All outputs use the original image filename as a base with
+    descriptive suffixes. `ImageSegmentationProcessor`
+
+    File Outputs
+
+    1. Cluster Centers Data
+        - File: `<image_name>_cluster_centers.csv`
+        - Content: CSV file containing the RGB color values of each cluster center
+        - Format: Columns ['R', 'G', 'B'] with cluster indices as rows
+        - Purpose: Provides the dominant colors identified in the image for analysis or reuse
+
+    2. Background-Removed Images
+        - File: `<image_name>_no_bkgd.png` (default suffix, customizable)
+        - Content: PNG image with specified background clusters replaced by white pixels (RGB: 255, 255, 255)
+        - Purpose: Clean foreground extraction by removing unwanted background elements
+
+    3. Segmented Images
+        - Files:
+            - `<image_name>_segmented.png` - Pure segmented image
+            - `<image_name>_segmented_comparison.png` - Side-by-side comparison of original and segmented
+
+        - Content: Images where each pixel is replaced with its corresponding cluster center color
+        - Purpose: Visual representation of color-based segmentation results
+
+    4. 3D Scatter Plots
+        - Files:
+            - `<image_name>_3d_scatter_raw.png` - Raw RGB values colored by their actual colors
+            - `<image_name>_3d_scatter.png` - RGB values colored by cluster assignments with discrete colorbar
+            - `<image_name>_3d_scatter_color.png` - RGB values with continuous viridis colormap
+
+        - Content: 3D visualizations showing RGB color distribution in 3D space
+        - Purpose: Analysis of color clustering patterns and validation of segmentation quality
+
+    5. Processing Logs (when logging enabled)
+        - File: `<image_name>_processing.log`
+        - Content: Timestamped log entries of all processing steps, parameters used, and file locations
+        - Purpose: Debugging, reproducibility, and processing audit trail
+
+    Data Characteristics
+    - Image Formats: All output images are saved as PNG for lossless quality preservation
+    - Color Space: RGB color space (0-255 range) for all outputs
+    - Sampling: 3D plots use configurable sampling (default every 1000th pixel) to manage file size and rendering performance
+    - File Organization: All outputs are centralized in the specified output directory with consistent naming conventions
+
+    Processing Workflow Outputs
+    The class produces outputs through a sequential workflow:
+    1. Analysis Phase: Cluster centers CSV file
+    2. Transformation Phase: Background-removed and segmented images
+    3. Visualization Phase: Multiple 3D scatter plots showing different perspectives
+    4. Documentation Phase: Processing logs with complete operation history
     """
 
     def __init__(self,
@@ -263,13 +322,13 @@ class ImageSegmentationProcessor:
 
 
     def remove_background(self,
-                          background_clusters: Union[int, List[int]],
+                          background_clusters: Union[int, List[int]] = [0, 4],
                           output_suffix: str = "_no_bkgd") -> 'ImageSegmentationProcessor':
         """
         Remove background pixels by replacing them with white color.
 
         Args:
-            background_clusters: Cluster index or list of indices to be treated as background
+            background_clusters: Cluster index or list of indices to be treated as background (default: [0, 4])
             output_suffix: Custom suffix for the output image file (default: "_no_bkgd")
 
         Returns:

@@ -9,6 +9,7 @@ from autosegmentation.background_remover import ImageSegmentationProcessor
 from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
 from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
 from sandbox.instance_segmentation_bycolor import InstanceSegmentationByColor
+from computer_vision.bounding_box_drawer_image_annotation import BoundingBoxDrawer
 
 
 def setup_logging(input_dir):
@@ -775,14 +776,14 @@ def main():
         custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
 
         processor = ImageSegmentationProcessor(
-            #"/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/capt0053_trimmed.jpg",
-            "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/crop_45_capt0053_trimmed_no_bkgd.png",
-             "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/",
-            n_clusters=5, # the white background is the 4th cluster
-            # kmeans_init_centers=custom_centers
+            image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
+            # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/crop_45_capt0053_trimmed_no_bkgd.png",
+            output_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/",
+            n_clusters = 5,  # Default: 5
+            # kmeans_init_centers = custom_centers  # (optional)
         )
 
-        sampling_ratio = 10
+        sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
         processor.cluster_rgb_colors()
         processor.plot_rgb_rawdata(sample_step=sampling_ratio)
         processor.plot_rgb_clusters(sample_step=sampling_ratio)
@@ -790,7 +791,7 @@ def main():
         processor.plot_replaced_colors_in_image()
 
         # Optional. Remove (i.e., transform to white color) some specific colors.
-        color_clusters_to_remove = [0, 4]
+        color_clusters_to_remove = [0, 4]  # Usually [0, 4] to remove the blue background in images.
         processor.remove_background(background_clusters=color_clusters_to_remove)
 
 
@@ -898,19 +899,19 @@ def main():
         #         logger.error("Single file processing failed")
 
         # =========================================
-        # # Segmentation by color
+        # # Segmentation by color (No Ok, old)
 
-        processor = InstanceSegmentationByColor(
-            image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_trimmed_no_bkgd.png",
-            raw_image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/tmp_2/clustering_crops/capt0053_trimmed_segm/crop_45_capt0053_trimmed.png",
-            sample_name="BM4_E",
-            output_dir="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
-            n_clusters=5,
-            min_pixels=400,
-            padding=10
-        )
+        # processor = InstanceSegmentationByColor(
+        #     image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_trimmed_no_bkgd.png",
+        #     raw_image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/tmp_2/clustering_crops/capt0053_trimmed_segm/crop_45_capt0053_trimmed.png",
+        #     sample_name="BM4_E",
+        #     output_dir="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
+        #     n_clusters=5,
+        #     min_pixels=400,
+        #     padding=10
+        # )
 
-        results = processor.process()
+        # results = processor.process()
 
         # # =========================================
 
@@ -1049,6 +1050,7 @@ if __name__ == "__main__":
 
 # OK!
 
+
     # if __name__ == "__main__":
     #     # Draw bounding boxes on top of images using the info from JSON files.
 
@@ -1092,9 +1094,9 @@ if __name__ == "__main__":
     #         show_id = True  # ID on boxes
     #     )
     #     success = roboflow_drawer.process_image_with_annotations(
-    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053.jpg",
-    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo/capt0053_deploy.json",
-    #         output_filename="capt0044_predict_confidence_.jpg"
+    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_no_bkgd.jpg",
+    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo/crop_45_capt0053_no_bkgd_deploy.json",
+    #         output_filename="crop_45_capt0053_no_bkgd_deploy_conf_.jpg"
     #         # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
     #         # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
     #         # output_filename = "capt0029_predict_confidence_.jpg"
@@ -1113,6 +1115,12 @@ if __name__ == "__main__":
     #     # Process batch
     #     # results = batch_drawer.process_batch(image_pattern="*.jpg", json_pattern="*.json")
     #     # print(f"Batch processing: {len(results['successful'])} successful, {len(results['failed'])} failed")
+
+
+
+
+
+
 
 
 
