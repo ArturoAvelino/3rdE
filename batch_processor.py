@@ -771,28 +771,28 @@ def main():
 
         # # SINGLE IMAGE PROCESSING (OK!)
 
-        import numpy as np
+        # import numpy as np
         # # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
-        custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
-
-        processor = ImageSegmentationProcessor(
-            image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
-            # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/crop_45_capt0053_trimmed_no_bkgd.png",
-            output_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/",
-            n_clusters = 5,  # Default: 5
-            # kmeans_init_centers = custom_centers  # (optional)
-        )
-
-        sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
-        processor.cluster_rgb_colors()
-        processor.plot_rgb_rawdata(sample_step=sampling_ratio)
-        processor.plot_rgb_clusters(sample_step=sampling_ratio)
-        processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-        processor.plot_replaced_colors_in_image()
-
-        # Optional. Remove (i.e., transform to white color) some specific colors.
-        color_clusters_to_remove = [0, 4]  # Usually [0, 4] to remove the blue background in images.
-        processor.remove_background(background_clusters=color_clusters_to_remove)
+        # custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
+        #
+        # processor = ImageSegmentationProcessor(
+        #     image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
+        #     # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/crop_45_capt0053_trimmed_no_bkgd.png",
+        #     output_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/",
+        #     n_clusters = 5,  # Default: 5
+        #     # kmeans_init_centers = custom_centers # (optional)
+        # )
+        #
+        # sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
+        # processor.cluster_rgb_colors()
+        # processor.plot_rgb_rawdata(sample_step=sampling_ratio)
+        # processor.plot_rgb_clusters(sample_step=sampling_ratio)
+        # processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
+        # processor.plot_replaced_colors_in_image()
+        #
+        # # Optional. Remove (i.e., transform to white color) some specific colors.
+        # color_clusters_to_remove = [0, 4]  # Usually [0, 4] to remove the blue background in images.
+        # processor.remove_background(background_clusters=color_clusters_to_remove)
 
 
         # -----------------------------------------
@@ -816,20 +816,20 @@ def main():
         # # Option 1 (OK): Generate Configuration Files Only.
 
         # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
-
+        #
         # config_files = generate_configuration_files_only(
         #     sample_name="BM4_E",
         #     raw_image_pattern="capt*.jpg",
-        #     raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/for_background_removal/",
+        #     raw_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/",
         #     no_background_image_pattern="*_no_bkgd.png",
-        #     no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/1_background_removed/",
         #     max_distance=4.0,
         #     min_pixels=1000,
         #     padding=35,
         #     cropping=True,
-        #     config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
+        #     config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/"
         # )
-
+        #
         # if config_files:
         #     logger.info(
         #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
@@ -842,20 +842,21 @@ def main():
         # -----------------------------------------
         # # Option 2 (OK): Process existing configuration files only
 
-        # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
-        #
-        # # If you already have configuration files and just want to process them
-        # config_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/"
-        # if Path(config_directory).exists():
-        #     results_existing = process_batch_with_config_files(
-        #         config_directory=config_directory,
-        #         filename_pattern="*_config.json"
-        #     )
-        #
-        #     logger.info(
-        #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
-        # else:
-        #     logger.info(f"Config directory not found: {config_directory}")
+        logger.info("=== OPTION 2: Process Existing Configuration Files ===")
+
+        # If you already have configuration files and just want to process them
+        config_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/2_configs"
+
+        if Path(config_directory).exists():
+            results_existing = process_batch_of_config_files(
+                config_directory=config_directory,
+                filename_pattern="*_config.json"
+            )
+
+            logger.info(
+                f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
+        else:
+            logger.info(f"Config directory not found: {config_directory}")
 
         # -----------------------------------------
         # # Option 3 (OK): Complete workflow - Generate configs and process them
@@ -1024,7 +1025,7 @@ if __name__ == "__main__":
     # --------------------------------------------------------60
 
     # Simple usage - process all configs in a directory
-    #c results = process_batch_with_config_files(
+    #c results = process_batch_of_config_files(
     #c     config_directory="/path/to/configs",
     #c     filename_pattern="*.json"
     #c )

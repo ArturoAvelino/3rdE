@@ -130,28 +130,28 @@ class BatchConfigGenerator:
     - Return value: A list of strings containing the full file paths to all generated configuration files
 
     JSON Configuration File Structure
-    #old. Each generated JSON file contains a standardized structure with three main sections:
-    #old. ``` json
-    #old. {
-    #old.   "image_info": {
-    #old.     "sample_name": "BM4_E",
-    #old.     "raw_image": {
-    #old.       "path": "/absolute/path/to/raw/image.jpg"
-    #old.     },
-    #old.     "no_background_image": {
-    #old.       "path": "/absolute/path/to/processed/image_no_bkgd.png"
-    #old.     }
-    #old.   },
-    #old.   "processing_parameters": {
-    #old.     "max_distance": 4.0,
-    #old.     "min_pixels": 1000,
-    #old.     "padding": 35,
-    #old.     "cropping": "true"
-    #old.   },
-    #old.   "output": {
-    #old.     "directory": "/output/path/image_base_name_segm/"
-    #old.   }
-    #old. }
+    Each generated JSON file contains a standardized structure with three main sections:
+    ``` json
+    {
+      "image_info": {
+        "sample_name": "BM4_E",
+        "raw_image": {
+          "path": "/absolute/path/to/raw/image.jpg"
+        },
+        "no_background_image": {
+          "path": "/absolute/path/to/processed/image_no_bkgd.png"
+        }
+      },
+      "processing_parameters": {
+        "max_distance": 4.0,
+        "min_pixels": 1000,
+        "padding": 35,
+        "cropping": "true"
+      },
+      "output": {
+        "directory": "/output/path/image_base_name_segm/"
+      }
+    }
     ```
     Output Characteristics
     - Absolute file paths: All image paths are converted to absolute paths for reliable access

@@ -631,16 +631,16 @@ class ImageSegmentationProcessor:
 # # Basic usage (unchanged behavior)
 # processor = ImageSegmentationProcessor("image.jpg", "output/")
 # processor.cluster_rgb_colors()
-
+#
 # # Set defaults in constructor
 # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
 # processor = ImageSegmentationProcessor(
 #     "image.jpg", "output/",
-#     n_clusters=3,
+#     n_clusters=5,
 #     kmeans_init_centers=custom_centers
 # )
 # processor.cluster_rgb_colors()  # Uses constructor defaults
-
+#
 # # Override in method call
 # processor.cluster_rgb_colors(n_clusters=8)  # Override n_clusters only
 # processor.cluster_rgb_colors(kmeans_init_centers=new_centers)  # Override centers only
