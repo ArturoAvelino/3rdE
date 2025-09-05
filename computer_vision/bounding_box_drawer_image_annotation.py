@@ -755,8 +755,13 @@ class COCOProcessor:
                 x, y, width, height = bbox
 
                 # Convert to corner coordinates
-                x1, y1 = x, y
-                x2, y2 = x + width, y + height
+                x1 = x - (width / 2)
+                y1 = y - (height / 2)
+                x2 = x1 + width
+                y2 = y1 + height
+
+                #old.  x1, y1 = x, y
+                #old.  x2, y2 = x + width, y + height
 
                 # Get category information
                 category_id = annotation.get('category_id')

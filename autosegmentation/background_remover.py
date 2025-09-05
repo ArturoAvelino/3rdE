@@ -42,8 +42,8 @@ class ImageSegmentationProcessor:
     ```python
     # Basic usage:
 
-    # input_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
-    # output_dir = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
+    # input_dir = Path("/Users/aavelino/PycharmProjects/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
+    # output_dir = Path("/Users/aavelino/PycharmProjects/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
     processor = ImageSegmentationProcessor(image_path, output_dir)
     processor.cluster_rgb_colors(n_clusters=5)
     processor.plot_rgb_rawdata()
@@ -93,7 +93,7 @@ class ImageSegmentationProcessor:
 
     --------------------------------------------------------
 
-    Output Description for ImageSegmentationProcessor
+    Output from the `ImageSegmentationProcessor` Python class
 
     The class produces multiple types of outputs organized in a specified output
     directory. All outputs use the original image filename as a base with

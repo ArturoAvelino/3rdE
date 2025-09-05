@@ -2,10 +2,9 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-IMAGES_PATH = Path("/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/3rdEd/images/09_unsupervised_learning/mnist")
+IMAGES_PATH = Path("/Users/aavelino/PycharmProjects/images/")
 IMAGES_PATH_OUTPUT = IMAGES_PATH
 
-# IMAGES_PATH = Path() / "images" / "09_unsupervised_learning" / "soil_fauna" / "BM4_E" / "capt0044"
 # IMAGES_PATH_OUTPUT = IMAGES_PATH / "outputs"
 
 IMAGES_PATH.mkdir(parents=True, exist_ok=True)

@@ -190,21 +190,54 @@ class CropImageAndWriteBBox:
         center_y = upper + height // 2
 
         return {
-            "image": [{
-                "sample_name": self.sample_name,
-                "file_name": self.path_raw_image.name,
-                "width": self.image_original.width,
-                "height": self.image_original.height
-            }],
-            "annotations": [{
-                "id": group_number,
-                "bbox": [{
-                    "center_x": center_x,
-                    "center_y": center_y,
-                    "box_width": width,
-                    "box_height": height
-                }]
-            }]
+            "info": {
+                "year": "TODO",
+                "version": "1",
+                "description": "arthropods bounding boxes",
+                "contributor": "Arturo_Avelino",
+                "url": "https://www.unine.ch/biolsol",
+                "date_created": "TODO"
+            },
+            "licenses": [
+                {
+                    "id": 1,
+                    "url": "https://www.unine.ch/biolsol",
+                    "name": "Research"
+                }
+            ],
+            "categories": [
+                {
+                    "id": "1000",
+                    "name": "object",
+                    "supercategory": "none"
+                }
+            ],
+            "images": [
+                {
+                    "id": self.sample_name,
+                    "license": 1,
+                    "file_name": self.path_raw_image.name,
+                    "height": self.image_original.height,
+                    "width": self.image_original.width,
+                    "date_captured": "TODO"
+                }
+            ],
+            "annotations": [
+                {
+                    "id": "TODO_crop_ID",
+                    "image_id": self.path_raw_image.name,
+                    "category_id": 1000,
+                    "bbox": [
+                        center_x,
+                        center_y,
+                        width,
+                        height
+                    ],
+                    "area": 2000,
+                    "segmentation": [],
+                    "iscrowd": 0
+                }
+            ]
         }
 
 

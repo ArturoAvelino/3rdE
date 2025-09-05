@@ -136,8 +136,7 @@ def plot_augmented_images_mosaic(image_aug_ext, save_path=None, show_plot=False)
 
 # Plot the original image + the augmentated data and save the plot
 
-savefig_path = (f'/Users/aavelino/PycharmProjects/Book_HandsOnML_withTF/Github/\
-3rdEd/images/09_unsupervised_learning/augmentation/test_2_capt0020_34/\
+savefig_path = (f'/Users/aavelino/PycharmProjects/test_2_capt0020_34/\
 capt0020_34_aug_shift_{shifting}.png')
 
 plot_augmented_images_mosaic(image_aug_ext, save_path=savefig_path)
