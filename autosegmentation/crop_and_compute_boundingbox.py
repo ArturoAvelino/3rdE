@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np
 from pathlib import Path
 import json
@@ -188,15 +189,19 @@ class CropImageAndWriteBBox:
         height = lower - upper
         center_x = left + width // 2
         center_y = upper + height // 2
+        area = width * height
+
+        current_time = datetime.now().strftime("%Y-%m-%d / %H:%M:%S")
+        current_year = datetime.now().strftime("%Y")
 
         return {
             "info": {
-                "year": "TODO",
+                "year": current_year,
                 "version": "1",
                 "description": "arthropods bounding boxes",
                 "contributor": "Arturo_Avelino",
                 "url": "https://www.unine.ch/biolsol",
-                "date_created": "TODO"
+                "date_created": current_time
             },
             "licenses": [
                 {
@@ -219,12 +224,12 @@ class CropImageAndWriteBBox:
                     "file_name": self.path_raw_image.name,
                     "height": self.image_original.height,
                     "width": self.image_original.width,
-                    "date_captured": "TODO"
+                    "date_captured": "none"
                 }
             ],
             "annotations": [
                 {
-                    "id": "TODO_crop_ID",
+                    "id": group_number,
                     "image_id": self.path_raw_image.name,
                     "category_id": 1000,
                     "bbox": [
@@ -233,7 +238,7 @@ class CropImageAndWriteBBox:
                         width,
                         height
                     ],
-                    "area": 2000,
+                    "area": area,
                     "segmentation": [],
                     "iscrowd": 0
                 }

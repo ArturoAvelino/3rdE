@@ -645,6 +645,7 @@ class CSVObjectProcessor:
         sample_name = Path(filename).stem
 
         current_time = datetime.now().isoformat() + "-01:00"
+        current_year = datetime.now().strftime("%Y")
 
         # Get actual image dimensions
         if image_path and image_path.exists():
@@ -663,7 +664,7 @@ class CSVObjectProcessor:
 
         json_data = {
             "info": {
-                "year": "2025",
+                "year": current_year,
                 "version": "1",
                 "description": "arthropods bounding boxes",
                 "contributor": "Arturo_Avelino",
@@ -773,6 +774,7 @@ class CSVObjectProcessor:
                 width, height = 6000, 4000
 
             current_time = datetime.now().isoformat() + "-01:00"
+            current_year = datetime.now().strftime("%Y")
 
             # Create an annotation list
             annotations = []
@@ -815,7 +817,7 @@ class CSVObjectProcessor:
             # Create the merged JSON structure
             merged_json = {
                 "info": {
-                    "year": "2025",
+                    "year": current_year,
                     "version": "1",
                     "description": "arthropods bounding boxes",
                     "contributor": "Arturo_Avelino",
