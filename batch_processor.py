@@ -1065,7 +1065,7 @@ if __name__ == "__main__":
         json_format="coco",
         output_directory="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
         font_size = 55,
-        bbox_color = "white",  # All boxes will be red
+        bbox_color = "lime",  # All boxes will be red
         text_color = "black",  # All text will be yellow
         text_position = "bottom",  # Text below bounding boxes
         show_center=True,
@@ -1074,7 +1074,8 @@ if __name__ == "__main__":
     )
 
     success = coco_drawer.process_image_with_annotations(
-        image_file_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
+        # image_file_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
+        image_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/1_background_removed/capt0053_no_bkgd.png",
         json_file_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/3_segm_and_cropping/capt0053_segm/capt0053_combined_metadata.json",
         output_filename = "capt0053_mycrops_bbox_.jpg"
     )

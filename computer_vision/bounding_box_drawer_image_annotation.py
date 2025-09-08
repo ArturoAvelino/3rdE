@@ -208,7 +208,7 @@ class BoundingBoxDrawer:
                  show_id: bool = True,
                  show_confidence: bool = True,
                  show_center: bool = False,
-                 center_dot_size: int = 4):
+                 center_dot_size: int = 8):
         """
             Initialize the BoundingBoxDrawer.
 
