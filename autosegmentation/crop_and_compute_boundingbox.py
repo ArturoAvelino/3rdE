@@ -212,7 +212,7 @@ class CropImageAndWriteBBox:
             ],
             "categories": [
                 {
-                    "id": "1000",
+                    "id": 1000,
                     "name": "object",
                     "supercategory": "none"
                 }
@@ -300,12 +300,16 @@ class CropImageAndWriteBBox:
             raise Exception(f"Error processing group {group_number}: {e}")
 
     # To fix the integration with the class.
+
     def combine_json_metadata(self, output_filename='combined_metadata.json'):
         """
-        Combines all individual JSON metadata files into a single JSON file.
+        Combines all individual JSON metadata files into a single COCO-format JSON file.
+
+        This method reads all individual JSON files created by create_json_metadata(),
+        combines their annotations into a single file while preserving the COCO format
+        structure (info, licenses, categories, images, annotations).
 
         Args:
-            input_dir (str or Path): Directory containing the individual JSON metadata files
             output_filename (str): Name of the output combined JSON file
 
         Returns:
@@ -313,12 +317,6 @@ class CropImageAndWriteBBox:
         """
 
         input_dir = Path(self.output_dir)
-
-        # Initialize the combined data structure
-        combined_data = {
-            "image": [],
-            "annotations": []
-        }
 
         # Get all JSON files in the input directory
         json_files = list(input_dir.glob('crop_*_*.json'))
@@ -328,18 +326,46 @@ class CropImageAndWriteBBox:
             raise FileNotFoundError(
                 f"No JSON metadata files found in {input_dir}")
 
+        # Initialize the combined data structure with COCO format
+        combined_data = {
+            "info": {},
+            "licenses": [],
+            "categories": [],
+            "images": [],
+            "annotations": []
+        }
+
+        # Use dictionaries to avoid duplicates
+        categories_dict = {}
+        images_dict = {}
+
         # Read and combine data from each JSON file
         for json_file in json_files:
             try:
                 with open(json_file, 'r') as f:
                     data = json.load(f)
 
-                # For the first file, set the image information
-                if not combined_data["image"]:
-                    combined_data["image"] = data["image"]
+                # For the first file, set the info and licenses sections
+                if not combined_data["info"]:
+                    combined_data["info"] = data.get("info", {})
 
-                # Add the annotations
-                combined_data["annotations"].extend(data["annotations"])
+                if not combined_data["licenses"]:
+                    combined_data["licenses"] = data.get("licenses", [])
+
+                # Add categories (avoid duplicates)
+                for category in data.get("categories", []):
+                    category_id = category["id"]
+                    if category_id not in categories_dict:
+                        categories_dict[category_id] = category
+
+                # Add images (avoid duplicates)
+                for image in data.get("images", []):
+                    image_id = image["id"]
+                    if image_id not in images_dict:
+                        images_dict[image_id] = image
+
+                # Add all annotations (these should be unique by design)
+                combined_data["annotations"].extend(data.get("annotations", []))
 
             except json.JSONDecodeError as e:
                 print(f"Error reading {json_file}: {e}")
@@ -348,14 +374,37 @@ class CropImageAndWriteBBox:
                 print(f"Invalid JSON structure in {json_file}: {e}")
                 continue
 
+        # Convert dictionaries back to lists
+        combined_data["categories"] = list(categories_dict.values())
+        combined_data["images"] = list(images_dict.values())
+
         # Sort annotations by id for consistency
         combined_data["annotations"].sort(key=lambda x: x["id"])
+
+        # Sort categories and images by id for consistency
+        combined_data["categories"].sort(key=lambda x: x["id"])
+        # Sort images by id (handling both string and numeric ids)
+        try:
+            combined_data["images"].sort(
+                key=lambda x: int(x["id"]) if isinstance(x["id"],
+                                                         (str, int)) and str(
+                    x["id"]).isdigit() else x["id"])
+        except (ValueError, TypeError):
+            combined_data["images"].sort(key=lambda x: str(x["id"]))
 
         # Save the combined data
         output_path = input_dir / output_filename
         try:
             with open(output_path, 'w') as f:
                 json.dump(combined_data, f, indent=4)
+
+            print(f"Successfully combined {len(json_files)} JSON files")
+            print(f"Combined file contains:")
+            print(f"  - {len(combined_data['categories'])} categories")
+            print(f"  - {len(combined_data['images'])} images")
+            print(f"  - {len(combined_data['annotations'])} annotations")
+            print(f"Combined JSON saved to: {output_path}")
+
             return output_path
         except Exception as e:
             raise IOError(f"Error writing combined JSON file: {e}")

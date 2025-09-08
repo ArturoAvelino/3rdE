@@ -1053,70 +1053,71 @@ if __name__ == "__main__":
 # OK!
 
 
-    # if __name__ == "__main__":
-    #     # Draw bounding boxes on top of images using the info from JSON files.
+# if __name__ == "__main__":
+#     # Draw bounding boxes on top of images using the info from JSON files.
 
-    #     # Setup logging
-    #     logging.basicConfig(level=logging.INFO,
-    #                         format='%(asctime)s - %(levelname)s - %(message)s')
+#     # Setup logging
+#     logging.basicConfig(level=logging.INFO,
+#                         format='%(asctime)s - %(levelname)s - %(message)s')
 
-    #     # # Example 1: Process a single COCO format file. OK!
-    #     coco_drawer = BoundingBoxDrawer(
-    #         json_format="coco",
-    #         output_directory="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/",
-    #         font_size = 60,
-    #         bbox_color = "green",  # All boxes will be red
-    #         text_color = "white",  # All text will be yellow
-    #         text_position = "bottom",  # Text below bounding boxes
-    #         show_id = True
-    #     )
+#     # # Example 1: Process a single COCO format file. OK!
+#     coco_drawer = BoundingBoxDrawer(
+#         json_format="coco",
+#         output_directory="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
+#         font_size = 60,
+#         bbox_color = "green",  # All boxes will be red
+#         text_color = "white",  # All text will be yellow
+#         text_position = "bottom",  # Text below bounding boxes
+#         show_id = True
+#     )
 
-    #     success = coco_drawer.process_image_with_annotations(
-    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
-    #         "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/3_segm_and_cropping/capt0053_segm/crop_0_capt0053.json",
-    #         output_filename = "crop_0_capt0053_bbox_.jpg"
-    #     )
+#     success = coco_drawer.process_image_with_annotations(
+#         image_file_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
+#         json_file_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/3_segm_and_cropping/capt0053_segm/capt0053_combined_metadata.json",
+#         output_filename = "capt0053_mycrops_bbox_.jpg"
+#     )
 
 
-    #     # # Example 2: Process a single Roboflow format file. OK!
-    #     # roboflow_drawer = BoundingBoxDrawer(
-    #     #     json_format="roboflow",
-    #     #     output_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo",
-    #     #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
-    #     #     # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
-    #     #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
-    #     #     font_size = 60,
-    #     #     bbox_color="red",  # All boxes will be red
-    #     #     text_color="white",  # All text will be yellow
-    #     #     text_position="top",  # Text below bounding boxes
-    #     #     confidence_range = (0.2, 1.0),  # Only show objects within a given confidence range.
-    #     #     show_confidence = True,
-    #     #     show_summary = True,  # Show object count summary
-    #     #     summary_position = "bottom_right",  # Position summary: "top_left"
-    #     #     show_id = True  # ID on boxes
-    #     # )
-    #     # success = roboflow_drawer.process_image_with_annotations(
-    #     #     "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_no_bkgd.jpg",
-    #     #     "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo/crop_45_capt0053_no_bkgd_deploy.json",
-    #     #     output_filename="crop_45_capt0053_no_bkgd_deploy_conf_.jpg"
-    #     #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
-    #     #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
-    #     #     # output_filename = "capt0029_predict_confidence_.jpg"
-    #     # )
 
-    #     # --------------------------------------------------------60
+#     # # Example 2: Process a single Roboflow format file. OK!
+#     # roboflow_drawer = BoundingBoxDrawer(
+#     #     json_format="roboflow",
+#     #     output_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo",
+#     #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
+#     #     # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
+#     #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
+#     #     font_size = 60,
+#     #     bbox_color="red",  # All boxes will be red
+#     #     text_color="white",  # All text will be yellow
+#     #     text_position="top",  # Text below bounding boxes
+#     #     confidence_range = (0.2, 1.0),  # Only show objects within a given confidence range.
+#     #     show_confidence = True,
+#     #     show_summary = True,  # Show object count summary
+#     #     summary_position = "bottom_right",  # Position summary: "top_left"
+#     #     show_id = True  # ID on boxes
+#     # )
+#     # success = roboflow_drawer.process_image_with_annotations(
+#     #     "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_no_bkgd.jpg",
+#     #     "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo/crop_45_capt0053_no_bkgd_deploy.json",
+#     #     output_filename="crop_45_capt0053_no_bkgd_deploy_conf_.jpg"
+#     #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
+#     #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
+#     #     # output_filename = "capt0029_predict_confidence_.jpg"
+#     # )
 
-    #     # # Example 3: Batch processing
-    #     # batch_drawer = BoundingBoxDrawer(
-    #     #     json_format="coco",
-    #     #     output_directory="/Users/aavelino/Downloads/bbox_tmp/",
-    #     #     image_path="/Users/aavelino/Downloads/bbox_tmp/capt0044.jpg",
-    #     #     json_path="/Users/aavelino/Downloads/bbox_tmp/capt0044_image_114_merged.json"
-    #     # )
+#     # --------------------------------------------------------60
 
-    #     # Process batch
-    #     # results = batch_drawer.process_batch(image_pattern="*.jpg", json_pattern="*.json")
-    #     # print(f"Batch processing: {len(results['successful'])} successful, {len(results['failed'])} failed")
+#     # # Example 3: Batch processing
+#     # batch_drawer = BoundingBoxDrawer(
+#     #     json_format="coco",
+#     #     output_directory="/Users/aavelino/Downloads/bbox_tmp/",
+#     #     image_path="/Users/aavelino/Downloads/bbox_tmp/capt0044.jpg",
+#     #     json_path="/Users/aavelino/Downloads/bbox_tmp/capt0044_image_114_merged.json"
+#     # )
+
+#     # Process batch
+#     # results = batch_drawer.process_batch(image_pattern="*.jpg", json_pattern="*.json")
+#     # print(f"Batch processing: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
 
 
