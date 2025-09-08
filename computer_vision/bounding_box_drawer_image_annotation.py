@@ -206,7 +206,9 @@ class BoundingBoxDrawer:
                  show_summary: bool = False,
                  summary_position: str = "bottom_right",
                  show_id: bool = True,
-                 show_confidence: bool = True):
+                 show_confidence: bool = True,
+                 show_center: bool = False,
+                 center_dot_size: int = 4):
         """
             Initialize the BoundingBoxDrawer.
 
@@ -225,6 +227,8 @@ class BoundingBoxDrawer:
                                       "top_left", "top_right", "center"
                 show_id (bool): Whether to show object ID in bounding box labels
                 show_confidence (bool): Whether to show confidence in bounding box labels
+                show_center (bool): Whether to draw a dot at the center of each bounding box
+                center_dot_size (int): Radius of center dot in pixels (default: 4)
 
             Raises:
                 ValueError: If json_format is not "coco" or "roboflow" or text_position is invalid
@@ -255,6 +259,8 @@ class BoundingBoxDrawer:
         self.summary_position = summary_position.lower()
         self.show_id = show_id
         self.show_confidence = show_confidence
+        self.show_center = show_center
+        self.center_dot_size = max(1, center_dot_size)  # Ensure minimum size of 1
 
         # Create output directory if it doesn't exist
         self.output_directory.mkdir(parents=True, exist_ok=True)
@@ -267,6 +273,7 @@ class BoundingBoxDrawer:
             self.processor = COCOProcessor()
         else:
             self.processor = RoboflowProcessor()
+
 
     def process_image_with_annotations(self, image_file_path: Union[str, Path],
                                        json_file_path: Union[str, Path],
@@ -285,7 +292,11 @@ class BoundingBoxDrawer:
                                        custom_show_id: Optional[
                                            bool] = None,
                                        custom_show_confidence: Optional[
-                                           bool] = None) -> bool:
+                                           bool] = None,
+                                       custom_show_center: Optional[
+                                           bool] = None,
+                                       custom_center_dot_size: Optional[
+                                           int] = None) -> bool:
         """
             Process a single image with its corresponding JSON annotation file.
 
@@ -302,6 +313,8 @@ class BoundingBoxDrawer:
                 custom_summary_position (str, optional): Custom summary position for this image
                 custom_show_id (bool, optional): Whether to show IDs for this image
                 custom_show_confidence (bool, optional): Whether to show confidence for this image
+                custom_show_center (bool, optional): Whether to show center dots for this image
+                custom_center_dot_size (int, optional): Custom center dot size for this image
 
             Returns:
                 bool: True if processing was successful, False otherwise
@@ -340,6 +353,8 @@ class BoundingBoxDrawer:
             summary_position = custom_summary_position if custom_summary_position is not None else self.summary_position
             show_id = custom_show_id if custom_show_id is not None else self.show_id
             show_confidence = custom_show_confidence if custom_show_confidence is not None else self.show_confidence
+            show_center = custom_show_center if custom_show_center is not None else self.show_center
+            center_dot_size = custom_center_dot_size if custom_center_dot_size is not None else self.center_dot_size
 
             # Extract bounding box data
             all_bbox_data = self.processor.extract_bbox_data(json_data,
@@ -376,7 +391,7 @@ class BoundingBoxDrawer:
             annotated_image = self._draw_bounding_boxes(
                 image, filtered_bbox_data, font_size, bbox_color, text_color,
                 text_position, show_id, show_confidence, class_summary,
-                summary_position
+                summary_position, show_center, center_dot_size
             )
 
             # Generate output filename if not provided
@@ -397,6 +412,7 @@ class BoundingBoxDrawer:
             self.logger.error(f"Error processing {image_file_path}: {str(e)}")
             return False
 
+
     def _filter_by_confidence(self, bbox_data: List[Dict],
                               confidence_range: Optional[
                                   Tuple[float, float]]) -> List[Dict]:
@@ -416,6 +432,7 @@ class BoundingBoxDrawer:
                 filtered_data.append(bbox)
 
         return filtered_data
+
 
     def _create_class_summary(self, bbox_data: List[Dict]) -> Dict[str, int]:
         """Create a summary of object counts by class."""
@@ -438,8 +455,10 @@ class BoundingBoxDrawer:
                              show_id: bool = True,
                              show_confidence: bool = True,
                              class_summary: Optional[Dict[str, int]] = None,
-                             summary_position: str = "bottom_right") -> Image.Image:
-        """Draw bounding boxes, labels, and summary on the image."""
+                             summary_position: str = "bottom_right",
+                             show_center: bool = False,
+                             center_dot_size: int = 4) -> Image.Image:
+        """Draw bounding boxes, labels, center dots, and summary on the image."""
         # Create a copy of the image to draw on
         annotated_image = image.copy()
         draw = ImageDraw.Draw(annotated_image)
@@ -469,6 +488,19 @@ class BoundingBoxDrawer:
 
             # Draw bounding box rectangle
             draw.rectangle([x1, y1, x2, y2], outline=color, width=line_width)
+
+            # Draw center dot if requested, using center coordinates from JSON
+            if show_center and 'center_x' in bbox and 'center_y' in bbox:
+                center_x = bbox['center_x']
+                center_y = bbox['center_y']
+
+                # Use configurable dot size
+                dot_radius = center_dot_size
+                draw.ellipse(
+                    [center_x - dot_radius, center_y - dot_radius,
+                     center_x + dot_radius, center_y + dot_radius],
+                    fill=color, outline=color
+                )
 
             # Prepare label text based on show_id and show_confidence settings
             label_parts = [label]
@@ -522,6 +554,7 @@ class BoundingBoxDrawer:
                                      summary_position)
 
         return annotated_image
+
 
     def _draw_class_summary(self, draw: ImageDraw.ImageDraw,
                             class_summary: Dict[str, int],
@@ -760,8 +793,19 @@ class COCOProcessor:
                 x2 = x1 + width
                 y2 = y1 + height
 
-                #old.  x1, y1 = x, y
-                #old.  x2, y2 = x + width, y + height
+                # Calculate center from original COCO data (if available) or from bounding box
+                if 'center_x' in annotation and 'center_y' in annotation:
+                    center_x = annotation['center_x']
+                    center_y = annotation['center_y']
+                else:
+                    # For COCO format, x and y are typically top-left corner
+                    # but we'll handle both cases - check if it's center or corner based on values
+                    center_x = x
+                    center_y = y
+                    # If the values seem to be corner coordinates, calculate center
+                    if x < width and y < height:  # Likely corner coordinates
+                        center_x = x + width / 2
+                        center_y = y + height / 2
 
                 # Get category information
                 category_id = annotation.get('category_id')
@@ -770,7 +814,9 @@ class COCOProcessor:
 
                 bbox_dict = {
                     'coordinates': (x1, y1, x2, y2),
-                    'label': category_name
+                    'label': category_name,
+                    'center_x': center_x,
+                    'center_y': center_y
                 }
 
                 # Add ID if requested
@@ -841,13 +887,13 @@ class RoboflowProcessor:
 
         for prediction in predictions:
             try:
-                # Extract center coordinates and dimensions
+                # Extract center coordinates directly from Roboflow JSON
                 center_x = prediction.get('x', 0)
                 center_y = prediction.get('y', 0)
                 width = prediction.get('width', 0)
                 height = prediction.get('height', 0)
 
-                # Convert center coordinates to corner coordinates
+                # Convert center coordinates to corner coordinates for bounding box
                 x1 = center_x - width / 2
                 y1 = center_y - height / 2
                 x2 = center_x + width / 2
@@ -859,8 +905,10 @@ class RoboflowProcessor:
                 bbox_dict = {
                     'coordinates': (x1, y1, x2, y2),
                     'label': class_name,
-                    'raw_confidence': prediction.get('confidence', 1.0)
+                    'raw_confidence': prediction.get('confidence', 1.0),
                     # Store raw confidence for filtering
+                    'center_x': center_x,  # Use center coordinates from JSON
+                    'center_y': center_y
                 }
 
                 # Add confidence if requested
@@ -896,7 +944,9 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
                              show_summary: bool = False,
                              summary_position: str = "bottom_right",
                              show_id: bool = True,
-                             show_confidence: bool = True) -> bool:
+                             show_confidence: bool = True,
+                             show_center: bool = False,
+                             center_dot_size: int = 4) -> bool:
     """
     Convenience function to draw bounding boxes from COCO format JSON.
 
@@ -913,6 +963,8 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
         summary_position (str): Position of summary text
         show_id (bool): Whether to show object IDs
         show_confidence (bool): Whether to show confidence scores
+        show_center (bool): Whether to draw center dots on bounding boxes
+        center_dot_size (int): Size of center dots in pixels
 
     Returns:
         bool: True if successful, False otherwise
@@ -922,7 +974,8 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
         font_size=font_size, bbox_color=bbox_color,
         text_color=text_color, text_position=text_position,
         show_summary=show_summary, summary_position=summary_position,
-        show_id=show_id, show_confidence=show_confidence
+        show_id=show_id, show_confidence=show_confidence,
+        show_center=show_center, center_dot_size=center_dot_size
     )
     return drawer.process_image_with_annotations(image_path, json_path,
                                                  output_filename)
@@ -940,7 +993,9 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
                                  show_summary: bool = False,
                                  summary_position: str = "bottom_right",
                                  show_id: bool = True,
-                                 show_confidence: bool = True) -> bool:
+                                 show_confidence: bool = True,
+                                 show_center: bool = False,
+                                 center_dot_size: int = 4) -> bool:
     """
     Convenience function to draw bounding boxes from Roboflow format JSON.
 
@@ -958,6 +1013,8 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
         summary_position (str): Position of summary text
         show_id (bool): Whether to show object IDs
         show_confidence (bool): Whether to show confidence scores
+        show_center (bool): Whether to draw center dots on bounding boxes
+        center_dot_size (int): Size of center dots in pixels
 
     Returns:
         bool: True if successful, False otherwise
@@ -968,12 +1025,11 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
         text_color=text_color, text_position=text_position,
         confidence_range=confidence_range, show_summary=show_summary,
         summary_position=summary_position, show_id=show_id,
-        show_confidence=show_confidence
+        show_confidence=show_confidence, show_center=show_center,
+        center_dot_size=center_dot_size
     )
     return drawer.process_image_with_annotations(image_path, json_path,
                                                  output_filename)
-
-
 
 # Example usage
 # if __name__ == "__main__":
