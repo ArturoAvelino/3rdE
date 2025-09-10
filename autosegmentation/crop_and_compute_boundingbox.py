@@ -80,7 +80,6 @@ class CropImageAndWriteBBox:
 
     def __init__(self, segmented_image, path_raw_image, path_image_no_bkgd,
                  sample_name, output_dir, padding=0):
-
         self.segmented_image = segmented_image
         self.path_raw_image = Path(path_raw_image)
         self.path_image_no_bkgd = Path(path_image_no_bkgd)
@@ -88,13 +87,82 @@ class CropImageAndWriteBBox:
         self.output_dir = Path(output_dir)
         self.padding = padding
         self.image_original = None
-        self.image_no_bkgd  = None
+        self.image_no_bkgd = None
 
         # Create the output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Load the original image
         self.load_original_image()
+
+    def is_pixel_white(self, x, y, image):
+        """
+            Check if a pixel at the given coordinates is white [255, 255, 255].
+
+            Args:
+                x (int): X coordinate of the pixel
+                y (int): Y coordinate of the pixel
+                image (PIL.Image): The image to check
+
+            Returns:
+                bool: True if pixel is white, False otherwise
+            """
+        try:
+            pixel = image.getpixel((x, y))
+            # Handle both RGB and RGBA images
+            if len(pixel) >= 3:
+                return pixel[0] == 255 and pixel[1] == 255 and pixel[2] == 255
+            return False
+        except (IndexError, TypeError):
+            return False
+
+    def find_closest_non_white_pixel(self, center_x, center_y, left, upper,
+                                     right,
+                                     lower):
+        """
+            Find the closest non-white pixel to the center within the bounding box using spiral search.
+
+            Args:
+                center_x (int): X coordinate of the bounding box center
+                center_y (int): Y coordinate of the bounding box center
+                left (int): Left boundary of the bounding box
+                upper (int): Upper boundary of the bounding box
+                right (int): Right boundary of the bounding box
+                lower (int): Lower boundary of the bounding box
+
+            Returns:
+                tuple: (new_x, new_y) coordinates of closest non-white pixel, or original center if none found
+            """
+        # Calculate maximum search radius (distance to farthest corner of bbox)
+        max_radius = max(
+            abs(center_x - left), abs(center_x - right),
+            abs(center_y - upper), abs(center_y - lower)
+        )
+
+        # Spiral search from center outward
+        for radius in range(1, max_radius + 1):
+            # Check all pixels in the current radius ring
+            for dx in range(-radius, radius + 1):
+                for dy in range(-radius, radius + 1):
+                    # Only check pixels at the current radius (not inside)
+                    if max(abs(dx), abs(dy)) != radius:
+                        continue
+
+                    new_x = center_x + dx
+                    new_y = center_y + dy
+
+                    # Check if pixel is within bounding box
+                    if left <= new_x <= right and upper <= new_y <= lower:
+                        # Check if pixel is within image bounds
+                        if (0 <= new_x < self.image_no_bkgd.width and
+                                0 <= new_y < self.image_no_bkgd.height):
+                            # Check if pixel is not white
+                            if not self.is_pixel_white(new_x, new_y,
+                                                       self.image_no_bkgd):
+                                return new_x, new_y
+
+        # If no non-white pixel found, return original center
+        return center_x, center_y
 
 
     def load_original_image(self):
@@ -169,26 +237,34 @@ class CropImageAndWriteBBox:
 
         return left_padded, upper_padded, right_padded, lower_padded, left, upper, right, lower
 
-
-    def create_json_metadata(self, group_number, bbox_coords):
+    def create_json_metadata(self, group_number, bbox_coords,
+                             use_alternative_center=False,
+                             alternative_center_coords=None):
         """
-        Create JSON metadata for a specific group.
+            Create JSON metadata for a specific group.
 
-        Args:
-            group_number (int): The group number
-            bbox_coords (tuple): (left, upper, right, lower) coordinates
+            Args:
+                group_number (int): The group number
+                bbox_coords (tuple): (left, upper, right, lower) coordinates
+                use_alternative_center (bool): Whether to use alternative center coordinates
+                alternative_center_coords (tuple): (center_x, center_y) alternative coordinates
 
-        Returns:
-            dict: JSON metadata structure
-        """
+            Returns:
+                dict: JSON metadata structure
+            """
 
         left, upper, right, lower = bbox_coords
 
         # Determine the center of the box
         width = right - left
         height = lower - upper
-        center_x = left + width // 2
-        center_y = upper + height // 2
+
+        if use_alternative_center and alternative_center_coords:
+            center_x, center_y = alternative_center_coords
+        else:
+            center_x = left + width // 2
+            center_y = upper + height // 2
+
         area = width * height
 
         current_time = datetime.now().strftime("%Y-%m-%d / %H:%M:%S")
@@ -246,39 +322,70 @@ class CropImageAndWriteBBox:
         }
 
 
-    def crop_and_write_bbox(self, group_number, image_format='PNG'):
+    def crop_and_write_bbox(self, group_number,
+                            image_format='JPG',
+                            check_white_center=False,
+                            use_non_white_center=False):
         """
-        Process a specific group: create crop and save metadata.
+            Process a specific group: create crop and save metadata.
 
-        Args:
-            group_number (int): The group number to process
-            image_format (str): Format to save the image ('PNG' or 'JPEG')
+            Args:
+                group_number (int): The group number to process
+                image_format (str): Format to save the image ('PNG' or 'JPEG')
+                check_white_center (bool): Whether to check if center pixel is white
+                use_non_white_center (bool): Whether to find and use closest non-white pixel as center
         """
 
         # Validate and normalize image format
         image_format = image_format.upper()
         if image_format not in ['PNG', 'JPEG', 'JPG']:
-            raise ValueError("Image format must be either 'PNG' or 'JPEG'/'JPG'")
+            raise ValueError(
+                "Image format must be either 'PNG' or 'JPEG'/'JPG'")
 
         # Convert 'JPG' to 'JPEG' for PIL compatibility
-        save_format = 'JPEG' if image_format in ['JPG', 'JPEG'] else image_format
+        save_format = 'JPEG' if image_format in ['JPG',
+                                                 'JPEG'] else image_format
         extension = 'jpg' if save_format == 'JPEG' else 'png'
 
         try:
             # Get bounding box coordinates
-            left_padded, upper_padded, right_padded, lower_padded, left, upper, right, lower = self.get_bounding_box(group_number)
+            (left_padded, upper_padded, right_padded, lower_padded, left, upper,
+             right, lower) = self.get_bounding_box(group_number)
 
             crop_coords = left_padded, upper_padded, right_padded, lower_padded
             bbox_coords = left, upper, right, lower
 
+            # Calculate original center
+            width = right - left
+            height = lower - upper
+            center_x = left + width // 2
+            center_y = upper + height // 2
+
+            # Initialize variables for alternative center
+            use_alternative_center = False
+            alternative_center_coords = None
+
+            # Check if center pixel is white and find alternative if requested
+            if check_white_center:
+                if self.is_pixel_white(center_x, center_y, self.image_no_bkgd):
+                    if use_non_white_center:
+                        # Find closest non-white pixel
+                        alt_x, alt_y = self.find_closest_non_white_pixel(
+                            center_x, center_y, left, upper, right, lower)
+
+                        # Only use alternative if it's different from original
+                        if alt_x != center_x or alt_y != center_y:
+                            use_alternative_center = True
+                            alternative_center_coords = (alt_x, alt_y)
+
             # Crop the image
-            cropped_image         = self.image_original.crop(crop_coords)
+            cropped_image = self.image_original.crop(crop_coords)
             cropped_image_no_bkgd = self.image_no_bkgd.crop(crop_coords)
 
             # Generate output image filenames
             base_name = self.path_raw_image.stem
             base_no_bkgd_name = self.path_image_no_bkgd.stem
-            crop_filename         = f"crop_{group_number}_{base_name}.{extension}"
+            crop_filename = f"crop_{group_number}_{base_name}.{extension}"
             crop_no_bkgd_filename = f"crop_{group_number}_{base_no_bkgd_name}.{extension}"
 
             # Generate output JSON filename
@@ -291,7 +398,11 @@ class CropImageAndWriteBBox:
             cropped_image_no_bkgd.save(crop_no_bkgd_path, format=save_format)
 
             # Create and save JSON metadata
-            json_data = self.create_json_metadata(group_number, bbox_coords)
+            json_data = self.create_json_metadata(
+                group_number, bbox_coords,
+                use_alternative_center=use_alternative_center,
+                alternative_center_coords=alternative_center_coords
+            )
             json_path = self.output_dir / json_filename
             with open(json_path, 'w') as f:
                 json.dump(json_data, f, indent=4)
@@ -299,7 +410,6 @@ class CropImageAndWriteBBox:
         except Exception as e:
             raise Exception(f"Error processing group {group_number}: {e}")
 
-    # To fix the integration with the class.
 
     def combine_json_metadata(self, output_filename='combined_metadata.json'):
         """
@@ -410,24 +520,46 @@ class CropImageAndWriteBBox:
             raise IOError(f"Error writing combined JSON file: {e}")
 
 
-    def process_all_groups(self, combine_json_data=True, image_format='PNG'):
+    def process_all_groups(self, combine_json_data=True,
+                           image_format='JPG',
+                           check_white_center=False,
+                           use_non_white_center=False):
         """
-        Process all valid groups in the segmented image.
+            Process all valid groups in the segmented image.
 
-        Args:
-            image_format (str): Format to save the images ('PNG' or 'JPG')
-        """
+            Args:
+                combine_json_data (bool): Whether to combine individual JSON files into one
+                image_format (str): Format to save the images ('PNG' or 'JPG')
+                check_white_center (bool): Whether to check if center pixel is white
+                use_non_white_center (bool): Whether to find and use closest non-white pixel as center
+            """
 
         # Get unique group numbers (excluding -1 which typically represents invalid/background)
         unique_groups = np.unique(self.segmented_image[:, 6])
         valid_groups = unique_groups[unique_groups >= 0]
 
         for group_number in valid_groups:
-            self.crop_and_write_bbox(int(group_number), image_format)
+            self.crop_and_write_bbox(
+                int(group_number),
+                image_format=image_format,
+                check_white_center=check_white_center,
+                use_non_white_center=use_non_white_center
+            )
 
         if combine_json_data:
-            self.combine_json_metadata(output_filename=f"{self.path_raw_image.stem}_combined_metadata.json")
+            self.combine_json_metadata(
+                output_filename=f"{self.path_raw_image.stem}_combined_metadata.json")
 
-    # ----------------------------------------
-    # Cluster by color instead of proximiy
 
+# # Basic usage (no white pixel checking)
+# processor.process_all_groups(image_format='PNG')
+
+# # Check for white center but don't replace coordinates
+# processor.process_all_groups(check_white_center=True, image_format='PNG')
+
+# # Check for white center and replace with closest non-white pixel
+# processor.process_all_groups(
+#     check_white_center=True,
+#     use_non_white_center=True,
+#     image_format='PNG'
+# )

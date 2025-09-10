@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 import glob
 import json
-from typing import List, Optional
+from typing import List
 from autosegmentation.instance_segmentator import InstanceSegmentation
 from autosegmentation.crop_and_compute_boundingbox import CropImageAndWriteBBox
 
@@ -94,26 +94,33 @@ class BatchConfigProcessor:
         config_files (List[Path]): List of discovered configuration files
         logger (logging.Logger): Logger instance for the class
     """
-    
-    def __init__(self, json_path: str, filename_pattern: str = "*.json"):
+
+    def __init__(self, json_path: str, filename_pattern: str = "*.json",
+                 check_white_center: bool = False,
+                 use_non_white_center: bool = False):
         """
         Initialize the BatchConfigProcessor.
-        
+
         Args:
             json_path (str or Path): Path to the directory containing JSON files
             filename_pattern (str): Pattern to match all the configuration files
+            check_white_center (bool): Whether to check for a white center in a
+                cropping process (default: False)
         """
         self.json_path = Path(json_path)
         self.filename_pattern = filename_pattern
+        self.check_white_center = check_white_center
+        self.use_non_white_center = use_non_white_center
         self.config_files = []
         self.logger = logging.getLogger(__name__)
-        
+
         # Validate the directory exists
         if not self.json_path.exists():
             raise FileNotFoundError(f"Directory not found: {self.json_path}")
-        
+
         if not self.json_path.is_dir():
-            raise NotADirectoryError(f"Path is not a directory: {self.json_path}")
+            raise NotADirectoryError(
+                f"Path is not a directory: {self.json_path}")
     
     def find_config_files(self) -> List[Path]:
         """
@@ -221,7 +228,12 @@ class BatchConfigProcessor:
                     )
                     
                     # Process all groups
-                    processor_crop.process_all_groups(combine_json_data=True)
+                    processor_crop.process_all_groups(
+                        combine_json_data = True,
+                        image_format = 'JPG', # JPG or PNG. Format of the output cropped images
+                        check_white_center = self.check_white_center,
+                        use_non_white_center = self.use_non_white_center
+                    )
                     
                 except Exception as e:
                     raise Exception(f"Error processing cropping for {config_path}: {str(e)}")
@@ -321,3 +333,23 @@ class BatchConfigProcessor:
                 })
         
         return files_info
+
+# # Example usage with check_white_center=True
+# processor = BatchConfigProcessor(
+#     json_path="/path/to/config/files",
+#     filename_pattern="*.json",
+#     check_white_center=True
+# )
+
+# # Example usage with check_white_center=False (default)
+# processor = BatchConfigProcessor(
+#     json_path="/path/to/config/files",
+#     filename_pattern="*.json",
+#     check_white_center=False
+# )
+
+# # Or simply use the default value (False)
+# processor = BatchConfigProcessor(
+#     json_path="/path/to/config/files",
+#     filename_pattern="*.json"
+# )
