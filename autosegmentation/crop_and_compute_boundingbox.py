@@ -95,6 +95,7 @@ class CropImageAndWriteBBox:
         # Load the original image
         self.load_original_image()
 
+
     def is_pixel_white(self, x, y, image):
         """
             Check if a pixel at the given coordinates is white [255, 255, 255].
@@ -116,30 +117,44 @@ class CropImageAndWriteBBox:
         except (IndexError, TypeError):
             return False
 
-    def find_closest_non_white_pixel(self, center_x, center_y, left, upper,
-                                     right,
-                                     lower):
+    def find_closest_non_white_pixel(self, center_x, center_y, group_number):
         """
-            Find the closest non-white pixel to the center within the bounding box using spiral search.
+            Find the closest non-white pixel to the center within the specific group of pixels.
 
             Args:
                 center_x (int): X coordinate of the bounding box center
                 center_y (int): Y coordinate of the bounding box center
-                left (int): Left boundary of the bounding box
-                upper (int): Upper boundary of the bounding box
-                right (int): Right boundary of the bounding box
-                lower (int): Lower boundary of the bounding box
+                group_number (int): The group number to search within
 
             Returns:
                 tuple: (new_x, new_y) coordinates of closest non-white pixel, or original center if none found
             """
-        # Calculate maximum search radius (distance to farthest corner of bbox)
+        # Get pixels belonging to the specified group
+        group_pixels = self.segmented_image[
+            self.segmented_image[:, 6] == group_number]
+
+        if len(group_pixels) == 0:
+            return center_x, center_y
+
+        # Extract x, y coordinates of group pixels
+        group_x_coords = group_pixels[:, 4].astype(int)
+        group_y_coords = group_pixels[:, 5].astype(int)
+
+        # Create a set of group pixel coordinates for fast lookup
+        group_pixel_set = set(zip(group_x_coords, group_y_coords))
+
+        # Calculate maximum possible distance within the group
+        max_x = np.max(group_x_coords)
+        min_x = np.min(group_x_coords)
+        max_y = np.max(group_y_coords)
+        min_y = np.min(group_y_coords)
+
         max_radius = max(
-            abs(center_x - left), abs(center_x - right),
-            abs(center_y - upper), abs(center_y - lower)
+            abs(center_x - min_x), abs(center_x - max_x),
+            abs(center_y - min_y), abs(center_y - max_y)
         )
 
-        # Spiral search from center outward
+        # Spiral search from center outward, but only check pixels in the group
         for radius in range(1, max_radius + 1):
             # Check all pixels in the current radius ring
             for dx in range(-radius, radius + 1):
@@ -151,8 +166,8 @@ class CropImageAndWriteBBox:
                     new_x = center_x + dx
                     new_y = center_y + dy
 
-                    # Check if pixel is within bounding box
-                    if left <= new_x <= right and upper <= new_y <= lower:
+                    # Check if this pixel is part of the group
+                    if (new_x, new_y) in group_pixel_set:
                         # Check if pixel is within image bounds
                         if (0 <= new_x < self.image_no_bkgd.width and
                                 0 <= new_y < self.image_no_bkgd.height):
@@ -236,6 +251,7 @@ class CropImageAndWriteBBox:
             lower_padded = lower + self.padding
 
         return left_padded, upper_padded, right_padded, lower_padded, left, upper, right, lower
+
 
     def create_json_metadata(self, group_number, bbox_coords,
                              use_alternative_center=False,
@@ -369,9 +385,9 @@ class CropImageAndWriteBBox:
             if check_white_center:
                 if self.is_pixel_white(center_x, center_y, self.image_no_bkgd):
                     if use_non_white_center:
-                        # Find closest non-white pixel
+                        # Find closest non-white pixel within the specific group
                         alt_x, alt_y = self.find_closest_non_white_pixel(
-                            center_x, center_y, left, upper, right, lower)
+                            center_x, center_y, group_number)
 
                         # Only use alternative if it's different from original
                         if alt_x != center_x or alt_y != center_y:
