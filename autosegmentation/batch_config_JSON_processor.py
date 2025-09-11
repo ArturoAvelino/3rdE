@@ -96,7 +96,7 @@ class BatchConfigProcessor:
     """
 
     def __init__(self, json_path: str, filename_pattern: str = "*.json",
-                 check_white_center: bool = False,
+                 #old. check_white_center: bool = False,
                  use_nonwhitepixel_as_bboxcenter: bool = False):
         """
         Initialize the BatchConfigProcessor.
@@ -104,12 +104,12 @@ class BatchConfigProcessor:
         Args:
             json_path (str or Path): Path to the directory containing JSON files
             filename_pattern (str): Pattern to match all the configuration files
-            check_white_center (bool): Whether to check for a white center in a
+            #old. check_white_center (bool): Whether to check for a white center in a
                 cropping process (default: False)
         """
         self.json_path = Path(json_path)
         self.filename_pattern = filename_pattern
-        self.check_white_center = check_white_center
+        #old. self.check_white_center = check_white_center
         self.use_nonwhitepixel_as_bboxcenter = use_nonwhitepixel_as_bboxcenter
         self.config_files = []
         self.logger = logging.getLogger(__name__)
@@ -231,7 +231,7 @@ class BatchConfigProcessor:
                     processor_crop.process_all_groups(
                         combine_json_data = True,
                         image_format = 'JPG', # JPG or PNG. Format of the output cropped images
-                        check_white_center = self.check_white_center,
+                        #old. check_white_center = self.check_white_center,
                         use_nonwhitepixel_as_bboxcenter = self.use_nonwhitepixel_as_bboxcenter
                     )
                     
@@ -334,18 +334,18 @@ class BatchConfigProcessor:
         
         return files_info
 
-# # Example usage with check_white_center=True
+# # #old. Example usage with check_white_center=True
 # processor = BatchConfigProcessor(
 #     json_path="/path/to/config/files",
 #     filename_pattern="*.json",
-#     check_white_center=True
+#     #old. check_white_center=True
 # )
 
-# # Example usage with check_white_center=False (default)
+# # #old. Example usage with check_white_center=False (default)
 # processor = BatchConfigProcessor(
 #     json_path="/path/to/config/files",
 #     filename_pattern="*.json",
-#     check_white_center=False
+#     #old. check_white_center=False
 # )
 
 # # Or simply use the default value (False)
