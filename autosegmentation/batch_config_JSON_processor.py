@@ -97,7 +97,7 @@ class BatchConfigProcessor:
 
     def __init__(self, json_path: str, filename_pattern: str = "*.json",
                  check_white_center: bool = False,
-                 use_non_white_center: bool = False):
+                 use_nonwhitepixel_as_bboxcenter: bool = False):
         """
         Initialize the BatchConfigProcessor.
 
@@ -110,7 +110,7 @@ class BatchConfigProcessor:
         self.json_path = Path(json_path)
         self.filename_pattern = filename_pattern
         self.check_white_center = check_white_center
-        self.use_non_white_center = use_non_white_center
+        self.use_nonwhitepixel_as_bboxcenter = use_nonwhitepixel_as_bboxcenter
         self.config_files = []
         self.logger = logging.getLogger(__name__)
 
@@ -232,7 +232,7 @@ class BatchConfigProcessor:
                         combine_json_data = True,
                         image_format = 'JPG', # JPG or PNG. Format of the output cropped images
                         check_white_center = self.check_white_center,
-                        use_non_white_center = self.use_non_white_center
+                        use_nonwhitepixel_as_bboxcenter = self.use_nonwhitepixel_as_bboxcenter
                     )
                     
                 except Exception as e:

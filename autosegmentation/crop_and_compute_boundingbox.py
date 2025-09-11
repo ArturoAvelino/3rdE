@@ -341,7 +341,7 @@ class CropImageAndWriteBBox:
     def crop_and_write_bbox(self, group_number,
                             image_format='JPG',
                             check_white_center=False,
-                            use_non_white_center=False):
+                            use_nonwhitepixel_as_bboxcenter=False):
         """
             Process a specific group: create crop and save metadata.
 
@@ -349,7 +349,7 @@ class CropImageAndWriteBBox:
                 group_number (int): The group number to process
                 image_format (str): Format to save the image ('PNG' or 'JPEG')
                 check_white_center (bool): Whether to check if center pixel is white
-                use_non_white_center (bool): Whether to find and use closest non-white pixel as center
+                use_nonwhitepixel_as_bboxcenter (bool): Whether to find and use closest non-white pixel as center
         """
 
         # Validate and normalize image format
@@ -384,7 +384,7 @@ class CropImageAndWriteBBox:
             # Check if center pixel is white and find alternative if requested
             if check_white_center:
                 if self.is_pixel_white(center_x, center_y, self.image_no_bkgd):
-                    if use_non_white_center:
+                    if use_nonwhitepixel_as_bboxcenter:
                         # Find closest non-white pixel within the specific group
                         alt_x, alt_y = self.find_closest_non_white_pixel(
                             center_x, center_y, group_number)
@@ -539,7 +539,7 @@ class CropImageAndWriteBBox:
     def process_all_groups(self, combine_json_data=True,
                            image_format='JPG',
                            check_white_center=False,
-                           use_non_white_center=False):
+                           use_nonwhitepixel_as_bboxcenter=False):
         """
             Process all valid groups in the segmented image.
 
@@ -547,7 +547,7 @@ class CropImageAndWriteBBox:
                 combine_json_data (bool): Whether to combine individual JSON files into one
                 image_format (str): Format to save the images ('PNG' or 'JPG')
                 check_white_center (bool): Whether to check if center pixel is white
-                use_non_white_center (bool): Whether to find and use closest non-white pixel as center
+                use_nonwhitepixel_as_bboxcenter (bool): Whether to find and use closest non-white pixel as center
             """
 
         # Get unique group numbers (excluding -1 which typically represents invalid/background)
@@ -559,7 +559,7 @@ class CropImageAndWriteBBox:
                 int(group_number),
                 image_format=image_format,
                 check_white_center=check_white_center,
-                use_non_white_center=use_non_white_center
+                use_nonwhitepixel_as_bboxcenter=use_nonwhitepixel_as_bboxcenter
             )
 
         if combine_json_data:
@@ -576,6 +576,6 @@ class CropImageAndWriteBBox:
 # # Check for white center and replace with closest non-white pixel
 # processor.process_all_groups(
 #     check_white_center=True,
-#     use_non_white_center=True,
+#     use_nonwhitepixel_as_bboxcenter=True,
 #     image_format='PNG'
 # )
