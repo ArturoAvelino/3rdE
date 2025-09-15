@@ -79,7 +79,7 @@ class InstanceSegmentation:
     2. Using Direct Parameters:
         ```python
         processor = InstanceSegmentation(
-            image_path="/path/to/image_without_background.jpg",
+            nobackground_image_path="/path/to/image_without_background.jpg",
             output_dir="/path/to/output",
             min_pixels=1000,
             max_distance=4.0
@@ -90,7 +90,7 @@ class InstanceSegmentation:
 
     Configuration Parameters:
     -----------------------
-    - image_path: Path to the input image with no background
+    - nobackground_image_path: Path to the input image with no background
     - output_dir: Directory for saving outputs
     - min_pixels: Minimum pixel count for valid objects (default: 1000)
     - max_distance: Maximum pixel-to-pixel distance for grouping (default: 4.0)
@@ -154,7 +154,7 @@ class InstanceSegmentation:
         Args:
             config_path (str or Path, optional): Path to JSON configuration file
             **kwargs: Optional parameters that override JSON config:
-                - image_path (str or Path): Path to the input image with no background
+                - nobackground_image_path (str or Path): Path to the input image with no background
                 - output_dir (str or Path): Directory to save output files
                 - min_pixels (int): Minimum size area of objects
                 - max_distance (float): Maximum distance between pixels to be considered part of the same object
@@ -163,8 +163,8 @@ class InstanceSegmentation:
             self.load_config(config_path)
         if 'sample_name' in kwargs:
             self.sample_name = kwargs['sample_name']
-        if 'image_path' in kwargs:
-            self.image_path = Path(kwargs['image_path'])
+        if 'nobackground_image_path' in kwargs:
+            self.nobackground_image_path = Path(kwargs['nobackground_image_path'])
         if 'raw_image_path' in kwargs:
             self.raw_image_path = Path(kwargs['raw_image_path'])
         if 'output_dir' in kwargs:
@@ -179,7 +179,7 @@ class InstanceSegmentation:
             self.cropping = kwargs['cropping']
 
         # Validate required attributes
-        required_attrs = ['image_path', 'output_dir', 'min_pixels', 'max_distance']
+        required_attrs = ['nobackground_image_path', 'output_dir', 'min_pixels', 'max_distance']
         missing_attrs = [attr for attr in required_attrs if not hasattr(self, attr)]
         if missing_attrs:
             raise ValueError(f"Missing required attributes: {', '.join(missing_attrs)}")
@@ -246,10 +246,10 @@ class InstanceSegmentation:
             if not all(key in image_info for key in ['sample_name', 'no_background_image']):
                 raise ValueError("Missing image path information or sample name in config file")
 
-            self.image_path = Path(image_info['no_background_image']['path'])
-            if not self.image_path.exists():
+            self.nobackground_image_path = Path(image_info['no_background_image']['path'])
+            if not self.nobackground_image_path.exists():
                 raise FileNotFoundError(
-                    f"Image without background not found: {self.image_path}")
+                    f"Image without background not found: {self.nobackground_image_path}")
 
             # Raw image file path definition, i.e., the one with still the
             # background color. This info is not used in this class but will be
@@ -297,7 +297,7 @@ class InstanceSegmentation:
 
     def create_image_with_coordinates(self):
         """Load and process the input image."""
-        self.image_np = np.asarray(Image.open(self.image_path))
+        self.image_np = np.asarray(Image.open(self.nobackground_image_path))
         self.height, self.width = self.image_np.shape[:2]
         self.image_proportion = self.height / self.width
 
@@ -413,7 +413,7 @@ class InstanceSegmentation:
                  f'distance <= {self.max_distance} pixels)')
         plt.tight_layout()
 
-        output_path = self.output_dir / f"{self.image_path.stem}_pixel_groups.png"
+        output_path = self.output_dir / f"{self.nobackground_image_path.stem}_pixel_groups.png"
         plt.savefig(output_path, dpi=150)
         plt.close()
 
@@ -421,13 +421,13 @@ class InstanceSegmentation:
         """
         Write metadata and statistics to output file.
         """
-        output_file = self.output_dir / f'{self.image_path.stem}_pixel_groups.txt'
+        output_file = self.output_dir / f'{self.nobackground_image_path.stem}_pixel_groups.txt'
 
         with open(output_file, 'w') as f:
             with redirect_stdout(f):
                 print("Settings used for the segmentation process:\n")
                 print(f"- Sample name: {self.sample_name}")
-                print(f"- Image filename: {self.image_path.name}")
+                print(f"- Image filename: {self.nobackground_image_path.name}")
                 print(f"- Minimal size area of the objects: {self.min_pixels} pixels")
                 print(f"- Maximum distance between pixels: {self.max_distance} pixels")
                 print("\n------------------------\n")

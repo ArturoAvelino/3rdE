@@ -254,8 +254,9 @@ class CropImageAndWriteBBox:
 
 
     def create_json_metadata(self, group_number, bbox_coords,
-                             use_alternative_center=False,
-                             alternative_center_coords=None):
+                             use_alternative_center = False,
+                             alternative_center_coords = None,
+                             undefined_category_id = 85):
         """
             Create JSON metadata for a specific group.
 
@@ -264,6 +265,7 @@ class CropImageAndWriteBBox:
                 bbox_coords (tuple): (left, upper, right, lower) coordinates
                 use_alternative_center (bool): Whether to use alternative center coordinates
                 alternative_center_coords (tuple): (center_x, center_y) alternative coordinates
+                undefined_category_id (int): ID for undefined categories
 
             Returns:
                 dict: JSON metadata structure
@@ -283,7 +285,7 @@ class CropImageAndWriteBBox:
 
         area = width * height
 
-        current_time = datetime.now().strftime("%Y-%m-%d / %H:%M:%S")
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         current_year = datetime.now().strftime("%Y")
 
         return {
@@ -302,13 +304,6 @@ class CropImageAndWriteBBox:
                     "name": "Research"
                 }
             ],
-            "categories": [
-                {
-                    "id": 1000,
-                    "name": "object",
-                    "supercategory": "none"
-                }
-            ],
             "images": [
                 {
                     "id": self.sample_name,
@@ -319,11 +314,18 @@ class CropImageAndWriteBBox:
                     "date_captured": "none"
                 }
             ],
+            "categories": [
+                {
+                    "id": undefined_category_id,
+                    "name": "Unclassified",
+                    "supercategory": "none"
+                }
+            ],
             "annotations": [
                 {
                     "id": group_number,
                     "image_id": self.path_raw_image.name,
-                    "category_id": 1000,
+                    "category_id": undefined_category_id,
                     "bbox": [
                         center_x,
                         center_y,
