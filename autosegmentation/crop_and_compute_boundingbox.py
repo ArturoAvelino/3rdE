@@ -117,6 +117,7 @@ class CropImageAndWriteBBox:
         except (IndexError, TypeError):
             return False
 
+
     def find_closest_non_white_pixel(self, center_x, center_y, group_number):
         """
             Find the closest non-white pixel to the center within the specific group of pixels.
@@ -178,6 +179,102 @@ class CropImageAndWriteBBox:
 
         # If no non-white pixel found, return original center
         return center_x, center_y
+
+
+    def find_perimeter_pixels(self, group_number):
+        """
+        Find all pixels in a pixel group that are in contact with white pixels.
+        These pixels form the perimeter or external contour of the pixel group.
+
+        Args:
+            group_number (int): The group number to process
+
+        Returns:
+            list: List of (x, y) coordinates of perimeter pixels as a flat list
+                 [x1, y1, x2, y2, x3, y3, ...]
+        """
+        # Get pixels belonging to the specified group
+        group_pixels = self.segmented_image[
+            self.segmented_image[:, 6] == group_number]
+
+        if len(group_pixels) == 0:
+            return []
+
+        # Extract x, y coordinates of group pixels
+        group_x_coords = group_pixels[:, 4].astype(int)
+        group_y_coords = group_pixels[:, 5].astype(int)
+
+        # Create a set of group pixel coordinates for fast lookup
+        group_pixel_set = set(zip(group_x_coords, group_y_coords))
+
+        perimeter_pixels = []
+
+        # Check each pixel in the group to see if it's adjacent to a white pixel
+        for x, y in group_pixel_set:
+            is_perimeter = False
+
+            # Check 8-connected neighbors (including diagonals)
+            for dx in [-1, 0, 1]:
+                for dy in [-1, 0, 1]:
+                    if dx == 0 and dy == 0:
+                        continue  # Skip the pixel itself
+
+                    neighbor_x = x + dx
+                    neighbor_y = y + dy
+
+                    # Check if neighbor is within image bounds
+                    if (0 <= neighbor_x < self.image_no_bkgd.width and
+                            0 <= neighbor_y < self.image_no_bkgd.height):
+
+                        # If neighbor is not part of this group, check if it's white
+                        if (neighbor_x, neighbor_y) not in group_pixel_set:
+                            if self.is_pixel_white(neighbor_x, neighbor_y,
+                                                   self.image_no_bkgd):
+                                is_perimeter = True
+                                break
+
+                if is_perimeter:
+                    break
+
+            if is_perimeter:
+                # Convert numpy int64 to Python int before adding to list
+                perimeter_pixels.extend([int(x), int(y)])
+
+        return perimeter_pixels
+
+
+    def get_image_metadata(self):
+        """
+        Extract image metadata including date captured from the original image.
+
+        Returns:
+            dict: Dictionary containing image metadata
+        """
+        try:
+            # Try to get EXIF data from the original image
+            exif_dict = self.image_original.getexif()
+
+            # Look for DateTime tags
+            date_captured = "unknown"
+            if exif_dict:
+                # Try different EXIF tags for date/time
+                for tag_id in [36867, 36868, 306]:  # DateTimeOriginal, DateTimeDigitized, DateTime
+                    if tag_id in exif_dict:
+                        date_captured = exif_dict[tag_id]
+                        break
+
+            return {
+                "date_captured": date_captured,
+                "width": self.image_original.width,
+                "height": self.image_original.height
+            }
+        except Exception:
+            # Fallback if EXIF reading fails
+            return {
+                "date_captured": "unknown",
+                "width": self.image_original.width,
+                "height": self.image_original.height
+            }
 
 
     def load_original_image(self):
@@ -258,7 +355,7 @@ class CropImageAndWriteBBox:
                              alternative_center_coords = None,
                              undefined_category_id = 85):
         """
-            Create JSON metadata for a specific group.
+            Create JSON metadata for a specific group in COCO format.
 
             Args:
                 group_number (int): The group number
@@ -268,7 +365,7 @@ class CropImageAndWriteBBox:
                 undefined_category_id (int): ID for undefined categories
 
             Returns:
-                dict: JSON metadata structure
+                dict: JSON metadata structure in COCO format
             """
 
         left, upper, right, lower = bbox_coords
@@ -285,7 +382,13 @@ class CropImageAndWriteBBox:
 
         area = width * height
 
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Get image metadata including date captured
+        image_metadata = self.get_image_metadata()
+
+        # Get perimeter pixels for segmentation
+        segmentation_coords = self.find_perimeter_pixels(group_number)
+
+        current_time = datetime.now().strftime("%Y-%m-%d")
         current_year = datetime.now().strftime("%Y")
 
         return {
@@ -306,37 +409,38 @@ class CropImageAndWriteBBox:
             ],
             "images": [
                 {
-                    "id": self.sample_name,
-                    "license": 1,
+                    "id": 1,
                     "file_name": self.path_raw_image.name,
-                    "height": self.image_original.height,
-                    "width": self.image_original.width,
-                    "date_captured": "none"
+                    "width": int(image_metadata["width"]),
+                    "height": int(image_metadata["height"]),
+                    "license": 1,
+                    "date_captured": image_metadata["date_captured"]
                 }
             ],
             "categories": [
                 {
-                    "id": undefined_category_id,
+                    "id": int(undefined_category_id),
                     "name": "Unclassified",
                     "supercategory": "none"
                 }
             ],
             "annotations": [
                 {
-                    "id": group_number,
-                    "image_id": self.path_raw_image.name,
-                    "category_id": undefined_category_id,
+                    "id": int(group_number),
+                    "image_id": 1,
+                    "category_id": int(undefined_category_id),
                     "bbox": [
-                        center_x,
-                        center_y,
-                        width,
-                        height
+                        int(left),
+                        int(upper),
+                        int(width),
+                        int(height)
                     ],
-                    "area": area,
-                    "segmentation": [],
+                    "area": int(area),
+                    "segmentation": [segmentation_coords] if segmentation_coords else [],
                     "iscrowd": 0
                 }
-            ]
+            ],
+            "type": ""
         }
 
 
@@ -390,22 +494,10 @@ class CropImageAndWriteBBox:
                     alt_x, alt_y = self.find_closest_non_white_pixel(
                         center_x, center_y, group_number)
 
-                    # Only use alternative if it's different from original
+                    # Only use the alternative if it's different from original
                     if alt_x != center_x or alt_y != center_y:
                         use_alternative_center = True
                         alternative_center_coords = (alt_x, alt_y)
-
-            #old. if check_white_center:
-            #old.     if self.is_pixel_white(center_x, center_y, self.image_no_bkgd):
-            #old.         if use_nonwhitepixel_as_bboxcenter:
-            #old.             # Find closest non-white pixel within the specific group
-            #old.             alt_x, alt_y = self.find_closest_non_white_pixel(
-            #old.                 center_x, center_y, group_number)
-            #old.
-            #old.             # Only use alternative if it's different from original
-            #old.             if alt_x != center_x or alt_y != center_y:
-            #old.                 use_alternative_center = True
-            #old.                 alternative_center_coords = (alt_x, alt_y)
 
             # Crop the image
             cropped_image = self.image_original.crop(crop_coords)
@@ -417,8 +509,8 @@ class CropImageAndWriteBBox:
             crop_filename = f"crop_{group_number}_{base_name}.{extension}"
             crop_no_bkgd_filename = f"crop_{group_number}_{base_no_bkgd_name}.{extension}"
 
-            # Generate output JSON filename
-            json_filename = f"crop_{group_number}_{base_name}.json"
+            # Generate output JSON filename with COCO suffix
+            json_filename = f"crop_{group_number}_{base_name}_coco.json"
 
             # Save cropped image
             crop_path = self.output_dir / crop_filename
@@ -457,20 +549,20 @@ class CropImageAndWriteBBox:
 
         input_dir = Path(self.output_dir)
 
-        # Get all JSON files in the input directory
-        json_files = list(input_dir.glob('crop_*_*.json'))
+        # Get all JSON files with the COCO suffix pattern
+        json_files = list(input_dir.glob('crop_*_*_coco.json'))
 
         # Check if any JSON files were found
         if not json_files:
             raise FileNotFoundError(
-                f"No JSON metadata files found in {input_dir}")
+                f"No COCO JSON metadata files found in {input_dir}")
 
         # Initialize the combined data structure with COCO format
         combined_data = {
             "info": {},
             "licenses": [],
-            "categories": [],
             "images": [],
+            "categories": [],
             "annotations": []
         }
 
@@ -491,17 +583,17 @@ class CropImageAndWriteBBox:
                 if not combined_data["licenses"]:
                     combined_data["licenses"] = data.get("licenses", [])
 
-                # Add categories (avoid duplicates)
-                for category in data.get("categories", []):
-                    category_id = category["id"]
-                    if category_id not in categories_dict:
-                        categories_dict[category_id] = category
-
                 # Add images (avoid duplicates)
                 for image in data.get("images", []):
                     image_id = image["id"]
                     if image_id not in images_dict:
                         images_dict[image_id] = image
+
+                # Add categories (avoid duplicates)
+                for category in data.get("categories", []):
+                    category_id = category["id"]
+                    if category_id not in categories_dict:
+                        categories_dict[category_id] = category
 
                 # Add all annotations (these should be unique by design)
                 combined_data["annotations"].extend(data.get("annotations", []))
@@ -514,8 +606,8 @@ class CropImageAndWriteBBox:
                 continue
 
         # Convert dictionaries back to lists
-        combined_data["categories"] = list(categories_dict.values())
         combined_data["images"] = list(images_dict.values())
+        combined_data["categories"] = list(categories_dict.values())
 
         # Sort annotations by id for consistency
         combined_data["annotations"].sort(key=lambda x: x["id"])
@@ -539,8 +631,8 @@ class CropImageAndWriteBBox:
 
             print(f"Successfully combined {len(json_files)} JSON files")
             print(f"Combined file contains:")
-            print(f"  - {len(combined_data['categories'])} categories")
             print(f"  - {len(combined_data['images'])} images")
+            print(f"  - {len(combined_data['categories'])} categories")
             print(f"  - {len(combined_data['annotations'])} annotations")
             print(f"Combined JSON saved to: {output_path}")
 

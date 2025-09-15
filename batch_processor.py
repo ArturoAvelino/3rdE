@@ -715,7 +715,7 @@ def main():
         logger.info("=== OPTION 2: Process Existing Configuration Files ===")
 
         # If you already have configuration files and just want to process them
-        config_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/2_configs_for segm/"
+        config_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/2_configs_for_segm/"
 
         if Path(config_directory).exists():
             results_existing = process_batch_of_config_files(
