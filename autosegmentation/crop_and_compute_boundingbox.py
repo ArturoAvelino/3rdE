@@ -353,7 +353,7 @@ class CropImageAndWriteBBox:
     def create_json_metadata(self, group_number, bbox_coords,
                              use_alternative_center = False,
                              alternative_center_coords = None,
-                             undefined_category_id = 85):
+                             undefined_category_id = 129):
         """
             Create JSON metadata for a specific group in COCO format.
 
