@@ -7,7 +7,7 @@ from typing import List, Dict, Optional, Union
 from tools.read_json_plot_contour_objects import read_json_plot_contours
 from tools.read_json_crop_objects import CropIndividualObjects
 
-from autosegmentation.crop_and_compute_boundingbox import CropImageAndWriteBBox
+from autosegmentation.bbox_contour_crop import CropImageAndWriteBBox
 from autosegmentation.instance_segmentator import InstanceSegmentation
 
 

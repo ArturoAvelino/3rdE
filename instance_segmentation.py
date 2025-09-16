@@ -439,7 +439,7 @@ print("\nWriting statistics: done.")
 
 # Crop and write the bounding box
 
-from autosegmentation.crop_and_compute_boundingbox import CropImageAndWriteBBox
+from autosegmentation.bbox_contour_crop import CropImageAndWriteBBox
 
 processor = CropImageAndWriteBBox(
     segmented_image = segmented_image,

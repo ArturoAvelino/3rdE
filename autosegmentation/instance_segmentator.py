@@ -158,13 +158,16 @@ class InstanceSegmentation:
                 - output_dir (str or Path): Directory to save output files
                 - min_pixels (int): Minimum size area of objects
                 - max_distance (float): Maximum distance between pixels to be considered part of the same object
+                - no_margins (bool): Generate plot without margins/borders (default: False)
+                - generate_both_plots (bool): Generate both regular and no-margins plots (default: False)
         """
         if config_path:
             self.load_config(config_path)
         if 'sample_name' in kwargs:
             self.sample_name = kwargs['sample_name']
         if 'nobackground_image_path' in kwargs:
-            self.nobackground_image_path = Path(kwargs['nobackground_image_path'])
+            self.nobackground_image_path = Path(
+                kwargs['nobackground_image_path'])
         if 'raw_image_path' in kwargs:
             self.raw_image_path = Path(kwargs['raw_image_path'])
         if 'output_dir' in kwargs:
@@ -177,12 +180,19 @@ class InstanceSegmentation:
             self.padding = kwargs['padding']
         if 'cropping' in kwargs:
             self.cropping = kwargs['cropping']
+        if 'no_margins' in kwargs:
+            self.no_margins = kwargs['no_margins']
+        if 'generate_both_plots' in kwargs:
+            self.generate_both_plots = kwargs['generate_both_plots']
 
         # Validate required attributes
-        required_attrs = ['nobackground_image_path', 'output_dir', 'min_pixels', 'max_distance']
-        missing_attrs = [attr for attr in required_attrs if not hasattr(self, attr)]
+        required_attrs = ['nobackground_image_path', 'output_dir', 'min_pixels',
+                          'max_distance']
+        missing_attrs = [attr for attr in required_attrs if
+                         not hasattr(self, attr)]
         if missing_attrs:
-            raise ValueError(f"Missing required attributes: {', '.join(missing_attrs)}")
+            raise ValueError(
+                f"Missing required attributes: {', '.join(missing_attrs)}")
 
         # Initialize other attributes
         self.image_np = None
@@ -192,6 +202,13 @@ class InstanceSegmentation:
         self.height = None
         self.width = None
         self.image_proportion = None
+
+        # Set default values if not provided
+        if not hasattr(self, 'no_margins'):
+            self.no_margins = False
+        if not hasattr(self, 'generate_both_plots'):
+            self.generate_both_plots = False
+
 
     def load_config(self, json_path):
         """
@@ -282,6 +299,22 @@ class InstanceSegmentation:
             else:
                 self.cropping = bool(cropping_value)
 
+            # Read the no_margins parameter from configuration
+            no_margins_value = proc_params.get('no_margins', False)
+            if isinstance(no_margins_value, str):
+                self.no_margins = no_margins_value.lower() in ('true', 'True', 'TRUE',
+                                                              '1', 'yes', 'Yes', 'YES', 'on')
+            else:
+                self.no_margins = bool(no_margins_value)
+
+            # Read the generate_both_plots parameter from configuration
+            generate_both_value = proc_params.get('generate_both_plots', False)
+            if isinstance(generate_both_value, str):
+                self.generate_both_plots = generate_both_value.lower() in ('true', 'True', 'TRUE',
+                                                                          '1', 'yes', 'Yes', 'YES', 'on')
+            else:
+                self.generate_both_plots = bool(generate_both_value)
+
             # Set the output directory. Create it if it doesn't exist.
             self.output_dir = Path(config['output']['directory'])
             self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -294,6 +327,7 @@ class InstanceSegmentation:
             raise e
         except Exception as e:
             raise Exception(f"Error loading configuration: {e}")
+
 
     def create_image_with_coordinates(self):
         """Load and process the input image."""
@@ -316,6 +350,7 @@ class InstanceSegmentation:
         reshaped_image = self.image_with_coords.reshape(-1, 6)
         mask = ~np.all(reshaped_image[:, :3] == 255, axis=1)
         self.filtered_image = reshaped_image[mask]
+
 
     def segment_image_kdtree(self):
         """
@@ -391,31 +426,100 @@ class InstanceSegmentation:
         print(f"Found {new_label} valid groups (with ≥{self.min_pixels} pixels) "
               f"out of {labels_all_groups} total groups")
 
-    def generate_plot(self, padding=35):
-        """Generate and save plot of segmented image."""
+
+    def generate_plot(self, padding=35, no_margins=None, generate_both=False):
+        """
+        Generate and save plot of segmented image.
+
+        Args:
+            padding (int): Padding parameter (for compatibility, not used in current implementation)
+            no_margins (bool, optional): If True, creates plot without margins/borders.
+                                       If None, uses the instance's no_margins setting.
+            generate_both (bool): If True, generates both regular and no-margins plots.
+        """
+        # Use parameter value if provided, otherwise use instance setting
+        use_no_margins = no_margins if no_margins is not None else self.no_margins
+
+        valid_points = self.segmented_image[self.segmented_image[:, -1] >= 0]
+
+        # If generate_both is True, create both versions
+        if generate_both:
+            # Generate regular plot first
+            self._create_single_plot(valid_points, with_margins=True)
+            # Generate no-margins plot
+            self._create_single_plot(valid_points, with_margins=False)
+        else:
+            # Generate single plot based on use_no_margins setting
+            self._create_single_plot(valid_points,
+                                     with_margins=not use_no_margins)
+
+
+    def _create_single_plot(self, valid_points, with_margins=True):
+        """
+        Create a single plot (either with or without margins).
+
+        Args:
+            valid_points: Array of valid segmentation points
+            with_margins (bool): If True, creates standard plot with margins, axes, etc.
+                                If False, creates plot without any margins or decorations.
+        """
         width_image = 12
         height_image = width_image * self.image_proportion
 
-        plt.figure(figsize=(width_image, height_image))
-        valid_points = self.segmented_image[self.segmented_image[:, -1] >= 0]
+        if with_margins:
+            # Standard plot with margins
+            plt.figure(figsize=(width_image, height_image))
 
-        plt.scatter(valid_points[:, 4], valid_points[:, 5],
-                   c=valid_points[:, -1],
-                   cmap='tab20',
-                   alpha=0.6,
-                   s=1)
+            plt.scatter(valid_points[:, 4], valid_points[:, 5],
+                        c=valid_points[:, -1],
+                        cmap='tab20',
+                        alpha=0.6,
+                        s=1)
 
-        plt.colorbar(label='Group Label')
-        plt.xlabel('X coordinate')
-        plt.ylabel('Y coordinate')
-        plt.gca().invert_yaxis()
-        plt.title(f'Filtered Pixel Groups (minimum {self.min_pixels} pixels, '
-                 f'distance <= {self.max_distance} pixels)')
-        plt.tight_layout()
+            plt.colorbar(label='Group Label')
+            plt.xlabel('X coordinate')
+            plt.ylabel('Y coordinate')
+            plt.gca().invert_yaxis()
+            plt.title(
+                f'Filtered Pixel Groups (minimum {self.min_pixels} pixels, '
+                f'distance <= {self.max_distance} pixels)')
+            plt.tight_layout()
 
-        output_path = self.output_dir / f"{self.nobackground_image_path.stem}_pixel_groups.png"
-        plt.savefig(output_path, dpi=150)
+            filename_suffix = "_pixel_groups.jpg"
+            output_path = self.output_dir / f"{self.nobackground_image_path.stem}{filename_suffix}"
+            plt.savefig(output_path, dpi=150, format='jpg')
+
+        else:
+            # No-margins plot - completely eliminate all white space
+            fig = plt.figure(figsize=(width_image, height_image), frameon=False)
+            ax = fig.add_axes([0, 0, 1, 1])  # Use entire figure area
+            ax.axis('off')  # Remove axes
+
+            # Create scatter plot
+            ax.scatter(valid_points[:, 4], valid_points[:, 5],
+                       c=valid_points[:, -1],
+                       cmap='tab20',
+                       alpha=0.6,
+                       s=1)
+
+            # Set exact limits to data bounds to eliminate any white space
+            ax.set_xlim(valid_points[:, 4].min(), valid_points[:, 4].max())
+            ax.set_ylim(valid_points[:, 5].min(), valid_points[:, 5].max())
+            ax.invert_yaxis()
+
+            # Remove all margins and padding
+            ax.set_position([0, 0, 1, 1])
+
+            filename_suffix = "_pixel_groups_no_margins.jpg"
+            output_path = self.output_dir / f"{self.nobackground_image_path.stem}{filename_suffix}"
+
+            # Save with absolute no padding/margins
+            plt.savefig(output_path, dpi=150, bbox_inches='tight',
+                        pad_inches=0, facecolor='none', edgecolor='none',
+                        format='jpg')
+
         plt.close()
+
 
     def write_metadata(self):
         """
@@ -445,6 +549,7 @@ class InstanceSegmentation:
                     print(f"\nObject {int(label)}:")
                     print(f"Number of pixels: {len(group_pixels)}")
 
+
     def process(self):
         """
         Process the image through all steps with error handling.
@@ -452,7 +557,13 @@ class InstanceSegmentation:
         try:
             self.create_image_with_coordinates()
             self.segment_image_kdtree()
-            self.generate_plot()
+
+            # Generate plots based on configuration
+            if self.generate_both_plots:
+                self.generate_plot(generate_both=True)
+            else:
+                self.generate_plot()
+
             self.write_metadata()
             return True
         except KeyboardInterrupt:
@@ -461,3 +572,32 @@ class InstanceSegmentation:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             return False
+
+# ------------------------------------------------------
+
+### Usage Examples
+
+# processor = InstanceSegmentation(
+#     nobackground_image_path="path/to/image.png",
+#     output_dir="output/",
+#     min_pixels=1000,
+#     max_distance=4.0,
+#     generate_both_plots=True  # This will create both versions
+# )
+# processor.process()
+#
+#
+# # Manual control over plot generation:
+# processor = InstanceSegmentation(config_path="config.json")
+# # Generate both plots manually
+# processor.generate_plot(generate_both=True)
+#
+# # **JSON configuration for both plots:**
+#
+# {
+#     "processing_parameters": {
+#         "max_distance": 4.0,
+#         "min_pixels": 1000,
+#         "generate_both_plots": true
+#     }
+# }

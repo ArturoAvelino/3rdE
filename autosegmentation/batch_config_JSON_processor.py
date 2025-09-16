@@ -5,7 +5,7 @@ import glob
 import json
 from typing import List
 from autosegmentation.instance_segmentator import InstanceSegmentation
-from autosegmentation.crop_and_compute_boundingbox import CropImageAndWriteBBox
+from autosegmentation.bbox_contour_crop import CropImageAndWriteBBox
 
 
 class BatchConfigProcessor:
@@ -199,7 +199,9 @@ class BatchConfigProcessor:
             self.logger.info(f"Processing configuration: {config_path}")
 
             # Initialize and process using InstanceSegmentation
-            processor = InstanceSegmentation(config_path=config_path)
+            processor = InstanceSegmentation(config_path=config_path,
+                                             generate_both_plots=True
+                                             )
             processor.process()  # This will run all steps
 
             # Extract the computed values from the processor
