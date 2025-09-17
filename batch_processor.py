@@ -729,6 +729,7 @@ def main():
                 include_segmentation=False
             )
 
+
             logger.info(
                 f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
         else:
