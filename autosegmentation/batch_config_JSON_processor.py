@@ -344,14 +344,12 @@ class BatchConfigProcessor:
 # processor = BatchConfigProcessor(
 #     json_path="/path/to/config/files",
 #     filename_pattern="*.json",
-#     #old. check_white_center=True
 # )
 
 # # #old. Example usage with check_white_center=False (default)
 # processor = BatchConfigProcessor(
 #     json_path="/path/to/config/files",
 #     filename_pattern="*.json",
-#     #old. check_white_center=False
 # )
 
 # # Or simply use the default value (False)

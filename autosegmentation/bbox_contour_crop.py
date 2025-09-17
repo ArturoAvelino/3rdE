@@ -435,8 +435,8 @@ class CropImageAndWriteBBox:
                     "image_id": 1,
                     "category_id": int(undefined_category_id),
                     "bbox": [
-                        int(left),
-                        int(upper),
+                        int(center_x),
+                        int(center_y),
                         int(width),
                         int(height)
                     ],

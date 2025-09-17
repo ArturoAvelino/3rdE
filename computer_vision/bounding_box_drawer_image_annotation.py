@@ -208,7 +208,8 @@ class BoundingBoxDrawer:
                  show_id: bool = True,
                  show_confidence: bool = True,
                  show_center: bool = False,
-                 center_dot_size: int = 8):
+                 center_dot_size: int = 8,
+                 show_label: bool = True):
         """
             Initialize the BoundingBoxDrawer.
 
@@ -229,6 +230,7 @@ class BoundingBoxDrawer:
                 show_confidence (bool): Whether to show confidence in bounding box labels
                 show_center (bool): Whether to draw a dot at the center of each bounding box
                 center_dot_size (int): Radius of center dot in pixels (default: 4)
+                show_label (bool): Whether to show object labels (class names) in bounding box labels
 
             Raises:
                 ValueError: If json_format is not "coco" or "roboflow" or text_position is invalid
@@ -261,6 +263,8 @@ class BoundingBoxDrawer:
         self.show_confidence = show_confidence
         self.show_center = show_center
         self.center_dot_size = max(1, center_dot_size)  # Ensure minimum size of 1
+        self.show_label = show_label
+
 
         # Create output directory if it doesn't exist
         self.output_directory.mkdir(parents=True, exist_ok=True)
@@ -296,7 +300,9 @@ class BoundingBoxDrawer:
                                        custom_show_center: Optional[
                                            bool] = None,
                                        custom_center_dot_size: Optional[
-                                           int] = None) -> bool:
+                                           int] = None,
+                                       custom_show_label: Optional[
+                                           bool] = None) -> bool:
         """
             Process a single image with its corresponding JSON annotation file.
 
@@ -315,6 +321,7 @@ class BoundingBoxDrawer:
                 custom_show_confidence (bool, optional): Whether to show confidence for this image
                 custom_show_center (bool, optional): Whether to show center dots for this image
                 custom_center_dot_size (int, optional): Custom center dot size for this image
+                custom_show_label (bool, optional): Whether to show labels for this image
 
             Returns:
                 bool: True if processing was successful, False otherwise
@@ -355,6 +362,7 @@ class BoundingBoxDrawer:
             show_confidence = custom_show_confidence if custom_show_confidence is not None else self.show_confidence
             show_center = custom_show_center if custom_show_center is not None else self.show_center
             center_dot_size = custom_center_dot_size if custom_center_dot_size is not None else self.center_dot_size
+            show_label = custom_show_label if custom_show_label is not None else self.show_label
 
             # Extract bounding box data
             all_bbox_data = self.processor.extract_bbox_data(json_data,
@@ -391,7 +399,7 @@ class BoundingBoxDrawer:
             annotated_image = self._draw_bounding_boxes(
                 image, filtered_bbox_data, font_size, bbox_color, text_color,
                 text_position, show_id, show_confidence, class_summary,
-                summary_position, show_center, center_dot_size
+                summary_position, show_center, center_dot_size, show_label
             )
 
             # Generate output filename if not provided
@@ -457,7 +465,8 @@ class BoundingBoxDrawer:
                              class_summary: Optional[Dict[str, int]] = None,
                              summary_position: str = "bottom_right",
                              show_center: bool = False,
-                             center_dot_size: int = 4) -> Image.Image:
+                             center_dot_size: int = 4,
+                             show_label: bool = True) -> Image.Image:
         """Draw bounding boxes, labels, center dots, and summary on the image."""
         # Create a copy of the image to draw on
         annotated_image = image.copy()
@@ -502,8 +511,11 @@ class BoundingBoxDrawer:
                     fill=color, outline=color
                 )
 
-            # Prepare label text based on show_id and show_confidence settings
-            label_parts = [label]
+            # Prepare label text based on show_label, show_id and show_confidence settings
+            label_parts = []
+
+            if show_label:
+                label_parts.append(label)
 
             if show_confidence and 'confidence' in bbox:
                 label_parts.append(bbox['confidence'])
@@ -511,42 +523,44 @@ class BoundingBoxDrawer:
             if show_id and 'id' in bbox:
                 label_parts.append(f"({bbox['id']})")
 
-            label_text = " ".join(label_parts)
+            # Only draw text if there are label parts to display
+            if label_parts:
+                label_text = " ".join(label_parts)
 
-            # Calculate text position based on preference
-            text_x = x1
-            if text_position.lower() == "top":
-                text_y = max(0, y1 - font_size - 5)  # Above the box
-            else:  # bottom
-                text_y = min(image.height - font_size, y2 + 5)  # Below the box
+                # Calculate text position based on preference
+                text_x = x1
+                if text_position.lower() == "top":
+                    text_y = max(0, y1 - font_size - 5)  # Above the box
+                else:  # bottom
+                    text_y = min(image.height - font_size, y2 + 5)  # Below the box
 
-            # Determine text fill color
-            if text_color:
-                fill_color = text_color
-                bg_color = self._get_complementary_color(
-                    text_color) if not bbox_color else color
-            else:
-                fill_color = 'white'
-                bg_color = color
+                # Determine text fill color
+                if text_color:
+                    fill_color = text_color
+                    bg_color = self._get_complementary_color(
+                        text_color) if not bbox_color else color
+                else:
+                    fill_color = 'white'
+                    bg_color = color
 
-            # Draw text background for better visibility
-            if font:
-                bbox_text = draw.textbbox((text_x, text_y), label_text,
-                                          font=font)
-                padding = 2
-                bg_bbox = (bbox_text[0] - padding, bbox_text[1] - padding,
-                           bbox_text[2] + padding, bbox_text[3] + padding)
-                draw.rectangle(bg_bbox, fill=bg_color)
-                draw.text((text_x, text_y), label_text, fill=fill_color,
-                          font=font)
-            else:
-                # Fallback without font
-                text_width = len(label_text) * (font_size // 2)
-                text_height = font_size
-                bg_bbox = (text_x, text_y, text_x + text_width,
-                           text_y + text_height)
-                draw.rectangle(bg_bbox, fill=bg_color)
-                draw.text((text_x, text_y), label_text, fill=fill_color)
+                # Draw text background for better visibility
+                if font:
+                    bbox_text = draw.textbbox((text_x, text_y), label_text,
+                                              font=font)
+                    padding = 2
+                    bg_bbox = (bbox_text[0] - padding, bbox_text[1] - padding,
+                               bbox_text[2] + padding, bbox_text[3] + padding)
+                    draw.rectangle(bg_bbox, fill=bg_color)
+                    draw.text((text_x, text_y), label_text, fill=fill_color,
+                              font=font)
+                else:
+                    # Fallback without font
+                    text_width = len(label_text) * (font_size // 2)
+                    text_height = font_size
+                    bg_bbox = (text_x, text_y, text_x + text_width,
+                               text_y + text_height)
+                    draw.rectangle(bg_bbox, fill=bg_color)
+                    draw.text((text_x, text_y), label_text, fill=fill_color)
 
         # Draw class summary if provided
         if class_summary:
@@ -946,7 +960,8 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
                              show_id: bool = True,
                              show_confidence: bool = True,
                              show_center: bool = False,
-                             center_dot_size: int = 4) -> bool:
+                             center_dot_size: int = 4,
+                             show_label: bool = True) -> bool:
     """
     Convenience function to draw bounding boxes from COCO format JSON.
 
@@ -965,6 +980,7 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
         show_confidence (bool): Whether to show confidence scores
         show_center (bool): Whether to draw center dots on bounding boxes
         center_dot_size (int): Size of center dots in pixels
+        show_label (bool): Whether to show object labels (class names)
 
     Returns:
         bool: True if successful, False otherwise
@@ -975,7 +991,8 @@ def draw_coco_bounding_boxes(image_path: str, json_path: str,
         text_color=text_color, text_position=text_position,
         show_summary=show_summary, summary_position=summary_position,
         show_id=show_id, show_confidence=show_confidence,
-        show_center=show_center, center_dot_size=center_dot_size
+        show_center=show_center, center_dot_size=center_dot_size,
+        show_label=show_label
     )
     return drawer.process_image_with_annotations(image_path, json_path,
                                                  output_filename)
@@ -995,7 +1012,8 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
                                  show_id: bool = True,
                                  show_confidence: bool = True,
                                  show_center: bool = False,
-                                 center_dot_size: int = 4) -> bool:
+                                 center_dot_size: int = 4,
+                                 show_label: bool = True) -> bool:
     """
     Convenience function to draw bounding boxes from Roboflow format JSON.
 
@@ -1015,6 +1033,7 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
         show_confidence (bool): Whether to show confidence scores
         show_center (bool): Whether to draw center dots on bounding boxes
         center_dot_size (int): Size of center dots in pixels
+        show_label (bool): Whether to show object labels (class names)
 
     Returns:
         bool: True if successful, False otherwise
@@ -1026,11 +1045,13 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
         confidence_range=confidence_range, show_summary=show_summary,
         summary_position=summary_position, show_id=show_id,
         show_confidence=show_confidence, show_center=show_center,
-        center_dot_size=center_dot_size
+        center_dot_size=center_dot_size, show_label=show_label
     )
     return drawer.process_image_with_annotations(image_path, json_path,
                                                  output_filename)
 
+
+# ----------------------------------------------------------
 # Example usage
 # if __name__ == "__main__":
 #     # Setup logging
