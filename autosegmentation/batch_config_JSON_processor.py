@@ -1,4 +1,3 @@
-
 import logging
 from pathlib import Path
 import glob
@@ -97,7 +96,9 @@ class BatchConfigProcessor:
 
     def __init__(self, json_path: str, filename_pattern: str = "*.json",
                  #old. check_white_center: bool = False,
-                 use_nonwhitepixel_as_bboxcenter: bool = False):
+                 use_nonwhitepixel_as_bboxcenter: bool = False,
+                 create_cropped_images: bool = True,
+                 include_segmentation: bool = True):
         """
         Initialize the BatchConfigProcessor.
 
@@ -111,6 +112,8 @@ class BatchConfigProcessor:
         self.filename_pattern = filename_pattern
         #old. self.check_white_center = check_white_center
         self.use_nonwhitepixel_as_bboxcenter = use_nonwhitepixel_as_bboxcenter
+        self.create_cropped_images = create_cropped_images
+        self.include_segmentation = include_segmentation
         self.config_files = []
         self.logger = logging.getLogger(__name__)
 
@@ -233,8 +236,9 @@ class BatchConfigProcessor:
                     processor_crop.process_all_groups(
                         combine_json_data = True,
                         image_format = 'JPG', # JPG or PNG. Format of the output cropped images
-                        #old. check_white_center = self.check_white_center,
-                        use_nonwhitepixel_as_bboxcenter = self.use_nonwhitepixel_as_bboxcenter
+                        use_nonwhitepixel_as_bboxcenter = self.use_nonwhitepixel_as_bboxcenter,
+                        create_cropped_images = self.create_cropped_images,
+                        include_segmentation = self.include_segmentation
                     )
 
                 except Exception as e:

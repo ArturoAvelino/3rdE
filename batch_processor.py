@@ -478,8 +478,9 @@ def generate_configuration_files_only(
 def process_batch_of_config_files(
         config_directory: str,
         filename_pattern: str = "*_config.json",
-        #old. check_white_center: bool = False,
-        use_nonwhitepixel_as_bboxcenter: bool = False  ) -> dict:
+        use_nonwhitepixel_as_bboxcenter: bool = False,
+        create_cropped_images: bool = True,
+        include_segmentation: bool = True) -> dict:
     """
     Process a batch of images using configuration JSON files with the BatchConfigProcessor.
 
@@ -503,7 +504,9 @@ def process_batch_of_config_files(
             json_path=config_directory,
             filename_pattern=filename_pattern,
             #old. check_white_center = check_white_center,
-            use_nonwhitepixel_as_bboxcenter = use_nonwhitepixel_as_bboxcenter
+            use_nonwhitepixel_as_bboxcenter = use_nonwhitepixel_as_bboxcenter,
+            create_cropped_images = create_cropped_images,
+            include_segmentation = include_segmentation
         )
 
         # Get information about found config files (optional - for logging)
@@ -721,8 +724,9 @@ def main():
             results_existing = process_batch_of_config_files(
                 config_directory=config_directory,
                 filename_pattern="*_config.json",
-                #old. check_white_center=True, # False = use the true bbox center, True = use the closest non-white pixel to the center
-                use_nonwhitepixel_as_bboxcenter=True
+                use_nonwhitepixel_as_bboxcenter=True,
+                create_cropped_images=False,
+                include_segmentation=False
             )
 
             logger.info(

@@ -353,7 +353,8 @@ class CropImageAndWriteBBox:
     def create_json_metadata(self, group_number, bbox_coords,
                              use_alternative_center = False,
                              alternative_center_coords = None,
-                             undefined_category_id = 129):
+                             undefined_category_id = 129,
+                             include_segmentation = True):
         """
             Create JSON metadata for a specific group in COCO format.
 
@@ -363,6 +364,7 @@ class CropImageAndWriteBBox:
                 use_alternative_center (bool): Whether to use alternative center coordinates
                 alternative_center_coords (tuple): (center_x, center_y) alternative coordinates
                 undefined_category_id (int): ID for undefined categories
+                include_segmentation (bool): Whether to include segmentation coordinates in the output
 
             Returns:
                 dict: JSON metadata structure in COCO format
@@ -385,8 +387,11 @@ class CropImageAndWriteBBox:
         # Get image metadata including date captured
         image_metadata = self.get_image_metadata()
 
-        # Get perimeter pixels for segmentation
-        segmentation_coords = self.find_perimeter_pixels(group_number)
+        # Get perimeter pixels for segmentation only if requested
+        if include_segmentation:
+            segmentation_coords = self.find_perimeter_pixels(group_number)
+        else:
+            segmentation_coords = []
 
         current_time = datetime.now().strftime("%Y-%m-%d")
         current_year = datetime.now().strftime("%Y")
@@ -443,11 +448,12 @@ class CropImageAndWriteBBox:
             "type": ""
         }
 
-
     def crop_and_write_bbox(self, group_number,
                             image_format='JPG',
-                            #old. check_white_center=False,
-                            use_nonwhitepixel_as_bboxcenter=False):
+                            # old. check_white_center=False,
+                            use_nonwhitepixel_as_bboxcenter=False,
+                            create_cropped_images=True,
+                            include_segmentation=True):
         """
             Process a specific group: create crop and save metadata.
 
@@ -456,6 +462,8 @@ class CropImageAndWriteBBox:
                 image_format (str): Format to save the image ('PNG' or 'JPEG')
                 #old. check_white_center (bool): Whether to check if center pixel is white
                 use_nonwhitepixel_as_bboxcenter (bool): Whether to find and use closest non-white pixel as center
+                create_cropped_images (bool): Whether to create and save cropped images
+                include_segmentation (bool): Whether to include segmentation coordinates in the JSON metadata
         """
 
         # Validate and normalize image format
@@ -499,31 +507,36 @@ class CropImageAndWriteBBox:
                         use_alternative_center = True
                         alternative_center_coords = (alt_x, alt_y)
 
-            # Crop the image
-            cropped_image = self.image_original.crop(crop_coords)
-            cropped_image_no_bkgd = self.image_no_bkgd.crop(crop_coords)
+            # Create and save cropped images only if requested
+            if create_cropped_images:
+                # Crop the image
+                cropped_image = self.image_original.crop(crop_coords)
+                cropped_image_no_bkgd = self.image_no_bkgd.crop(crop_coords)
 
-            # Generate output image filenames
-            base_name = self.path_raw_image.stem
-            base_no_bkgd_name = self.path_image_no_bkgd.stem
-            crop_filename = f"crop_{group_number}_{base_name}.{extension}"
-            crop_no_bkgd_filename = f"crop_{group_number}_{base_no_bkgd_name}.{extension}"
+                # Generate output image filenames
+                base_name = self.path_raw_image.stem
+                base_no_bkgd_name = self.path_image_no_bkgd.stem
+                crop_filename = f"crop_{group_number}_{base_name}.{extension}"
+                crop_no_bkgd_filename = f"crop_{group_number}_{base_no_bkgd_name}.{extension}"
 
-            # Generate output JSON filename with COCO suffix
-            json_filename = f"crop_{group_number}_{base_name}_coco.json"
-
-            # Save cropped image
-            crop_path = self.output_dir / crop_filename
-            crop_no_bkgd_path = self.output_dir / crop_no_bkgd_filename
-            cropped_image.save(crop_path, format=save_format)
-            cropped_image_no_bkgd.save(crop_no_bkgd_path, format=save_format)
+                # Save cropped image
+                crop_path = self.output_dir / crop_filename
+                crop_no_bkgd_path = self.output_dir / crop_no_bkgd_filename
+                cropped_image.save(crop_path, format=save_format)
+                cropped_image_no_bkgd.save(crop_no_bkgd_path,
+                                           format=save_format)
 
             # Create and save JSON metadata
             json_data = self.create_json_metadata(
                 group_number, bbox_coords,
                 use_alternative_center=use_alternative_center,
-                alternative_center_coords=alternative_center_coords
+                alternative_center_coords=alternative_center_coords,
+                include_segmentation=include_segmentation
             )
+
+            # Generate output JSON filename with COCO suffix
+            base_name = self.path_raw_image.stem
+            json_filename = f"crop_{group_number}_{base_name}_coco.json"
             json_path = self.output_dir / json_filename
             with open(json_path, 'w') as f:
                 json.dump(json_data, f, indent=4)
@@ -641,10 +654,13 @@ class CropImageAndWriteBBox:
             raise IOError(f"Error writing combined JSON file: {e}")
 
 
+
     def process_all_groups(self, combine_json_data=True,
                            image_format='JPG',
                            #old. check_white_center=False,
-                           use_nonwhitepixel_as_bboxcenter=False):
+                           use_nonwhitepixel_as_bboxcenter=False,
+                           create_cropped_images=True,
+                           include_segmentation=True):
         """
             Process all valid groups in the segmented image.
 
@@ -653,6 +669,8 @@ class CropImageAndWriteBBox:
                 image_format (str): Format to save the images ('PNG' or 'JPG')
                 #old. check_white_center (bool): Whether to check if center pixel is white
                 use_nonwhitepixel_as_bboxcenter (bool): Whether to find and use closest non-white pixel as center
+                create_cropped_images (bool): Whether to create and save cropped images
+                include_segmentation (bool): Whether to include segmentation coordinates in the JSON metadata
             """
 
         # Get unique group numbers (excluding -1 which typically represents invalid/background)
@@ -664,7 +682,9 @@ class CropImageAndWriteBBox:
                 int(group_number),
                 image_format=image_format,
                 #old. check_white_center=check_white_center,
-                use_nonwhitepixel_as_bboxcenter=use_nonwhitepixel_as_bboxcenter
+                use_nonwhitepixel_as_bboxcenter=use_nonwhitepixel_as_bboxcenter,
+                create_cropped_images=create_cropped_images,
+                include_segmentation=include_segmentation
             )
 
         if combine_json_data:
@@ -672,15 +692,32 @@ class CropImageAndWriteBBox:
                 output_filename=f"{self.path_raw_image.stem}_combined_metadata.json")
 
 
+# --------------------------------------------------
+
 # # Basic usage (no white pixel checking)
 # processor.process_all_groups(image_format='PNG')
 
-# # Check for white center but don't replace coordinates
-#old. processor.process_all_groups(check_white_center=True, image_format='PNG')
-
 # # Check for white center and replace with closest non-white pixel
 # processor.process_all_groups(
-#     #old. check_white_center=True,
 #     use_nonwhitepixel_as_bboxcenter=True,
+#     image_format='PNG'
+# )
+
+# # Process only metadata without creating cropped images
+# processor.process_all_groups(
+#     create_cropped_images=False,
+#     image_format='PNG'
+# )
+
+# # Process without segmentation coordinates (faster processing)
+# processor.process_all_groups(
+#     include_segmentation=False,
+#     image_format='PNG'
+# )
+
+# # Process with both options disabled for minimal output
+# processor.process_all_groups(
+#     create_cropped_images=False,
+#     include_segmentation=False,
 #     image_format='PNG'
 # )
