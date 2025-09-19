@@ -478,7 +478,8 @@ class BoundingBoxClusteringProcessor:
             plt.savefig(plot_path, dpi=dpi, bbox_inches='tight')
             self.logger.info(f"Raw data scatter plot saved to: {plot_path}")
 
-        plt.show()
+        # plt.show()
+        plt.close()
 
     def apply_kmeans_clustering(self, random_state: int = 42) -> Tuple[np.ndarray, KMeans]:
         """
@@ -592,7 +593,8 @@ class BoundingBoxClusteringProcessor:
             plt.savefig(plot_path, dpi=dpi, bbox_inches='tight')
             self.logger.info(f"Scatter plot saved to: {plot_path}")
         
-        plt.show()
+        # plt.show()
+        plt.close()
     
     def save_cluster_centers(self, centers_filename: Optional[str] = None) -> None:
         """

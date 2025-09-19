@@ -278,7 +278,6 @@ class BoundingBoxDrawer:
         else:
             self.processor = RoboflowProcessor()
 
-
     def process_image_with_annotations(self, image_file_path: Union[str, Path],
                                        json_file_path: Union[str, Path],
                                        output_filename: Optional[str] = None,
@@ -420,7 +419,6 @@ class BoundingBoxDrawer:
             self.logger.error(f"Error processing {image_file_path}: {str(e)}")
             return False
 
-
     def _filter_by_confidence(self, bbox_data: List[Dict],
                               confidence_range: Optional[
                                   Tuple[float, float]]) -> List[Dict]:
@@ -441,7 +439,6 @@ class BoundingBoxDrawer:
 
         return filtered_data
 
-
     def _create_class_summary(self, bbox_data: List[Dict]) -> Dict[str, int]:
         """Create a summary of object counts by class."""
         class_counts = {}
@@ -452,7 +449,6 @@ class BoundingBoxDrawer:
 
         # Sort by count (descending) then by name
         return dict(sorted(class_counts.items(), key=lambda x: (-x[1], x[0])))
-
 
     def _draw_bounding_boxes(self, image: Image.Image,
                              bbox_data: List[Dict],
@@ -568,7 +564,6 @@ class BoundingBoxDrawer:
                                      summary_position)
 
         return annotated_image
-
 
     def _draw_class_summary(self, draw: ImageDraw.ImageDraw,
                             class_summary: Dict[str, int],
@@ -759,6 +754,246 @@ class BoundingBoxDrawer:
             return ImageFont.load_default()
         except Exception:
             return None
+
+    def process_batch(self,
+                      input_image_dir: Union[str, Path],
+                      input_json_dir: Union[str, Path],
+                      input_json_format: str,
+                      output_dir: Union[str, Path],
+                      font_size: Optional[int] = None,
+                      bbox_color: Optional[str] = None,
+                      text_color: Optional[str] = None,
+                      text_position: Optional[str] = None,
+                      show_center: Optional[bool] = None,
+                      center_dot_size: Optional[int] = None,
+                      show_id: Optional[bool] = None,
+                      show_label: Optional[bool] = None,
+                      summary_position: Optional[str] = None,
+                      show_confidence: Optional[bool] = None,
+                      confidence_range: Optional[Tuple[float, float]] = None,
+                      show_summary: Optional[bool] = None,
+                      image_extensions: List[str] = None,
+                      json_extensions: List[str] = None) -> Dict[
+        str, Union[List[str], int]]:
+        """
+            Process a batch of images and their corresponding JSON files in a single operation.
+
+            This method enables batch processing of multiple images with their annotation files,
+            eliminating the need to process each image individually. It automatically matches
+            image files with their corresponding JSON files based on filename (without extension).
+
+            Args:
+                input_image_dir (Union[str, Path]): Path to directory containing images
+                input_json_dir (Union[str, Path]): Path to directory containing JSON files
+                input_json_format (str): Format of JSON files ("coco" or "roboflow")
+                output_dir (Union[str, Path]): Path to output directory (will be created if doesn't exist)
+                font_size (int, optional): Override default font size for this batch
+                bbox_color (str, optional): Override default bounding box color
+                text_color (str, optional): Override default text color
+                text_position (str, optional): Override default text position ("top" or "bottom")
+                show_center (bool, optional): Override default center dot display
+                center_dot_size (int, optional): Override default center dot size
+                show_id (bool, optional): Override default ID display
+                show_label (bool, optional): Override default label display
+                summary_position (str, optional): Override default summary position
+                show_confidence (bool, optional): Override default confidence display
+                confidence_range (Tuple[float, float], optional): Override default confidence filtering
+                show_summary (bool, optional): Override default summary display
+                image_extensions (List[str], optional): List of image file extensions to process
+                                                       (default: ['.jpg', '.jpeg', '.png', '.bmp', '.tiff'])
+                json_extensions (List[str], optional): List of JSON file extensions to process
+                                                      (default: ['.json'])
+
+            Returns:
+                Dict[str, Union[List[str], int]]: Dictionary containing:
+                    - 'successful': List of successfully processed image filenames
+                    - 'failed': List of failed image filenames
+                    - 'skipped': List of skipped image filenames (no matching JSON)
+                    - 'total_processed': Total number of images processed
+                    - 'success_count': Number of successful processes
+                    - 'failure_count': Number of failed processes
+                    - 'skipped_count': Number of skipped images
+
+            Example:
+                ```python
+                drawer = BoundingBoxDrawer(json_format="coco")
+
+                results = drawer.process_batch(
+                    input_image_dir="/path/to/images",
+                    input_json_dir="/path/to/json",
+                    input_json_format="coco",
+                    output_dir="/path/to/output",
+                    font_size=20,
+                    bbox_color="red",
+                    show_confidence=True
+                )
+
+                print(f"Successfully processed: {results['success_count']} images")
+                print(f"Failed: {results['failure_count']} images")
+                ```
+            """
+
+        # Convert paths to Path objects
+        input_image_dir = Path(input_image_dir)
+        input_json_dir = Path(input_json_dir)
+        output_dir = Path(output_dir)
+
+        # Create output directory if it doesn't exist
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Set default extensions
+        if image_extensions is None:
+            image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
+        if json_extensions is None:
+            json_extensions = ['.json']
+
+        # Validate input format
+        if input_json_format.lower() not in ["coco", "roboflow"]:
+            raise ValueError(
+                "input_json_format must be either 'coco' or 'roboflow'")
+
+        # Validate directories
+        if not input_image_dir.exists():
+            raise FileNotFoundError(f"Image directory not found: {input_image_dir}")
+        if not input_json_dir.exists():
+            raise FileNotFoundError(f"JSON directory not found: {input_json_dir}")
+
+        self.logger.info(f"Starting batch processing...")
+        self.logger.info(f"Image directory: {input_image_dir}")
+        self.logger.info(f"JSON directory: {input_json_dir}")
+        self.logger.info(f"Output directory: {output_dir}")
+        self.logger.info(f"JSON format: {input_json_format}")
+
+        # Find all image files
+        image_files = []
+        for ext in image_extensions:
+            image_files.extend(input_image_dir.glob(f"*{ext}"))
+            image_files.extend(input_image_dir.glob(f"*{ext.upper()}"))
+
+        if not image_files:
+            self.logger.warning(f"No image files found in {input_image_dir}")
+            return {
+                'successful': [],
+                'failed': [],
+                'skipped': [],
+                'total_processed': 0,
+                'success_count': 0,
+                'failure_count': 0,
+                'skipped_count': 0
+            }
+
+        self.logger.info(f"Found {len(image_files)} image files to process")
+
+        # Initialize results tracking
+        results = {
+            'successful': [],
+            'failed': [],
+            'skipped': [],
+            'total_processed': 0,
+            'success_count': 0,
+            'failure_count': 0,
+            'skipped_count': 0
+        }
+
+        # Create a temporary instance with updated format if needed
+        original_format = self.json_format
+        if input_json_format.lower() != self.json_format:
+            self.json_format = input_json_format.lower()
+            # Reinitialize processor for the new format
+            if self.json_format == "coco":
+                self.processor = COCOProcessor()
+            else:
+                self.processor = RoboflowProcessor()
+
+        # Process each image file
+        for image_file in image_files:
+            try:
+                # Look for matching JSON file
+                json_file = None
+                base_name = image_file.stem
+
+                for ext in json_extensions:
+                    potential_json = input_json_dir / f"{base_name}{ext}"
+                    if potential_json.exists():
+                        json_file = potential_json
+                        break
+
+                if json_file is None:
+                    self.logger.warning(
+                        f"No matching JSON file found for {image_file.name}")
+                    results['skipped'].append(image_file.name)
+                    results['skipped_count'] += 1
+                    continue
+
+                # Generate output filename
+                output_filename = f"{base_name}_with_bboxes{image_file.suffix}"
+
+                self.logger.info(
+                    f"Processing {image_file.name} with {json_file.name}")
+
+                # Process the image with optional parameter overrides
+                success = self.process_image_with_annotations(
+                    image_file_path=image_file,
+                    json_file_path=json_file,
+                    output_filename=output_filename,
+                    custom_font_size=font_size,
+                    custom_bbox_color=bbox_color,
+                    custom_text_color=text_color,
+                    custom_text_position=text_position,
+                    custom_confidence_range=confidence_range,
+                    custom_show_summary=show_summary,
+                    custom_summary_position=summary_position,
+                    custom_show_id=show_id,
+                    custom_show_confidence=show_confidence,
+                    custom_show_center=show_center,
+                    custom_center_dot_size=center_dot_size,
+                    custom_show_label=show_label
+                )
+
+                # Update output directory for the processed file
+                if success:
+                    # Move the file from default output directory to specified output directory
+                    source_file = self.output_directory / output_filename
+                    target_file = output_dir / output_filename
+
+                    if source_file.exists() and source_file != target_file:
+                        source_file.rename(target_file)
+
+                    results['successful'].append(image_file.name)
+                    results['success_count'] += 1
+                    self.logger.info(f"Successfully processed {image_file.name}")
+                else:
+                    results['failed'].append(image_file.name)
+                    results['failure_count'] += 1
+                    self.logger.error(f"Failed to process {image_file.name}")
+
+                results['total_processed'] += 1
+
+            except Exception as e:
+                self.logger.error(f"Error processing {image_file.name}: {str(e)}")
+                results['failed'].append(image_file.name)
+                results['failure_count'] += 1
+                results['total_processed'] += 1
+
+        # Restore original format if it was changed
+        if input_json_format.lower() != original_format:
+            self.json_format = original_format
+            # Reinitialize processor for the original format
+            if self.json_format == "coco":
+                self.processor = COCOProcessor()
+            else:
+                self.processor = RoboflowProcessor()
+
+        # Log summary
+        self.logger.info(f"Batch processing completed:")
+        self.logger.info(f"  Total images found: {len(image_files)}")
+        self.logger.info(f"  Successfully processed: {results['success_count']}")
+        self.logger.info(f"  Failed: {results['failure_count']}")
+        self.logger.info(f"  Skipped (no JSON): {results['skipped_count']}")
+        self.logger.info(
+            f"  Success rate: {(results['success_count'] / max(results['total_processed'], 1)) * 100:.1f}%")
+
+        return results
 
 
 class COCOProcessor:
@@ -1051,8 +1286,129 @@ def draw_roboflow_bounding_boxes(image_path: str, json_path: str,
                                                  output_filename)
 
 
+def process_batch_bounding_boxes(input_image_dir: Union[str, Path],
+                                 input_json_dir: Union[str, Path],
+                                 input_json_format: str,
+                                 output_dir: Union[str, Path],
+                                 font_size: int = 16,
+                                 bbox_color: Optional[str] = None,
+                                 text_color: Optional[str] = None,
+                                 text_position: str = "top",
+                                 show_center: bool = False,
+                                 center_dot_size: int = 8,
+                                 show_id: bool = True,
+                                 show_label: bool = True,
+                                 summary_position: str = "bottom_right",
+                                 show_confidence: bool = True,
+                                 confidence_range: Optional[
+                                     Tuple[float, float]] = None,
+                                 show_summary: bool = False) -> Dict[
+    str, Union[List[str], int]]:
+    """
+    Convenience function for batch processing of images with bounding box annotations.
+
+    This function creates a BoundingBoxDrawer instance and processes a batch of images
+    with their corresponding JSON annotation files in a single operation.
+
+    Args:
+        input_image_dir (Union[str, Path]): Path to directory containing images
+        input_json_dir (Union[str, Path]): Path to directory containing JSON files
+        input_json_format (str): Format of JSON files ("coco" or "roboflow")
+        output_dir (Union[str, Path]): Path to output directory
+        font_size (int): Font size for text labels (default: 16)
+        bbox_color (str, optional): Color for all bounding boxes
+        text_color (str, optional): Color for all text
+        text_position (str): Text position ("top" or "bottom")
+        show_center (bool): Whether to show center dots
+        center_dot_size (int): Size of center dots
+        show_id (bool): Whether to show object IDs
+        show_label (bool): Whether to show object labels
+        summary_position (str): Position for object count summary
+        show_confidence (bool): Whether to show confidence scores
+        confidence_range (Tuple[float, float], optional): Range for confidence filtering
+        show_summary (bool): Whether to show object count summary
+
+    Returns:
+        Dict containing processing results and statistics
+
+    Example:
+        ```python
+        results = process_batch_bounding_boxes(
+            input_image_dir="/path/to/images",
+            input_json_dir="/path/to/json",
+            input_json_format="coco",
+            output_dir="/path/to/output",
+            font_size=24,
+            bbox_color="red",
+            show_confidence=True
+        )
+        ```
+    """
+
+    # Create BoundingBoxDrawer instance
+    drawer = BoundingBoxDrawer(
+        json_format=input_json_format,
+        output_directory=str(output_dir),
+        font_size=font_size,
+        bbox_color=bbox_color,
+        text_color=text_color,
+        text_position=text_position,
+        show_center=show_center,
+        center_dot_size=center_dot_size,
+        show_id=show_id,
+        show_label=show_label,
+        summary_position=summary_position,
+        show_confidence=show_confidence,
+        confidence_range=confidence_range,
+        show_summary=show_summary
+    )
+
+    # Process the batch
+    return drawer.process_batch(
+        input_image_dir=input_image_dir,
+        input_json_dir=input_json_dir,
+        input_json_format=input_json_format,
+        output_dir=output_dir
+    )
+
+
 # ----------------------------------------------------------
 # Example usage
+
+# # Basic usage
+# drawer = BoundingBoxDrawer()
+# results = drawer.process_batch(
+#     input_image_dir="/path/to/images",
+#     input_json_dir="/path/to/json",
+#     input_json_format="coco",
+#     output_dir="/path/to/output"
+# )
+
+# # Advanced usage with customization
+# results = drawer.process_batch(
+#     input_image_dir="/path/to/images",
+#     input_json_dir="/path/to/json",
+#     input_json_format="roboflow",
+#     output_dir="/path/to/output",
+#     font_size=24,
+#     bbox_color="red",
+#     confidence_range=(0.5, 0.9),
+#     show_summary=True,
+#     show_center=True
+# )
+
+# # Using convenience function
+# results = process_batch_bounding_boxes(
+#     input_image_dir="/path/to/images",
+#     input_json_dir="/path/to/json",
+#     input_json_format="coco",
+#     output_dir="/path/to/output",
+#     font_size=20,
+#     show_confidence=True
+# )
+
+# ----------------------------
+
 # if __name__ == "__main__":
 #     # Setup logging
 #     logging.basicConfig(level=logging.INFO,

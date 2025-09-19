@@ -452,6 +452,7 @@ class ImageSegmentationProcessor:
                 self.logger.info(f"Saved segmented image to {segmented_path}")
 
         # plt.show()
+        plt.close()
         return self
 
 
