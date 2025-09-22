@@ -19,12 +19,12 @@ import time
 from dataclasses import dataclass, field
 
 # Import your existing modules
-from autosegmentation.background_remover import ImageSegmentationProcessor
+from autosegmentation.background_remover import BackgroundRemover
 from batch_processor import (
     generate_and_process_batch_configs,
     setup_logging
 )
-from computer_vision.bounding_box_drawer_image_annotation import BoundingBoxDrawer
+from computer_vision.bounding_box_drawer import BoundingBoxDrawer
 
 
 @dataclass
@@ -68,7 +68,7 @@ class PipelineConfig:
     parallel_processing: bool = False
     
 
-class ImageProcessingPipeline:
+class Bkgd_Segm_Bbox_pipe:
     """
     A comprehensive pipeline for batch image processing through multiple stages.
     
@@ -192,7 +192,7 @@ class ImageProcessingPipeline:
                 return True, no_bg_image_path
             
             # Process background removal
-            processor = ImageSegmentationProcessor(image_path, output_dir)
+            processor = BackgroundRemover(image_path, output_dir)
             processor.cluster_rgb_colors(n_clusters=self.config.n_clusters)
             processor.plot_rgb_rawdata()
             processor.plot_rgb_clusters()
@@ -870,7 +870,7 @@ def main():
     )
     
     # Initialize and run a pipeline
-    pipeline = ImageProcessingPipeline(config)
+    pipeline = Bkgd_Segm_Bbox_pipe(config)
     results = pipeline.run_pipeline()
     
     # Print final results
@@ -892,7 +892,7 @@ if __name__ == "__main__":
 # """
 
 # from pathlib import Path
-# from image_processing_pipeline import ImageProcessingPipeline, PipelineConfig
+# from image_processing_pipeline import Bkgd_Segm_Bbox_pipe, PipelineConfig
 # from batch_processor import setup_logging
 
 
@@ -910,7 +910,7 @@ if __name__ == "__main__":
 #     )
 
 #     # Run pipeline
-#     pipeline = ImageProcessingPipeline(config)
+#     pipeline = Bkgd_Segm_Bbox_pipe(config)
 #     results = pipeline.run_pipeline()
 
 #     print(f"Processed {results['processed_images']} images successfully")
@@ -951,7 +951,7 @@ if __name__ == "__main__":
 #     )
 
 #     # Run pipeline
-#     pipeline = ImageProcessingPipeline(config)
+#     pipeline = Bkgd_Segm_Bbox_pipe(config)
 #     results = pipeline.run_pipeline()
 
 
@@ -983,7 +983,7 @@ if __name__ == "__main__":
 #     setup_logging(log_dir)
 
 #     # Run pipeline
-#     pipeline = ImageProcessingPipeline(config)
+#     pipeline = Bkgd_Segm_Bbox_pipe(config)
 #     results = pipeline.run_pipeline()
 
 #     # Log final statistics
@@ -1002,7 +1002,7 @@ if __name__ == "__main__":
 #         image_pattern="sample_*.jpg"
 #     )
 
-#     pipeline = ImageProcessingPipeline(config)
+#     pipeline = Bkgd_Segm_Bbox_pipe(config)
 
 #     # You could extend this to process only specific subfolders
 #     # by modifying the discover_images method or filtering the results
@@ -1021,7 +1021,7 @@ if __name__ == "__main__":
 # # 2. **Modify paths**: Update the paths in the configuration to match your setup
 # # 3. **Run the pipeline**:
 
-# from image_processing_pipeline import ImageProcessingPipeline, PipelineConfig
+# from image_processing_pipeline import Bkgd_Segm_Bbox_pipe, PipelineConfig
 # from batch_processor import setup_logging
 
 # # Setup logging
@@ -1037,5 +1037,5 @@ if __name__ == "__main__":
 # )
 
 # # Run pipeline
-# pipeline = ImageProcessingPipeline(config)
+# pipeline = Bkgd_Segm_Bbox_pipe(config)
 # results = pipeline.run_pipeline()

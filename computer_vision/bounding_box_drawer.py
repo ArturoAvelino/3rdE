@@ -86,7 +86,7 @@ class BoundingBoxDrawer:
     drawer.set_summary_options(True, "center") # Enable centered summary
 
     # Example 6: Using Convenience Functions
-    from bounding_box_drawer_image_annotation import draw_roboflow_bounding_boxes
+    from bounding_box_drawer import draw_roboflow_bounding_boxes
 
     success = draw_roboflow_bounding_boxes(
         image_path="image.jpg",

@@ -5,11 +5,11 @@ from typing import List
 from tools.read_json_and_plot_contour_objects import read_json_plot_contours
 from tools.read_json_and_crop_objects import CropIndividualObjects
 
-from autosegmentation.background_remover import ImageSegmentationProcessor
+from autosegmentation.background_remover import BackgroundRemover
 from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
 from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
 from sandbox.instance_segmentation_bycolor import InstanceSegmentationByColor
-from computer_vision.bounding_box_drawer_image_annotation import BoundingBoxDrawer
+from computer_vision.bounding_box_drawer import BoundingBoxDrawer
 
 
 def setup_logging(input_dir):
@@ -364,7 +364,7 @@ def process_background_remover(input_dir, output_dir=None,
 
             # -----------
             # Remove color background from the images.
-            processor = ImageSegmentationProcessor(image_file, image_output_dir)
+            processor = BackgroundRemover(image_file, image_output_dir)
             processor.cluster_rgb_colors(n_clusters=DEFAULT_N_CLUSTERS)
             processor.plot_rgb_rawdata()
             processor.plot_rgb_clusters()
@@ -660,7 +660,7 @@ def generate_and_process_batch_configs(
     #         # # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
     #         # custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
     #         #
-    #         # processor = ImageSegmentationProcessor(
+    #         # processor = BackgroundRemover(
     #         #     image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
     #         #     # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/crop_45_capt0053_trimmed_no_bkgd.png",
     #         #     output_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/",

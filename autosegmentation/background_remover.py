@@ -8,9 +8,9 @@ from typing import List, Optional, Union
 import matplotlib.pyplot as plt
 
 
-class ImageSegmentationProcessor:
+class BackgroundRemover:
     """
-    ImageSegmentationProcessor: A class for image segmentation and background
+    BackgroundRemover: A class for image segmentation and background
     removal using K-means clustering.
 
     This class provides a comprehensive solution for image segmentation using
@@ -44,7 +44,7 @@ class ImageSegmentationProcessor:
 
     # input_dir = Path("/Users/aavelino/PycharmProjects/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/capt0044.jpg")
     # output_dir = Path("/Users/aavelino/PycharmProjects/Github/3rdEd/images/09_unsupervised_learning/soil_fauna/BM4_E/capt0044/outputs/")
-    processor = ImageSegmentationProcessor(image_path, output_dir)
+    processor = BackgroundRemover(image_path, output_dir)
     processor.cluster_rgb_colors(n_clusters=5)
     processor.plot_rgb_rawdata()
     processor.plot_rgb_clusters()
@@ -58,7 +58,7 @@ class ImageSegmentationProcessor:
         [255, 255, 0],  # Yellow
         [128, 128, 128] # Gray
     ])
-    processor = ImageSegmentationProcessor(
+    processor = BackgroundRemover(
         image_path="input/image.jpg",
         output_dir="output",
         enable_logging=True,
@@ -93,11 +93,11 @@ class ImageSegmentationProcessor:
 
     --------------------------------------------------------
 
-    Output from the `ImageSegmentationProcessor` Python class
+    Output from the `BackgroundRemover` Python class
 
     The class produces multiple types of outputs organized in a specified output
     directory. All outputs use the original image filename as a base with
-    descriptive suffixes. `ImageSegmentationProcessor`
+    descriptive suffixes. `BackgroundRemover`
 
     File Outputs
 
@@ -243,7 +243,7 @@ class ImageSegmentationProcessor:
                            n_clusters: Optional[int] = None,
                            random_state: int = 42,
                            kmeans_init_centers: Optional[
-                               np.ndarray] = None) -> 'ImageSegmentationProcessor':
+                               np.ndarray] = None) -> 'BackgroundRemover':
         """
         Perform K-means clustering on the image pixels.
 
@@ -323,7 +323,7 @@ class ImageSegmentationProcessor:
 
     def remove_background(self,
                           background_clusters: Union[int, List[int]] = [0, 4],
-                          output_suffix: str = "_no_bkgd") -> 'ImageSegmentationProcessor':
+                          output_suffix: str = "_no_bkgd") -> 'BackgroundRemover':
         """
         Remove background pixels by replacing them with white color.
 
@@ -381,7 +381,7 @@ class ImageSegmentationProcessor:
 
     def plot_replaced_colors_in_image(self,
                                       save: bool = True,
-                                      output_suffix: str = "_segmented") -> 'ImageSegmentationProcessor':
+                                      output_suffix: str = "_segmented") -> 'BackgroundRemover':
         """
         Plot the input image with pixel colors replaced by their cluster center colors.
 
@@ -458,7 +458,7 @@ class ImageSegmentationProcessor:
 
     def plot_rgb_rawdata(self,
                           sample_step: int = 1000,
-                          save: bool = True) -> 'ImageSegmentationProcessor':
+                          save: bool = True) -> 'BackgroundRemover':
         """
         Create a 3D scatter plot of the RGB values colored by cluster.
 
@@ -507,7 +507,7 @@ class ImageSegmentationProcessor:
 
     def plot_rgb_clusters(self,
                          sample_step: int = 1000,
-                         save: bool = True) -> 'ImageSegmentationProcessor':
+                         save: bool = True) -> 'BackgroundRemover':
         """
         Create a 3D scatter plot of the RGB values colored by their cluster centers.
 
@@ -576,7 +576,7 @@ class ImageSegmentationProcessor:
 
     def plot_rgb_clusters_colorful(self,
                          sample_step: int = 1000,
-                         save: bool = True) -> 'ImageSegmentationProcessor':
+                         save: bool = True) -> 'BackgroundRemover':
         """
         Create a 3D scatter plot of the RGB values colored by their cluster centers.
 
@@ -630,12 +630,12 @@ class ImageSegmentationProcessor:
 # ## Usage Examples
 
 # # Basic usage (unchanged behavior)
-# processor = ImageSegmentationProcessor("image.jpg", "output/")
+# processor = BackgroundRemover("image.jpg", "output/")
 # processor.cluster_rgb_colors()
 #
 # # Set defaults in constructor
 # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
-# processor = ImageSegmentationProcessor(
+# processor = BackgroundRemover(
 #     "image.jpg", "output/",
 #     n_clusters=5,
 #     kmeans_init_centers=custom_centers
