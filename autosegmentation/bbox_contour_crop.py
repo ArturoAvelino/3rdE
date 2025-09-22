@@ -448,6 +448,7 @@ class CropImageAndWriteBBox:
             "type": ""
         }
 
+
     def crop_and_write_bbox(self, group_number,
                             image_format='JPG',
                             # old. check_white_center=False,
@@ -654,10 +655,8 @@ class CropImageAndWriteBBox:
             raise IOError(f"Error writing combined JSON file: {e}")
 
 
-
     def process_all_groups(self, combine_json_data=True,
                            image_format='JPG',
-                           #old. check_white_center=False,
                            use_nonwhitepixel_as_bboxcenter=False,
                            create_cropped_images=True,
                            include_segmentation=True):
@@ -689,7 +688,8 @@ class CropImageAndWriteBBox:
 
         if combine_json_data:
             self.combine_json_metadata(
-                output_filename=f"{self.path_raw_image.stem}_combined_metadata.json")
+                #old. output_filename=f"{self.path_raw_image.stem}_all_combined.json")
+                output_filename=f"{self.path_image_no_bkgd.stem}.json")
 
 
 # --------------------------------------------------
