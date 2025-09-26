@@ -2,14 +2,15 @@ import logging
 from pathlib import Path
 from typing import List
 
-from tools.read_json_and_plot_contour_objects import read_json_plot_contours
-from tools.read_json_and_crop_objects import CropIndividualObjects
+# from tools.read_json_and_plot_contour_objects import read_json_plot_contours
+# from tools.read_json_and_crop_objects import CropIndividualObjects
+from tools.mesh_drawer import MeshDrawer
+from PIL import Image
 
-from autosegmentation.background_remover import BackgroundRemover
-from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
-from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
-from sandbox.instance_segmentation_bycolor import InstanceSegmentationByColor
-from computer_vision.bounding_box_drawer import BoundingBoxDrawer
+# from autosegmentation.background_remover import BackgroundRemover
+# from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
+# from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
+# from computer_vision.bounding_box_drawer import BoundingBoxDrawer
 
 
 def setup_logging(input_dir):
@@ -953,25 +954,25 @@ if __name__ == "__main__":
     # ------------------------------
     # Batch processing, eithe "coco" and "robo" JSON format
 
-    drawer = BoundingBoxDrawer()
-
-    # Advanced usage with customization
-    results = drawer.process_batch(
-        input_image_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/4_bboxes/no_background_tmp",
-        input_json_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/3_segmentation/combined_json_and_renamed",
-        input_json_format="coco",
-        output_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/4_bboxes",
-        font_size=60,
-        bbox_color="red",
-        text_color="white",
-        text_position="top",
-        show_center=True,
-        center_dot_size=12,
-        show_id=True,
-        show_label=False,
-        show_summary=True
-        # confidence_range=(0.5, 0.9)
-    )
+    # drawer = BoundingBoxDrawer()
+    #
+    # # Advanced usage with customization
+    # results = drawer.process_batch(
+    #     input_image_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/4_bboxes/no_background_tmp",
+    #     input_json_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/3_segmentation/combined_json_and_renamed",
+    #     input_json_format="coco",
+    #     output_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/4_bboxes",
+    #     font_size=60,
+    #     bbox_color="red",
+    #     text_color="white",
+    #     text_position="top",
+    #     show_center=True,
+    #     center_dot_size=12,
+    #     show_id=True,
+    #     show_label=False,
+    #     show_summary=True
+    #     # confidence_range=(0.5, 0.9)
+    # )
 
     # ------------------------------
     # Single file
@@ -1045,4 +1046,31 @@ if __name__ == "__main__":
     # results = batch_drawer.process_batch(image_pattern="*.jpg", json_pattern="*.json")
     # print(f"Batch processing: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
+    # ##########################################################
+
+    # DRAW A MILLIMETRIC MESH ON TOP OF IMAGES
+
+    line_color = "white"
+    line_width = 2
+
+    # Advanced usage with all features
+    mesh_drawer = MeshDrawer(
+        line_color = line_color,
+        line_width = line_width,
+        pixels_per_mm=476,
+        line_distance_mm=1,
+        draw_scale=True,
+        scale_position="top_left",
+        scale_size_mm=2.0,
+        draw_subscales=True,
+        subscale_distance_mm=0.2
+    )
+
+    # Apply to existing image
+    input_image_path = "/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/BM4_E_sandbox/tests/mesh_on_top_image/capt0011.jpg"
+    output_image_path = f"/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/BM4_E_sandbox/tests/mesh_on_top_image/capt0011_mesh_{line_color}_lw_{line_width}.jpg"
+
+    existing_image = Image.open(input_image_path)
+    result = mesh_drawer.draw_mesh_on_image(existing_image)
+    result.save(output_image_path)
 

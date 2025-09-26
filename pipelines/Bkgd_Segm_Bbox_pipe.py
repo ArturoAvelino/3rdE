@@ -837,7 +837,7 @@ def main():
     config = PipelineConfig(
 
         # 0. Input/Output paths
-        input_root_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/try_1/",
+        input_root_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/",
         # output_root_dir="/path/to/output",  # Optional
         image_pattern="*.jpg",
         
