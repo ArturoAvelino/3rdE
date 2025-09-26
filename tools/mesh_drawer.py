@@ -62,7 +62,9 @@ class MeshDrawer:
             self.subscale_distance_mm * self.pixels_per_mm)
 
 
-    def draw_mesh_on_image(self, input_image: Image.Image) -> Image.Image:
+    def draw_mesh_on_image(self,
+                           input_image: Image.Image
+                           ) -> Image.Image:
         """
         Draw mesh lines on an existing image.
 
@@ -72,6 +74,7 @@ class MeshDrawer:
         Returns:
             PIL Image with mesh overlay
         """
+
         # Create a copy of the input image
         output_image = input_image.copy()
         draw = ImageDraw.Draw(output_image)
@@ -96,8 +99,6 @@ class MeshDrawer:
         return output_image
 
 
-
-
     def create_mesh_image(self,
                           image_size: Optional[Tuple[int, int]] = None,
                           background_color: str = "white") -> Image.Image:
@@ -119,6 +120,7 @@ class MeshDrawer:
 
         # Draw mesh on the blank image
         return self.draw_mesh_on_image(image)
+
 
     def _draw_vertical_lines(self, draw: ImageDraw.Draw, center_x: int,
                              height: int):
