@@ -760,6 +760,7 @@ class BoundingBoxDrawer:
                       input_json_dir: Union[str, Path],
                       input_json_format: str,
                       output_dir: Union[str, Path],
+                      suffix_output_imagefiles: Optional[str] = "_with_bboxes",
                       font_size: Optional[int] = None,
                       bbox_color: Optional[str] = None,
                       text_color: Optional[str] = None,
@@ -926,7 +927,7 @@ class BoundingBoxDrawer:
                     continue
 
                 # Generate output filename
-                output_filename = f"{base_name}_with_bboxes{image_file.suffix}"
+                output_filename = f"{base_name}{suffix_output_imagefiles}{image_file.suffix}"
 
                 self.logger.info(
                     f"Processing {image_file.name} with {json_file.name}")

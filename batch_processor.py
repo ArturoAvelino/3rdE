@@ -960,25 +960,30 @@ if __name__ == "__main__":
     # ------------------------------
     # Batch processing, either "coco" and "robo" JSON format
 
-    # drawer = BoundingBoxDrawer()
-    #
-    # # Advanced usage with customization
-    # results = drawer.process_batch(
-    #     input_image_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/4_bboxes/no_background_tmp",
-    #     input_json_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/3_segmentation/combined_json_and_renamed",
-    #     input_json_format="coco",
-    #     output_dir="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/4_bboxes",
-    #     font_size=60,
-    #     bbox_color="red",
-    #     text_color="white",
-    #     text_position="top",
-    #     show_center=True,
-    #     center_dot_size=12,
-    #     show_id=True,
-    #     show_label=False,
-    #     show_summary=True
-    #     # confidence_range=(0.5, 0.9)
-    # )
+    drawer = BoundingBoxDrawer()
+
+    # Confidence range to plot
+    min_confidence = 0.5
+    max_confidence = 1.0
+
+    # Advanced usage with customization
+    results = drawer.process_batch(
+        input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A",
+        input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A",
+        input_json_format="roboflow",
+        output_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/bboxes",
+        suffix_output_imagefiles= f"_bbox_c_{min_confidence}_{max_confidence}",
+        font_size=60,
+        bbox_color="red",
+        text_color="white",
+        text_position="top",
+        show_center=True,
+        center_dot_size=12,
+        show_id=False,
+        show_label=True,
+        show_summary=True,
+        confidence_range=(min_confidence, max_confidence)
+    )
 
     # ------------------------------
     # Single file
@@ -1008,32 +1013,32 @@ if __name__ == "__main__":
     # ---------------------------------------
 
     # # Process a single Robo format file. OK!
-    roboflow_drawer = BoundingBoxDrawer(
-        json_format="roboflow",
-        output_directory = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/",
-        # output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
-        # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
-        # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
-        font_size = 60,
-        bbox_color="red",  # All boxes will be red
-        text_color="white",  # All text will be yellow
-        text_position="top",  # Text below bounding boxes
-        confidence_range = (0.2, 1.0),  # Only show objects within a given confidence range.
-        show_confidence = True,
-        show_summary = True,  # Show object count summary
-        summary_position = "bottom_right",  # Position summary: "top_left"
-        show_center = True,
-        center_dot_size = 8,
-        show_id = True  # ID on boxes
-    )
-    success = roboflow_drawer.process_image_with_annotations(
-        "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/R21-A_r7c6.jpg",
-        "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/R21-A_r7c6.json",
-        output_filename="R21-A_r7c6_bbox.jpg"
-        # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
-        # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
-        # output_filename = "capt0029_predict_confidence_.jpg"
-    )
+    # roboflow_drawer = BoundingBoxDrawer(
+    #     json_format="roboflow",
+    #     output_directory = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/",
+    #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
+    #     # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
+    #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
+    #     font_size = 60,
+    #     bbox_color="red",  # All boxes will be red
+    #     text_color="white",  # All text will be yellow
+    #     text_position="top",  # Text below bounding boxes
+    #     confidence_range = (0.2, 1.0),  # Only show objects within a given confidence range.
+    #     show_confidence = True,
+    #     show_summary = True,  # Show object count summary
+    #     summary_position = "bottom_right",  # Position summary: "top_left"
+    #     show_center = True,
+    #     center_dot_size = 8,
+    #     show_id = True  # ID on boxes
+    # )
+    # success = roboflow_drawer.process_image_with_annotations(
+    #     "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/R21-A_r7c6.jpg",
+    #     "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/R21-A_r7c6.json",
+    #     output_filename="R21-A_r7c6_bbox.jpg"
+    #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
+    #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
+    #     # output_filename = "capt0029_predict_confidence_.jpg"
+    # )
 
     # --------------------------------------------------------60
 
