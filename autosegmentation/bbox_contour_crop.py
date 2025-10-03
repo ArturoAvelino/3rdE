@@ -372,17 +372,16 @@ class CropImageAndWriteBBox:
 
         left, upper, right, lower = bbox_coords
 
-        # Determine the center of the box
         width = right - left
         height = lower - upper
+        area = width * height
 
+        # Determine the center of the box
         if use_alternative_center and alternative_center_coords:
             center_x, center_y = alternative_center_coords
         else:
             center_x = left + width // 2
             center_y = upper + height // 2
-
-        area = width * height
 
         # Get image metadata including date captured
         image_metadata = self.get_image_metadata()
