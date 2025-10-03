@@ -2,15 +2,15 @@ import logging
 from pathlib import Path
 from typing import List
 
-# from tools.read_json_and_plot_contour_objects import read_json_plot_contours
-# from tools.read_json_and_crop_objects import CropIndividualObjects
+from tools.read_json_and_plot_contour_objects import read_json_plot_contours
+from tools.read_json_and_crop_objects import CropIndividualObjects
 from tools.mesh_drawer import MeshDrawer
 from PIL import Image
 
-# from autosegmentation.background_remover import BackgroundRemover
-# from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
-# from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
-# from computer_vision.bounding_box_drawer import BoundingBoxDrawer
+from autosegmentation.background_remover import BackgroundRemover
+from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
+from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
+from computer_vision.bounding_box_drawer import BoundingBoxDrawer
 
 
 def setup_logging(input_dir):
@@ -949,10 +949,16 @@ def generate_and_process_batch_configs(
 
 
 if __name__ == "__main__":
+
+    # # Setup logging
+    # logging.basicConfig(level=logging.INFO,
+    #                     format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # ------------------------------
     # Draw bounding boxes of images using the info from JSON files.
 
     # ------------------------------
-    # Batch processing, eithe "coco" and "robo" JSON format
+    # Batch processing, either "coco" and "robo" JSON format
 
     # drawer = BoundingBoxDrawer()
     #
@@ -977,10 +983,6 @@ if __name__ == "__main__":
     # ------------------------------
     # Single file
 
-    # # Setup logging
-    # logging.basicConfig(level=logging.INFO,
-    #                     format='%(asctime)s - %(levelname)s - %(message)s')
-    #
     # # # Process a single COCO format file. OK!
     # coco_drawer = BoundingBoxDrawer(
     #     json_format="coco",
@@ -1003,34 +1005,35 @@ if __name__ == "__main__":
     #     output_filename=f"{image_name}_with_bboxes.jpg"
     # )
 
+    # ---------------------------------------
 
     # # Process a single Robo format file. OK!
-    # roboflow_drawer = BoundingBoxDrawer(
-    #     json_format="roboflow",
-    #     output_directory = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo",
-    #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
-    #     # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
-    #     # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
-    #     font_size = 60,
-    #     bbox_color="red",  # All boxes will be red
-    #     text_color="white",  # All text will be yellow
-    #     text_position="top",  # Text below bounding boxes
-    #     confidence_range = (0.2, 1.0),  # Only show objects within a given confidence range.
-    #     show_confidence = True,
-    #     show_summary = True,  # Show object count summary
-    #     summary_position = "bottom_right",  # Position summary: "top_left"
-    #     show_center = True,
-    #     center_dot_size = 8,
-    #     show_id = True  # ID on boxes
-    # )
-    # success = roboflow_drawer.process_image_with_annotations(
-    #     "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_no_bkgd.jpg",
-    #     "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/robo/crop_45_capt0053_no_bkgd_deploy.json",
-    #     output_filename="crop_45_capt0053_no_bkgd_deploy_conf_.jpg"
-    #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
-    #     # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
-    #     # output_filename = "capt0029_predict_confidence_.jpg"
-    # )
+    roboflow_drawer = BoundingBoxDrawer(
+        json_format="roboflow",
+        output_directory = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/",
+        # output_directory="/Users/aavelino/Downloads/images_biigle/tests/biigle_volume_02_03/bbox/",
+        # output_directory="/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/",
+        # output_directory="/Users/aavelino/Downloads/images_biigle/tests/roboflow/predictions/deploy_detect_count_visualize/BM4_F_capt0029/",
+        font_size = 60,
+        bbox_color="red",  # All boxes will be red
+        text_color="white",  # All text will be yellow
+        text_position="top",  # Text below bounding boxes
+        confidence_range = (0.2, 1.0),  # Only show objects within a given confidence range.
+        show_confidence = True,
+        show_summary = True,  # Show object count summary
+        summary_position = "bottom_right",  # Position summary: "top_left"
+        show_center = True,
+        center_dot_size = 8,
+        show_id = True  # ID on boxes
+    )
+    success = roboflow_drawer.process_image_with_annotations(
+        "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/R21-A_r7c6.jpg",
+        "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/R21-A_r7c6.json",
+        output_filename="R21-A_r7c6_bbox.jpg"
+        # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/capt0029_no_bkgd.jpg",
+        # "/Users/aavelino/Downloads/images/Sandbox/BM4_F_capt0029/capt0029_gray/roboflow_deploy_detect_count_visualize/prediction_confidence_0.0.json",
+        # output_filename = "capt0029_predict_confidence_.jpg"
+    )
 
     # --------------------------------------------------------60
 
@@ -1048,29 +1051,29 @@ if __name__ == "__main__":
 
     # ##########################################################
 
-    # DRAW A MILLIMETRIC MESH ON TOP OF IMAGES
+    # DRAW A MILLIMETRIC MESH ON TOP OF IMAGES (OK!)
 
-    line_color = "white"
-    line_width = 2
-
-    # Advanced usage with all features
-    mesh_drawer = MeshDrawer(
-        line_color = line_color,
-        line_width = line_width,
-        pixels_per_mm=476,
-        line_distance_mm=1,
-        draw_scale=True,
-        scale_position="top_left",
-        scale_size_mm=2.0,
-        draw_subscales=True,
-        subscale_distance_mm=0.2
-    )
-
-    # Apply to existing image
-    input_image_path = "/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/BM4_E_sandbox/tests/mesh_on_top_image/capt0011.jpg"
-    output_image_path = f"/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/BM4_E_sandbox/tests/mesh_on_top_image/capt0011_mesh_{line_color}_lw_{line_width}.jpg"
-
-    existing_image = Image.open(input_image_path)
-    result = mesh_drawer.draw_mesh_on_image(existing_image)
-    result.save(output_image_path)
+    # line_color = "white"
+    # line_width = 2
+    #
+    # # Advanced usage with all features
+    # mesh_drawer = MeshDrawer(
+    #     line_color = line_color,
+    #     line_width = line_width,
+    #     pixels_per_mm=476,
+    #     line_distance_mm=1,
+    #     draw_scale=True,
+    #     scale_position="top_left",
+    #     scale_size_mm=2.0,
+    #     draw_subscales=True,
+    #     subscale_distance_mm=0.2
+    # )
+    #
+    # # Apply to existing image
+    # input_image_path = "/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/BM4_E_sandbox/tests/mesh_on_top_image/capt0011.jpg"
+    # output_image_path = f"/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/BM4_E_sandbox/tests/mesh_on_top_image/capt0011_mesh_{line_color}_lw_{line_width}.jpg"
+    #
+    # existing_image = Image.open(input_image_path)
+    # result = mesh_drawer.draw_mesh_on_image(existing_image)
+    # result.save(output_image_path)
 

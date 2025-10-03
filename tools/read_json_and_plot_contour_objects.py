@@ -173,8 +173,8 @@ def read_json_plot_contours(json_file_path, output_path=None, no_margins=False):
 # json_path = '/Users/aavelino/Downloads/images/Guillaume/2025_05_15/im44.json'
 # output_path = Path('/Users/aavelino/Downloads/images/Guillaume/2025_05_15/output/im44.png')
 
-json_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053_combined_metadata.json'
-output_path = Path(
-    '/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation')
-
-read_json_plot_contours(json_path, output_path, no_margins=True)
+# json_path = '/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053_combined_metadata.json'
+# output_path = Path(
+#     '/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation')
+#
+# read_json_plot_contours(json_path, output_path, no_margins=True)

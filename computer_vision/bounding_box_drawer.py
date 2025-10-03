@@ -1132,7 +1132,15 @@ class RoboflowProcessor:
         """
         bbox_data = []
 
-        predictions = json_data.get('predictions', [])
+        # Handle new JSON format: check if json_data is a list
+        if isinstance(json_data, list) and len(json_data) > 0:
+            # Extract the first element from the array
+            first_element = json_data[0]
+            # Navigate to predictions -> predictions
+            predictions = first_element.get('predictions', {}).get('predictions', [])
+        else:
+            # Fallback to old format for backward compatibility
+            predictions = json_data.get('predictions', [])
 
         for prediction in predictions:
             try:
