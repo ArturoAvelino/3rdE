@@ -991,7 +991,10 @@ if __name__ == "__main__":
     # # Process a single COCO format file. OK!
     coco_drawer = BoundingBoxDrawer(
         json_format="coco",
-        output_directory="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/",
+
+        output_directory="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation",
+        # output_directory="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation",
+
         font_size = 55,
         bbox_color = "red",
         text_color = "white",
@@ -1002,14 +1005,17 @@ if __name__ == "__main__":
         show_label = False
     )
 
-    image_name = "BM3-F_r3c2"
+    # image_name = "BM3-F_r3c2"
+
     success = coco_drawer.process_image_with_annotations(
-        # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False.jpg",
-        # json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False.json",
-        # output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False_bbox.jpg",
-        image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.jpg",
-        json_file_path ="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.json",
-        output_filename= "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044_bbox.jpg",
+        image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False.jpg",
+        json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False.json",
+        output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False_bbox.jpg",
+
+        # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.jpg",
+        # json_file_path ="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.json",
+        # output_filename= "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044_bbox.jpg",
+
         # image_file_path=f"/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/{image_name}_no_bkgd.png",
         # json_file_path=f"/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/3_segmentation/{image_name}_segm/{image_name}_combined_metadata.json",
         # output_filename=f"{image_name}_with_bboxes.jpg"

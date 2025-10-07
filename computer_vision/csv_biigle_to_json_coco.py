@@ -16,6 +16,15 @@ class CSVObjectProcessor:
     This class reads CSV files with object pixel coordinates, calculates bounding boxes,
     creates cropped images, and generates JSON metadata files organized by class labels.
 
+    NOTE: The first two numbers in the output JSON file with COCO format of the
+        bounding box information (see section "bbox" for each object) correspond
+        to the pixel coordinates of *top-left corner* of the bounding box! Not to
+        the bounding-box center. This, because the standard COCO format has been
+        defined like this.
+        The second two numbers in the output JSON file with COCO format correspond
+        to the width and height of the bounding box.
+
+
     ================================================================================
     OVERVIEW AND PURPOSE
     ================================================================================
