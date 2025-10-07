@@ -955,13 +955,13 @@ if __name__ == "__main__":
     # purposes
 
     from pathlib import Path
-    from computer_vision.image_and_bbox_rotation_for_data_augmentation \
+    from computer_vision.data_augmentation \
         import ImageBoundingBoxTransformer, transform_image_and_boxes
 
     image_name = "capt0044"
-    angle = 45
+    angle = 20
     flip_horizontal = False
-    flip_vertical = False
+    flip_vertical = True
     output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/"
 
     logging_dir = Path(output_dir)
@@ -971,14 +971,14 @@ if __name__ == "__main__":
         "\n=== Example 4: Using class directly with custom filename ===")
     try:
         transformer = ImageBoundingBoxTransformer(
-            image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.jpg",
+            image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}_bbox.jpg",
             json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.json",
             output_dir=output_dir,
             angle=angle,
             flip_horizontal=flip_horizontal,
             flip_vertical=flip_vertical,
             fill_color=(79.48,130.62,189.84),  # Blue fill color (RGB)
-            output_filename_pattern=f"{image_name}_rot{angle}_flip_H_{flip_horizontal}_flip_V_{flip_vertical}",
+            output_filename_pattern=f"{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}",
         )
 
         img_path, json_path = transformer.process()
@@ -1044,17 +1044,17 @@ if __name__ == "__main__":
     # image_name = "BM3-F_r3c2"
 
     success = coco_drawer.process_image_with_annotations(
-        image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.jpg",
-        json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.json",
-        output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False_bbox.jpg",
+        # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.jpg",
+        # json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.json",
+        # output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False_bbox.jpg",
 
         # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.jpg",
         # json_file_path ="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.json",
         # output_filename= "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044_bbox.jpg",
 
-        # image_file_path=f"/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/{image_name}_no_bkgd.png",
-        # json_file_path=f"/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/3_segmentation/{image_name}_segm/{image_name}_combined_metadata.json",
-        # output_filename=f"{image_name}_with_bboxes.jpg"
+        image_file_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}.jpg",
+        json_file_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}.json",
+        output_filename=f"{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}_with_bboxes.jpg"
     )
 
     # ---------------------------------------
