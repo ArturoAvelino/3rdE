@@ -10,7 +10,7 @@ from PIL import Image
 from autosegmentation.background_remover import BackgroundRemover
 from autosegmentation.batch_config_JSON_generator import BatchConfigGenerator
 from autosegmentation.batch_config_JSON_processor import BatchConfigProcessor
-from computer_vision.bounding_box_drawer import BoundingBoxDrawer
+from computer_vision.boundingbox_drawer import BoundingBoxDrawer
 
 
 def setup_logging(input_dir):
@@ -958,10 +958,11 @@ if __name__ == "__main__":
     from computer_vision.data_augmentation \
         import ImageBoundingBoxTransformer, transform_image_and_boxes
 
-    image_name = "capt0044"
+    # image_name = "capt0044"
+    image_name = "capt0044_object_3377_class_171"
     angle = 20
     flip_horizontal = False
-    flip_vertical = True
+    flip_vertical = False
     output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/"
 
     logging_dir = Path(output_dir)
@@ -971,7 +972,7 @@ if __name__ == "__main__":
         "\n=== Example 4: Using class directly with custom filename ===")
     try:
         transformer = ImageBoundingBoxTransformer(
-            image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}_bbox.jpg",
+            image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.jpg",
             json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.json",
             output_dir=output_dir,
             angle=angle,

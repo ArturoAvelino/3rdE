@@ -24,7 +24,7 @@ from batch_processor import (
     generate_and_process_batch_configs,
     setup_logging
 )
-from computer_vision.bounding_box_drawer import BoundingBoxDrawer
+from computer_vision.boundingbox_drawer import BoundingBoxDrawer
 
 
 @dataclass
