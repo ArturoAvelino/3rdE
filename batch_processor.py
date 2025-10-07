@@ -950,6 +950,42 @@ def generate_and_process_batch_configs(
 
 if __name__ == "__main__":
 
+    # ##########################################################
+    # Rotate images and their respective bounding boxes for data-augmentation
+    # purposes
+
+    from pathlib import Path
+    from computer_vision.image_and_bbox_rotation_for_data_augmentation \
+        import ImageBoundingBoxTransformer, transform_image_and_boxes
+
+    image_name = "capt0044"
+    angle = 45
+    flip_horizontal = False
+    flip_vertical = False
+    output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/"
+
+    logging_dir = Path(output_dir)
+    setup_logging(logging_dir)
+    logger = logging.getLogger(__name__)
+    logger.info(
+        "\n=== Example 4: Using class directly with custom filename ===")
+    try:
+        transformer = ImageBoundingBoxTransformer(
+            image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.jpg",
+            json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.json",
+            output_dir=output_dir,
+            angle=angle,
+            flip_horizontal=flip_horizontal,
+            flip_vertical=flip_vertical,
+            fill_color=(79.48,130.62,189.84),  # Blue fill color (RGB)
+            output_filename_pattern=f"{image_name}_rot{angle}_flip_H_{flip_horizontal}_flip_V_{flip_vertical}",
+        )
+
+        img_path, json_path = transformer.process()
+        logger.info(f"Output saved to: {img_path} and {json_path}")
+    except Exception as e:
+        logger.error(f"Example 4 failed: {e}")
+
     # ========================================================60
     # Draw bounding boxes of images using the info from JSON files.
 
@@ -988,7 +1024,7 @@ if __name__ == "__main__":
     # ------------------------------
     # Single file
 
-    # # Process a single COCO format file. OK!
+    # Process a single COCO format file. OK!
     coco_drawer = BoundingBoxDrawer(
         json_format="coco",
 
@@ -1008,9 +1044,9 @@ if __name__ == "__main__":
     # image_name = "BM3-F_r3c2"
 
     success = coco_drawer.process_image_with_annotations(
-        image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False.jpg",
-        json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False.json",
-        output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_False_flip_False_bbox.jpg",
+        image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.jpg",
+        json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.json",
+        output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False_bbox.jpg",
 
         # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.jpg",
         # json_file_path ="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.json",
@@ -1093,40 +1129,6 @@ if __name__ == "__main__":
     # result = mesh_drawer.draw_mesh_on_image(existing_image)
     # result.save(output_image_path)
 
-    # ##########################################################
-    # Rotate images and their respective bounding boxes for data-augmentation
-    # purposes
 
-    # from pathlib import Path
-    # from computer_vision.image_and_bbox_rotation_for_data_augmentation \
-    #     import ImageBoundingBoxTransformer, transform_image_and_boxes
-    #
-    # image_name = "capt0044"
-    # angle = 45
-    # flip_horizontal = False
-    # flip_vertical = False
-    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/"
-    #
-    # logging_dir = Path(output_dir)
-    # setup_logging(logging_dir)
-    # logger = logging.getLogger(__name__)
-    # logger.info(
-    #     "\n=== Example 4: Using class directly with custom filename ===")
-    # try:
-    #     transformer = ImageBoundingBoxTransformer(
-    #         image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.jpg",
-    #         json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.json",
-    #         output_dir=output_dir,
-    #         angle=angle,
-    #         flip_horizontal=flip_horizontal,
-    #         flip_vertical=flip_vertical,
-    #         fill_color=(79.48,130.62,189.84),  # Blue fill color (RGB)
-    #         output_filename_pattern=f"{image_name}_rot{angle}_flip_H_{flip_horizontal}_flip_V_{flip_vertical}",
-    #     )
-    #
-    #     img_path, json_path = transformer.process()
-    #     logger.info(f"Output saved to: {img_path} and {json_path}")
-    # except Exception as e:
-    #     logger.error(f"Example 4 failed: {e}")
 
 

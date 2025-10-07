@@ -16,8 +16,17 @@ class BoundingBox:
     height: float
     
     def to_list(self) -> List[float]:
-        """Convert bounding box to list format [x-center, y-center, width, height]."""
-        return [self.center_x, self.center_y, self.width, self.height]
+        """Convert bounding box to list format [x_top_left, y_top_left, width, height]."""
+        x_tl = self.center_x - self.width / 2
+        y_tl = self.center_y - self.height / 2
+        return [x_tl, y_tl, self.width, self.height]
+    
+    @classmethod
+    def from_top_left(cls, x: float, y: float, w: float, h: float) -> "BoundingBox":
+        """Create a BoundingBox from top-left x,y and width,height."""
+        center_x = x + w / 2
+        center_y = y + h / 2
+        return cls(center_x, center_y, w, h)
     
     def get_corners(self) -> np.ndarray:
         """Get the four corners of the bounding box as a numpy array."""
@@ -317,7 +326,7 @@ class ImageBoundingBoxTransformer:
         flipped_annotations = []
         for annotation in self.annotations_data['annotations']:
             bbox_data = annotation['bbox']
-            bbox = BoundingBox(bbox_data[0], bbox_data[1], bbox_data[2], bbox_data[3])
+            bbox = BoundingBox.from_top_left(bbox_data[0], bbox_data[1], bbox_data[2], bbox_data[3])
             
             # Apply flip to bounding box
             flipped_bbox = self._flip_bounding_box(bbox, width, height)
@@ -334,7 +343,7 @@ class ImageBoundingBoxTransformer:
         rotated_annotations = []
         for annotation in flipped_annotations:
             bbox_data = annotation['bbox']
-            bbox = BoundingBox(bbox_data[0], bbox_data[1], bbox_data[2], bbox_data[3])
+            bbox = BoundingBox.from_top_left(bbox_data[0], bbox_data[1], bbox_data[2], bbox_data[3])
             
             # Apply rotation to bounding box
             rotated_bbox = self._rotate_bounding_box(bbox, rotation_matrix)
