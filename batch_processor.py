@@ -958,105 +958,143 @@ if __name__ == "__main__":
     from computer_vision.data_augmentation \
         import ImageBoundingBoxTransformer, transform_image_and_boxes
 
-    # image_name = "capt0044"
-    image_name = "capt0044_object_3377_class_171"
-    angle = 20
-    flip_horizontal = False
-    flip_vertical = False
-    output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/"
+    image_name = "capt0044"
+    # # angle = 20
+    # # flip_horizontal = False
+    # # flip_vertical = False
+    output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/rotation/"
 
     logging_dir = Path(output_dir)
     setup_logging(logging_dir)
     logger = logging.getLogger(__name__)
-    logger.info(
-        "\n=== Example 4: Using class directly with custom filename ===")
-    try:
-        transformer = ImageBoundingBoxTransformer(
-            image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.jpg",
-            json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.json",
-            output_dir=output_dir,
-            angle=angle,
-            flip_horizontal=flip_horizontal,
-            flip_vertical=flip_vertical,
-            fill_color=(79.48,130.62,189.84),  # Blue fill color (RGB)
-            output_filename_pattern=f"{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}",
-        )
 
-        img_path, json_path = transformer.process()
-        logger.info(f"Output saved to: {img_path} and {json_path}")
-    except Exception as e:
-        logger.error(f"Example 4 failed: {e}")
+    # --------------------------------------------------------60
+    # Single file (OK!)
+
+    # logger.info(
+    #     "\n=== Example 4: Using class directly with custom filename ===")
+    # try:
+    #     transformer = ImageBoundingBoxTransformer(
+    #         image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.jpg",
+    #         json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.json",
+    #         output_dir=output_dir,
+    #         angle=angle,
+    #         flip_horizontal=flip_horizontal,
+    #         flip_vertical=flip_vertical,
+    #         fill_color=(79.48,130.62,189.84),  # Blue fill color (RGB)
+    #         output_filename_pattern=f"{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}",
+    #     )
+    #
+    #     img_path, json_path = transformer.process()
+    #
+    #     logger.info(f"Output saved to: {img_path} and {json_path}")
+    # except Exception as e:
+    #     logger.error(f"Example 4 failed: {e}")
+
+    # --------------------------------------------------------60
+    # Batch processing multiple angles (OK!)
+
+    logger.info("\n=== Example 5: Batch processing ===")
+
+    angles = [10, 30, 60, 90, 120, 150, 170]
+    flipsH = [False, True]
+    flipsV = [False, True]
+
+    for flipV in flipsV:
+        for flipH in flipsH:
+            for angle in angles:
+                try:
+                    img_path, json_path = transform_image_and_boxes(
+                        image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/{image_name}.jpg",
+                        json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/{image_name}.json",
+                        output_dir=output_dir,
+                        angle=angle,
+                        flip_horizontal=flipH,
+                        flip_vertical=flipV,
+                        fill_color=(79.48,130.62,189.84),  # Blue fill color (RGB)
+                        output_filename_pattern=f"{image_name}_rot{angle}_flipH_{flipH}_flipV_{flipV}",
+                    )
+                    logger.info(f"Processed angle {angle}: {img_path.name}")
+                except Exception as e:
+                    logger.error(f"Failed to process angle {angle}: {e}")
+
+    logger.info("\n=== All examples completed ===")
 
     # ========================================================60
     # Draw bounding boxes of images using the info from JSON files.
 
-    # # Setup logging
-    # logging.basicConfig(level=logging.INFO,
-    #                     format='%(asctime)s - %(levelname)s - %(message)s')
+    # Setup logging
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
 
     # ------------------------------
     # Batch processing, either "coco" and "robo" JSON format
 
-    # drawer = BoundingBoxDrawer()
-    #
-    # # Confidence range to plot
-    # min_confidence = 0.5
-    # max_confidence = 1.0
-    #
-    # # Advanced usage with customization
-    # results = drawer.process_batch(
-    #     input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A",
-    #     input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A",
-    #     input_json_format="roboflow",
-    #     output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/R21-A/bboxes_c_{min_confidence}_{max_confidence}",
-    #     suffix_output_imagefiles= f"_bbox_c_{min_confidence}_{max_confidence}",
-    #     font_size=60,
-    #     bbox_color="red",
-    #     text_color="white",
-    #     text_position="top",
-    #     show_center=True,
-    #     center_dot_size=12,
-    #     show_id=False,
-    #     show_label=True,
-    #     show_summary=True,
-    #     confidence_range=(min_confidence, max_confidence)
-    # )
+    drawer = BoundingBoxDrawer()
+
+    # Confidence range to plot
+    min_confidence = 0.2
+    max_confidence = 1.0
+
+    # Advanced usage with customization
+    results = drawer.process_batch(
+        # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
+        input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
+
+        input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
+        input_json_format="roboflow",
+        # output_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_0.5_1.0",
+        # suffix_output_imagefiles = "_bbox",
+        output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
+        suffix_output_imagefiles= f"_bbox_c_{min_confidence}_{max_confidence}",
+        confidence_range=(min_confidence, max_confidence),
+        font_size=70,
+        bbox_color="white",
+        text_color="black",
+        text_position="top",
+        show_center=True,
+        center_dot_size=12,
+        show_id=False,
+        show_label=True,
+        show_summary=True,
+
+    )
 
     # ------------------------------
     # Single file
 
-    # Process a single COCO format file. OK!
-    coco_drawer = BoundingBoxDrawer(
-        json_format="coco",
-
-        output_directory="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation",
-        # output_directory="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation",
-
-        font_size = 55,
-        bbox_color = "red",
-        text_color = "white",
-        text_position = "top",  # (top, bottom) Text below bounding boxes
-        show_center=True,
-        center_dot_size=14,
-        show_id = True,
-        show_label = False
-    )
-
-    # image_name = "BM3-F_r3c2"
-
-    success = coco_drawer.process_image_with_annotations(
-        # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.jpg",
-        # json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.json",
-        # output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False_bbox.jpg",
-
-        # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.jpg",
-        # json_file_path ="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.json",
-        # output_filename= "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044_bbox.jpg",
-
-        image_file_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}.jpg",
-        json_file_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}.json",
-        output_filename=f"{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}_with_bboxes.jpg"
-    )
+    # # Process a single COCO format file. OK!
+    # coco_drawer = BoundingBoxDrawer(
+    #     json_format="coco",
+    #
+    #     output_directory="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation",
+    #     # output_directory="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation",
+    #
+    #     font_size = 55,
+    #     bbox_color = "red",
+    #     text_color = "white",
+    #     text_position = "top",  # (top, bottom) Text below bounding boxes
+    #     show_center=True,
+    #     center_dot_size=14,
+    #     show_id = True,
+    #     show_label = False
+    # )
+    #
+    # # image_name = "BM3-F_r3c2"
+    #
+    # success = coco_drawer.process_image_with_annotations(
+    #     # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.jpg",
+    #     # json_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False.json",
+    #     # output_filename="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/capt0044_rot45_flip_H_False_flip_V_False_bbox.jpg",
+    #
+    #     # image_file_path="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.jpg",
+    #     # json_file_path ="/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044.json",
+    #     # output_filename= "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/capt0044_bbox.jpg",
+    #
+    #     image_file_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}.jpg",
+    #     json_file_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/rotation/{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}.json",
+    #     output_filename=f"{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}_with_bboxes.jpg"
+    # )
 
     # ---------------------------------------
 

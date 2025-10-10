@@ -348,9 +348,19 @@ class ImageBoundingBoxTransformer:
             # Apply rotation to bounding box
             rotated_bbox = self._rotate_bounding_box(bbox, rotation_matrix)
             
-            # Create new annotation with rotated bbox
+            # Create new annotation with rotated bbox and area
             new_annotation = annotation.copy()
-            new_annotation['bbox'] = rotated_bbox.to_list()
+
+            # Round bbox values to integers for output JSON
+            new_bbox_list = rotated_bbox.to_list()
+            rounded_bbox = [int(round(v)) for v in new_bbox_list]
+            new_annotation['bbox'] = rounded_bbox
+
+            # Compute area as width * height of the final bbox and round to int
+            #old area = float(rotated_bbox.width * rotated_bbox.height)
+            #old new_annotation['area'] = int(round(area))
+            area = rounded_bbox[2] * rounded_bbox[3]
+            new_annotation['area'] = area
             rotated_annotations.append(new_annotation)
         
         # Store results
