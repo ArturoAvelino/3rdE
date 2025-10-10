@@ -90,6 +90,8 @@ def setup_logging(input_dir):
     console_handler.setFormatter(formatter)
 
     # Create file handler and set formatter
+    if not input_dir.exists():
+        input_dir.mkdir()
     log_file = input_dir / "processing.log"
     file_handler = logging.FileHandler(log_file, mode='w')
     file_handler.setFormatter(formatter)
@@ -996,7 +998,7 @@ if __name__ == "__main__":
 
     logger.info("\n=== Example 5: Batch processing ===")
 
-    angles = [10, 30, 60, 90, 120, 150, 170]
+    angles = [10, 30, 60, 75, 90, 105, 120, 150, 170]
     flipsH = [False, True]
     flipsV = [False, True]
 
@@ -1024,8 +1026,8 @@ if __name__ == "__main__":
     # Draw bounding boxes of images using the info from JSON files.
 
     # Setup logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s')
+    # logging.basicConfig(level=logging.INFO,
+    #                     format='%(asctime)s - %(levelname)s - %(message)s')
 
     # ------------------------------
     # Batch processing, either "coco" and "robo" JSON format
@@ -1033,21 +1035,26 @@ if __name__ == "__main__":
     drawer = BoundingBoxDrawer()
 
     # Confidence range to plot
-    min_confidence = 0.2
-    max_confidence = 1.0
+    # min_confidence = 0.2
+    # max_confidence = 1.0
 
     # Advanced usage with customization
     results = drawer.process_batch(
-        # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
-        input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
 
-        input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
-        input_json_format="roboflow",
-        # output_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_0.5_1.0",
-        # suffix_output_imagefiles = "_bbox",
-        output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
-        suffix_output_imagefiles= f"_bbox_c_{min_confidence}_{max_confidence}",
-        confidence_range=(min_confidence, max_confidence),
+        # # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
+        # input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
+        # input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
+        # input_json_format="roboflow",
+        # output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
+        # confidence_range=(min_confidence, max_confidence),
+        # suffix_output_imagefiles= f"_bbox_c_{min_confidence}_{max_confidence}",
+
+        input_image_dir=output_dir,
+        input_json_dir=output_dir,
+        input_json_format="coco",
+        output_dir=f"{output_dir}/bbox",
+        suffix_output_imagefiles=f"_bbox",
+
         font_size=70,
         bbox_color="white",
         text_color="black",
