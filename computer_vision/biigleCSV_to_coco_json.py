@@ -388,70 +388,116 @@ class BiigleCSV_to_COCO_JSON:
             dict: Mapping from image_id to filename
         """
         return {
-            3: "capt0004.jpg",
-            4: "capt0010.jpg",
-            5: "capt0011.jpg",
-            6: "capt0012.jpg",
-            7: "capt0013.jpg",
-            8: "capt0017.jpg",
-            9: "capt0018.jpg",
-            10: "capt0019.jpg",
-            11: "capt0020.jpg",
-            12: "capt0021.jpg",
-            13: "capt0022.jpg",
-            14: "capt0025.jpg",
-            15: "capt0026.jpg",
-            16: "capt0027.jpg",
-            17: "capt0028.jpg",
-            18: "capt0029.jpg",
-            19: "capt0030.jpg",
-            20: "capt0033.jpg",
-            21: "capt0034.jpg",
-            105: "capt0035.jpg",
-            106: "capt0036.jpg",
-            107: "capt0037.jpg",
-            108: "capt0038.jpg",
-            109: "capt0039.jpg",
-            110: "capt0040.jpg",
-            111: "capt0041.jpg",
-            112: "capt0042.jpg",
-            113: "capt0043.jpg",
-            114: "capt0044.jpg",
-            115: "capt0045.jpg",
-            116: "capt0046.jpg",
-            117: "capt0047.jpg",
-            118: "capt0048.jpg",
-            119: "capt0049.jpg",
-            120: "capt0050.jpg",
-            121: "capt0051.jpg",
-            122: "capt0052.jpg",
-            123: "capt0053.jpg",
-            124: "capt0054.jpg",
-            125: "capt0055.jpg",
-            126: "capt0057.jpg",
-            127: "capt0058.jpg",
-            128: "capt0059.jpg",
-            129: "capt0060.jpg",
-            130: "capt0061.jpg",
-            131: "capt0062.jpg",
-            132: "capt0064.jpg",
-            133: "capt0065.jpg",
-            134: "capt0066.jpg",
-            135: "capt0067.jpg",
-            136: "capt0068.jpg",
-            137: "capt0069.jpg",
-            138: "capt0070.jpg",
-            139: "capt0073.jpg",
-            140: "capt0074.jpg",
-            141: "capt0075.jpg",
-            142: "capt0076.jpg",
-            143: "capt0077.jpg",
-            144: "capt0078.jpg",
-            145: "capt0083.jpg",
-            146: "capt0084.jpg",
-            147: "capt0086.jpg",
-            148: "capt0090.jpg",
-            149: "capt0091.jpg"
+            # 3: "capt0004.jpg",
+            # 4: "capt0010.jpg",
+            # 5: "capt0011.jpg",
+            # 6: "capt0012.jpg",
+            # 7: "capt0013.jpg",
+            # 8: "capt0017.jpg",
+            # 9: "capt0018.jpg",
+            # 10: "capt0019.jpg",
+            # 11: "capt0020.jpg",
+            # 12: "capt0021.jpg",
+            # 13: "capt0022.jpg",
+            # 14: "capt0025.jpg",
+            # 15: "capt0026.jpg",
+            # 16: "capt0027.jpg",
+            # 17: "capt0028.jpg",
+            # 18: "capt0029.jpg",
+            # 19: "capt0030.jpg",
+            # 20: "capt0033.jpg",
+            # 21: "capt0034.jpg",
+            # 105: "capt0035.jpg",
+            # 106: "capt0036.jpg",
+            # 107: "capt0037.jpg",
+            # 108: "capt0038.jpg",
+            # 109: "capt0039.jpg",
+            # 110: "capt0040.jpg",
+            # 111: "capt0041.jpg",
+            # 112: "capt0042.jpg",
+            # 113: "capt0043.jpg",
+            # 114: "capt0044.jpg",
+            # 115: "capt0045.jpg",
+            # 116: "capt0046.jpg",
+            # 117: "capt0047.jpg",
+            # 118: "capt0048.jpg",
+            # 119: "capt0049.jpg",
+            # 120: "capt0050.jpg",
+            # 121: "capt0051.jpg",
+            # 122: "capt0052.jpg",
+            # 123: "capt0053.jpg",
+            # 124: "capt0054.jpg",
+            # 125: "capt0055.jpg",
+            # 126: "capt0057.jpg",
+            # 127: "capt0058.jpg",
+            # 128: "capt0059.jpg",
+            # 129: "capt0060.jpg",
+            # 130: "capt0061.jpg",
+            # 131: "capt0062.jpg",
+            # 132: "capt0064.jpg",
+            # 133: "capt0065.jpg",
+            # 134: "capt0066.jpg",
+            # 135: "capt0067.jpg",
+            # 136: "capt0068.jpg",
+            # 137: "capt0069.jpg",
+            # 138: "capt0070.jpg",
+            # 139: "capt0073.jpg",
+            # 140: "capt0074.jpg",
+            # 141: "capt0075.jpg",
+            # 142: "capt0076.jpg",
+            # 143: "capt0077.jpg",
+            # 144: "capt0078.jpg",
+            # 145: "capt0083.jpg",
+            # 146: "capt0084.jpg",
+            # 147: "capt0086.jpg",
+            # 148: "capt0090.jpg",
+            # 149: "capt0091.jpg",
+
+            196: "BM13_B_margo_r1c2.jpg",
+            197: "BM13_B_margo_r1c3.jpg",
+            198: "BM13_B_margo_r1c5.jpg",
+            199: "BM13_B_margo_r2c2.jpg",
+            200: "BM13_B_margo_r2c3.jpg",
+            201: "BM13_B_margo_r2c4.jpg",
+            202: "BM13_B_margo_r2c5.jpg",
+            203: "BM13_B_margo_r2c6.jpg",
+            205: "BM13_B_margo_r3c2.jpg",
+            206: "BM13_B_margo_r3c3.jpg",
+            207: "BM13_B_margo_r3c5.jpg",
+            208: "BM13_B_margo_r3c6.jpg",
+            209: "BM13_B_margo_r4c0.jpg",
+            210: "BM13_B_margo_r4c1.jpg",
+            211: "BM13_B_margo_r4c2.jpg",
+            212: "BM13_B_margo_r4c3.jpg",
+            213: "BM13_B_margo_r4c4.jpg",
+            214: "BM13_B_margo_r4c5.jpg",
+            215: "BM13_B_margo_r4c7.jpg",
+            216: "BM13_B_margo_r5c1.jpg",
+            217: "BM13_B_margo_r5c2.jpg",
+            218: "BM13_B_margo_r5c3.jpg",
+            219: "BM13_B_margo_r5c4.jpg",
+            220: "BM13_B_margo_r5c6.jpg",
+            221: "BM13_B_margo_r6c1.jpg",
+            222: "BM13_B_margo_r6c2.jpg",
+            223: "BM13_B_margo_r6c3.jpg",
+            224: "BM13_B_margo_r6c5.jpg",
+            225: "BM13_B_margo_r7c1.jpg",
+            226: "BM13_B_margo_r7c2.jpg",
+            227: "BM13_B_margo_r7c4.jpg",
+            228: "BM13_B_margo_r7c5.jpg",
+            229: "BM13_B_margo_r7c7.jpg",
+            230: "BM13_B_margo_r8c2.jpg",
+            231: "BM13_B_margo_r8c3.jpg",
+            232: "BM13_B_margo_r8c4.jpg",
+            233: "BM13_B_margo_r8c5.jpg",
+            234: "BM13_B_margo_r8c6.jpg",
+            235: "BM13_B_margo_r9c1.jpg",
+            236: "BM13_B_margo_r9c2.jpg",
+            237: "BM13_B_margo_r9c4.jpg",
+            238: "BM13_B_margo_r9c5.jpg",
+            239: "BM13_B_margo_r9c6.jpg",
+            240: "BM13_B_margo_r10c2.jpg",
+            241: "BM13_B_margo_r11c2.jpg",
         }
 
 
@@ -653,7 +699,8 @@ class BiigleCSV_to_COCO_JSON:
         # Extract base filename without extension for sample_name
         sample_name = Path(filename).stem
 
-        current_time = datetime.now().isoformat() + "-01:00"
+        #old current_time = datetime.now().isoformat() + "-01:00"
+        current_date = datetime.now().strftime("%Y-%m-%d")
         current_year = datetime.now().strftime("%Y")
 
         # Get actual image dimensions
@@ -667,7 +714,7 @@ class BiigleCSV_to_COCO_JSON:
         else:
             width, height = 6000, 4000  # fallback values
 
-        # Get category name using the mapping
+        # Get the category name using the mapping
         category_id = int(row_data['label_id'])
         category_name = self._get_category_name(category_id)
 
@@ -678,7 +725,7 @@ class BiigleCSV_to_COCO_JSON:
                 "description": "arthropods bounding boxes",
                 "contributor": "Arturo_Avelino",
                 "url": "https://www.unine.ch/biolsol",
-                "date_created": current_time
+                "date_created": current_date
             },
             "licenses": [
                 {
@@ -782,7 +829,8 @@ class BiigleCSV_to_COCO_JSON:
             else:
                 width, height = 6000, 4000
 
-            current_time = datetime.now().isoformat() + "-01:00"
+            #old current_time = datetime.now().isoformat() + "-01:00"
+            current_date = datetime.now().strftime("%Y-%m-%d")
             current_year = datetime.now().strftime("%Y")
 
             # Create an annotation list
@@ -831,7 +879,7 @@ class BiigleCSV_to_COCO_JSON:
                     "description": "arthropods bounding boxes",
                     "contributor": "Arturo_Avelino",
                     "url": "https://www.unine.ch/biolsol",
-                    "date_created": current_time
+                    "date_created": current_date
                 },
                 "licenses": [
                     {
@@ -849,7 +897,7 @@ class BiigleCSV_to_COCO_JSON:
                         "height": height,
                         "width": width,
                         "date_captured": objects_list[0][
-                            'created_at'] if objects_list else current_time
+                            'created_at'] if objects_list else current_date
                     }
                 ],
                 "annotations": annotations
