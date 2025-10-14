@@ -892,33 +892,48 @@ def generate_and_process_batch_configs(
 
 # ########################################################60
 
-# OK!
+if __name__ == "__main__":
 
-    # if __name__ == "__main__":
-    #     # From the CSV file containing the bounding boxes
-    #     # and the output path for the extracted images
-    #     # and the output filename for the extracted images
-    #     # from the JSON file containing the metadata
-    #     # for the bounding boxes.
-    #     # The processor will extract the bounding boxes
-    #     # and save them in a single comma-separated value (.CSV) text file.
-    #     # This file will be used for the next processing step.
-    #     # The processor will then extract the bounding boxes
-    #     # and save them in a single comma-separated value (.CSV) text file.
-    #     processor = CSVObjectProcessor(
-    #         csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_unsure_removed.csv",
-    #         labels_json_path = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/label_trees_arranged_all.json",
-    #         images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
-    #         filename_pattern="capt*.jpg",
-    #         output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/5",
-    #         prefix_filename=""  # Optional prefix
-    #     )
-    #
-    #     # Process all objects
-    #     processor.process_all_objects()
-    #
-    #     # Merge JSON files (saves to output/merged_json/)
-    #     processor.merge_json_files_by_image_id()
+    # ========================================================60
+    # Convert Biigle CSV file to COCO JSON file (OK!)
+
+    # From the CSV file containing the bounding boxes
+    # and the output path for the extracted images
+    # and the output filename for the extracted images
+    # from the JSON file containing the metadata
+    # for the bounding boxes.
+    # The processor will extract the bounding boxes
+    # and save them in a single comma-separated value (.CSV) text file.
+    # This file will be used for the next processing step.
+    # The processor will then extract the bounding boxes
+    # and save them in a single comma-separated value (.CSV) text file.
+
+    # --------------------------------------------------------60
+    # # Batch processor
+
+    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+
+
+    processor = BiigleCSV_to_COCO_JSON(
+        # csv_file = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/biigle_volume_03/image_annotations_unsure_removed.csv",
+        # json_label_tree_path = "/Users/aavelino/Downloads/images_biigle/Volumes_biigle_annotation_done/label_trees_arranged_all.json",
+        # images_path="/Users/aavelino/Downloads/images_biigle/Archives_biigle_Arthuro-2/Images/BM4_E",
+        # filename_pattern="capt*.jpg",
+        # output_crops_path="/Users/aavelino/Downloads/images_biigle/tests/5",
+        # prefix_filename=""  # Optional prefix
+
+        csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
+        json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
+        images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
+        filename_pattern = "BM13_B_margo*.jpg",
+        output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
+    )
+
+    # Process all objects
+    processor.process_all_objects()
+
+    # Merge JSON files (saves to output/merged_json/)
+    processor.merge_json_files_by_image_id()
 
     # --------------------------------------------------------60
 
@@ -950,7 +965,7 @@ def generate_and_process_batch_configs(
 # OK!
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # ##########################################################
     # Rotate images and their respective bounding boxes for data-augmentation
@@ -959,272 +974,272 @@ if __name__ == "__main__":
     # ========================================================60
     # Batch processing of multiple JSON files and multiple angles (OPTIMIZED!)
 
-    from pathlib import Path
-    import glob
-    import shutil
-    from computer_vision.data_augmentation \
-        import ImageBoundingBoxTransformer, transform_image_and_boxes
-
-    json_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/originals/"
-    image_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/"
-    output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
-
-    # Validate directories exist before processing
-    json_path = Path(json_path_dir)
-    image_path = Path(image_path_dir)
-    output_path = Path(output_dir)
-
-    if not json_path.exists():
-        raise FileNotFoundError(f"JSON directory not found: {json_path_dir}")
-    if not image_path.exists():
-        raise FileNotFoundError(f"Image directory not found: {image_path_dir}")
-
-    # Create an output directory if it doesn't exist
-    output_path.mkdir(parents=True, exist_ok=True)
-
-    # Setup logging
-    logging_dir = output_path
-    setup_logging(logging_dir)
-    logger = logging.getLogger(__name__)
-    logger.info("\n=== Example 5: Batch processing (Enhanced) ===")
-
-    # Find all the JSON files with COCO format containing the bounding boxes data
-    json_files = sorted(json_path.glob(
-        "*.json"))  # Use Path.glob() and sort for deterministic order
-
-    if not json_files:
-        logger.warning(f"No JSON files found in {json_path_dir}")
-        raise ValueError("No JSON files to process")
-
-    logger.info(f"Found {len(json_files)} JSON files to process")
-
-    # Check available disk space (in bytes)
-    disk_usage = shutil.disk_usage(output_path)
-    free_space_gb = disk_usage.free / (1024 ** 3)
-    logger.info(f"Available disk space: {free_space_gb:.2f} GB")
-
-    # Estimate required space (rough estimate: 5MB per augmented image)
-    estimated_space_gb = len(json_files) * len([90, 120]) * len(
-        [False, True]) * len([False, True]) * 5 / 1024
-    logger.info(f"Estimated space required: {estimated_space_gb:.2f} GB")
-
-    if free_space_gb < estimated_space_gb * 1.5:  # 50% safety margin
-        logger.warning(
-            f"Low disk space! Available: {free_space_gb:.2f}GB, Required: ~{estimated_space_gb:.2f}GB")
-
-    # Processing parameters
-    # angles = [90, 120]
-    angles = [10, 30, 60, 75, 90, 105, 120, 150, 170]
-    flips_h = [False, True]
-    flips_v = [False, True]
-
-    # Calculate total operations for progress tracking
-    total_operations = len(json_files) * len(angles) * len(flips_h) * len(
-        flips_v)
-    completed_operations = 0
-    failed_operations = 0
-    skipped_operations = 0
-
-    logger.info(
-        f"Starting batch processing: {total_operations} total operations")
-    logger.info(
-        f"JSON files: {len(json_files)}, Angles: {angles}, Flips H/V: {flips_h}/{flips_v}")
-
-    # Track processing statistics
-    processing_stats = {
-        'successful': [],
-        'failed': [],
-        'skipped': []
-    }
-
-    # Main processing loop - optimized structure
-    for json_file in json_files:
-        image_name = json_file.stem
-        image_file = image_path / f"{image_name}.jpg"
-
-        # Validate that a corresponding image exists before processing
-        if not image_file.exists():
-            logger.warning(
-                f"Image file not found for {image_name}, skipping all transformations")
-            skipped_operations += len(angles) * len(flips_h) * len(flips_v)
-            processing_stats['skipped'].append({
-                'image': image_name,
-                'reason': 'Image file not found'
-            })
-            continue
-
-        logger.info(f"\n{'=' * 60}")
-        logger.info(f"Processing image set: {image_name}")
-        logger.info(f"{'=' * 60}")
-
-        # Process all transformation combinations for this image
-        for flip_v in flips_v:
-            for flip_h in flips_h:
-                for angle in angles:
-                    completed_operations += 1
-                    progress_pct = (
-                                               completed_operations / total_operations) * 100
-
-                    try:
-                        # Generate descriptive transformation label
-                        transform_label = f"angle={angle}°, flipH={flip_h}, flipV={flip_v}"
-                        logger.info(
-                            f"[{completed_operations}/{total_operations} - {progress_pct:.1f}%] "
-                            f"Processing: {image_name} | {transform_label}")
-
-                        # Build output filename pattern
-                        output_filename = f"{image_name}_rot{angle}_flipH_{flip_h}_flipV_{flip_v}"
-
-                        # Check if the output already exists (skip if present to avoid reprocessing)
-                        output_img = output_path / f"{output_filename}.jpg"
-                        output_json = output_path / f"{output_filename}.json"
-
-                        if output_img.exists() and output_json.exists():
-                            logger.info(
-                                f"Output already exists, skipping: {output_filename}")
-                            skipped_operations += 1
-                            processing_stats['skipped'].append({
-                                'image': image_name,
-                                'transform': transform_label,
-                                'reason': 'Already processed'
-                            })
-                            continue
-
-                        # Perform transformation
-                        img_path, json_path_out = transform_image_and_boxes(
-                            image_path=str(image_file),
-                            json_path=str(json_file),
-                            output_dir=str(output_path),
-                            angle=angle,
-                            flip_horizontal=flip_h,
-                            flip_vertical=flip_v,
-                            fill_color=(79.48, 130.62, 189.84),
-                            # Blue fill color (RGB)
-                            output_filename_pattern=output_filename,
-                        )
-
-                        logger.info(
-                            f"✓ Success: Image={img_path.name}, JSON={json_path_out.name}")
-                        processing_stats['successful'].append({
-                            'image': image_name,
-                            'transform': transform_label,
-                            'output': output_filename
-                        })
-
-                    except FileNotFoundError as e:
-                        failed_operations += 1
-                        error_msg = f"File not found: {e}"
-                        logger.error(
-                            f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-                        processing_stats['failed'].append({
-                            'image': image_name,
-                            'transform': transform_label,
-                            'error': error_msg
-                        })
-
-                    except ValueError as e:
-                        failed_operations += 1
-                        error_msg = f"Invalid value: {e}"
-                        logger.error(
-                            f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-                        processing_stats['failed'].append({
-                            'image': image_name,
-                            'transform': transform_label,
-                            'error': error_msg
-                        })
-
-                    except PermissionError as e:
-                        failed_operations += 1
-                        error_msg = f"Permission denied: {e}"
-                        logger.error(
-                            f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-                        processing_stats['failed'].append({
-                            'image': image_name,
-                            'transform': transform_label,
-                            'error': error_msg
-                        })
-
-                    except Exception as e:
-                        failed_operations += 1
-                        error_msg = f"Unexpected error: {type(e).__name__}: {e}"
-                        logger.error(
-                            f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-                        logger.exception("Full stack trace:")
-                        processing_stats['failed'].append({
-                            'image': image_name,
-                            'transform': transform_label,
-                            'error': error_msg
-                        })
-
-                    # Check disk space periodically (every 10 operations)
-                    if completed_operations % 10 == 0:
-                        current_disk = shutil.disk_usage(output_path)
-                        current_free_gb = current_disk.free / (1024 ** 3)
-                        logger.info(
-                            f"Disk space check: {current_free_gb:.2f} GB available")
-
-                        if current_free_gb < 1.0:  # Less than 1GB remaining
-                            logger.critical(
-                                f"CRITICAL: Low disk space ({current_free_gb:.2f} GB)! Stopping processing.")
-                            raise RuntimeError(
-                                "Insufficient disk space to continue processing")
-
-    # Generate final summary report
-    logger.info(f"\n{'=' * 60}")
-    logger.info("=== BATCH PROCESSING SUMMARY ===")
-    logger.info(f"{'=' * 60}")
-    logger.info(f"Total operations: {total_operations}")
-    logger.info(
-        f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)")
-    logger.info(
-        f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)")
-    logger.info(
-        f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)")
-
-    # Log failed operations details
-    if processing_stats['failed']:
-        logger.warning(f"\n{'=' * 60}")
-        logger.warning("FAILED OPERATIONS DETAILS:")
-        logger.warning(f"{'=' * 60}")
-        for failure in processing_stats['failed']:
-            logger.warning(
-                f"• {failure['image']} | {failure['transform']} | Error: {failure['error']}")
-
-    # Save summary report to file
-    summary_file = output_path / "batch_processing_summary.txt"
-    with open(summary_file, 'w') as f:
-        f.write("=" * 60 + "\n")
-        f.write("BATCH PROCESSING SUMMARY REPORT\n")
-        f.write("=" * 60 + "\n\n")
-        f.write(f"Total operations: {total_operations}\n")
-        f.write(
-            f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)\n")
-        f.write(
-            f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)\n")
-        f.write(
-            f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)\n\n")
-
-        if processing_stats['failed']:
-            f.write("\nFAILED OPERATIONS:\n")
-            f.write("-" * 60 + "\n")
-            for failure in processing_stats['failed']:
-                f.write(f"Image: {failure['image']}\n")
-                f.write(f"Transform: {failure['transform']}\n")
-                f.write(f"Error: {failure['error']}\n\n")
-
-        if processing_stats['skipped']:
-            f.write("\nSKIPPED OPERATIONS:\n")
-            f.write("-" * 60 + "\n")
-            for skipped in processing_stats['skipped']:
-                f.write(f"Image: {skipped['image']}\n")
-                f.write(f"Reason: {skipped['reason']}\n\n")
-
-    logger.info(f"\nSummary report saved to: {summary_file}")
-    logger.info("\n=== All examples completed ===")
+    # from pathlib import Path
+    # import glob
+    # import shutil
+    # from computer_vision.data_augmentation \
+    #     import ImageBoundingBoxTransformer, transform_image_and_boxes
+    #
+    # json_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/originals/"
+    # image_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
+    #
+    # # Validate directories exist before processing
+    # json_path = Path(json_path_dir)
+    # image_path = Path(image_path_dir)
+    # output_path = Path(output_dir)
+    #
+    # if not json_path.exists():
+    #     raise FileNotFoundError(f"JSON directory not found: {json_path_dir}")
+    # if not image_path.exists():
+    #     raise FileNotFoundError(f"Image directory not found: {image_path_dir}")
+    #
+    # # Create an output directory if it doesn't exist
+    # output_path.mkdir(parents=True, exist_ok=True)
+    #
+    # # Setup logging
+    # logging_dir = output_path
+    # setup_logging(logging_dir)
+    # logger = logging.getLogger(__name__)
+    # logger.info("\n=== Example 5: Batch processing (Enhanced) ===")
+    #
+    # # Find all the JSON files with COCO format containing the bounding boxes data
+    # json_files = sorted(json_path.glob(
+    #     "*.json"))  # Use Path.glob() and sort for deterministic order
+    #
+    # if not json_files:
+    #     logger.warning(f"No JSON files found in {json_path_dir}")
+    #     raise ValueError("No JSON files to process")
+    #
+    # logger.info(f"Found {len(json_files)} JSON files to process")
+    #
+    # # Check available disk space (in bytes)
+    # disk_usage = shutil.disk_usage(output_path)
+    # free_space_gb = disk_usage.free / (1024 ** 3)
+    # logger.info(f"Available disk space: {free_space_gb:.2f} GB")
+    #
+    # # Estimate required space (rough estimate: 5MB per augmented image)
+    # estimated_space_gb = len(json_files) * len([90, 120]) * len(
+    #     [False, True]) * len([False, True]) * 5 / 1024
+    # logger.info(f"Estimated space required: {estimated_space_gb:.2f} GB")
+    #
+    # if free_space_gb < estimated_space_gb * 1.5:  # 50% safety margin
+    #     logger.warning(
+    #         f"Low disk space! Available: {free_space_gb:.2f}GB, Required: ~{estimated_space_gb:.2f}GB")
+    #
+    # # Processing parameters
+    # # angles = [90, 120]
+    # angles = [10, 30, 60, 75, 90, 105, 120, 150, 170]
+    # flips_h = [False, True]
+    # flips_v = [False, True]
+    #
+    # # Calculate total operations for progress tracking
+    # total_operations = len(json_files) * len(angles) * len(flips_h) * len(
+    #     flips_v)
+    # completed_operations = 0
+    # failed_operations = 0
+    # skipped_operations = 0
+    #
+    # logger.info(
+    #     f"Starting batch processing: {total_operations} total operations")
+    # logger.info(
+    #     f"JSON files: {len(json_files)}, Angles: {angles}, Flips H/V: {flips_h}/{flips_v}")
+    #
+    # # Track processing statistics
+    # processing_stats = {
+    #     'successful': [],
+    #     'failed': [],
+    #     'skipped': []
+    # }
+    #
+    # # Main processing loop - optimized structure
+    # for json_file in json_files:
+    #     image_name = json_file.stem
+    #     image_file = image_path / f"{image_name}.jpg"
+    #
+    #     # Validate that a corresponding image exists before processing
+    #     if not image_file.exists():
+    #         logger.warning(
+    #             f"Image file not found for {image_name}, skipping all transformations")
+    #         skipped_operations += len(angles) * len(flips_h) * len(flips_v)
+    #         processing_stats['skipped'].append({
+    #             'image': image_name,
+    #             'reason': 'Image file not found'
+    #         })
+    #         continue
+    #
+    #     logger.info(f"\n{'=' * 60}")
+    #     logger.info(f"Processing image set: {image_name}")
+    #     logger.info(f"{'=' * 60}")
+    #
+    #     # Process all transformation combinations for this image
+    #     for flip_v in flips_v:
+    #         for flip_h in flips_h:
+    #             for angle in angles:
+    #                 completed_operations += 1
+    #                 progress_pct = (
+    #                                            completed_operations / total_operations) * 100
+    #
+    #                 try:
+    #                     # Generate descriptive transformation label
+    #                     transform_label = f"angle={angle}°, flipH={flip_h}, flipV={flip_v}"
+    #                     logger.info(
+    #                         f"[{completed_operations}/{total_operations} - {progress_pct:.1f}%] "
+    #                         f"Processing: {image_name} | {transform_label}")
+    #
+    #                     # Build output filename pattern
+    #                     output_filename = f"{image_name}_rot{angle}_flipH_{flip_h}_flipV_{flip_v}"
+    #
+    #                     # Check if the output already exists (skip if present to avoid reprocessing)
+    #                     output_img = output_path / f"{output_filename}.jpg"
+    #                     output_json = output_path / f"{output_filename}.json"
+    #
+    #                     if output_img.exists() and output_json.exists():
+    #                         logger.info(
+    #                             f"Output already exists, skipping: {output_filename}")
+    #                         skipped_operations += 1
+    #                         processing_stats['skipped'].append({
+    #                             'image': image_name,
+    #                             'transform': transform_label,
+    #                             'reason': 'Already processed'
+    #                         })
+    #                         continue
+    #
+    #                     # Perform transformation
+    #                     img_path, json_path_out = transform_image_and_boxes(
+    #                         image_path=str(image_file),
+    #                         json_path=str(json_file),
+    #                         output_dir=str(output_path),
+    #                         angle=angle,
+    #                         flip_horizontal=flip_h,
+    #                         flip_vertical=flip_v,
+    #                         fill_color=(79.48, 130.62, 189.84),
+    #                         # Blue fill color (RGB)
+    #                         output_filename_pattern=output_filename,
+    #                     )
+    #
+    #                     logger.info(
+    #                         f"✓ Success: Image={img_path.name}, JSON={json_path_out.name}")
+    #                     processing_stats['successful'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'output': output_filename
+    #                     })
+    #
+    #                 except FileNotFoundError as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"File not found: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+    #
+    #                 except ValueError as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"Invalid value: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+    #
+    #                 except PermissionError as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"Permission denied: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+    #
+    #                 except Exception as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"Unexpected error: {type(e).__name__}: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     logger.exception("Full stack trace:")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+    #
+    #                 # Check disk space periodically (every 10 operations)
+    #                 if completed_operations % 10 == 0:
+    #                     current_disk = shutil.disk_usage(output_path)
+    #                     current_free_gb = current_disk.free / (1024 ** 3)
+    #                     logger.info(
+    #                         f"Disk space check: {current_free_gb:.2f} GB available")
+    #
+    #                     if current_free_gb < 1.0:  # Less than 1GB remaining
+    #                         logger.critical(
+    #                             f"CRITICAL: Low disk space ({current_free_gb:.2f} GB)! Stopping processing.")
+    #                         raise RuntimeError(
+    #                             "Insufficient disk space to continue processing")
+    #
+    # # Generate final summary report
+    # logger.info(f"\n{'=' * 60}")
+    # logger.info("=== BATCH PROCESSING SUMMARY ===")
+    # logger.info(f"{'=' * 60}")
+    # logger.info(f"Total operations: {total_operations}")
+    # logger.info(
+    #     f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)")
+    # logger.info(
+    #     f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)")
+    # logger.info(
+    #     f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)")
+    #
+    # # Log failed operations details
+    # if processing_stats['failed']:
+    #     logger.warning(f"\n{'=' * 60}")
+    #     logger.warning("FAILED OPERATIONS DETAILS:")
+    #     logger.warning(f"{'=' * 60}")
+    #     for failure in processing_stats['failed']:
+    #         logger.warning(
+    #             f"• {failure['image']} | {failure['transform']} | Error: {failure['error']}")
+    #
+    # # Save summary report to file
+    # summary_file = output_path / "batch_processing_summary.txt"
+    # with open(summary_file, 'w') as f:
+    #     f.write("=" * 60 + "\n")
+    #     f.write("BATCH PROCESSING SUMMARY REPORT\n")
+    #     f.write("=" * 60 + "\n\n")
+    #     f.write(f"Total operations: {total_operations}\n")
+    #     f.write(
+    #         f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)\n")
+    #     f.write(
+    #         f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)\n")
+    #     f.write(
+    #         f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)\n\n")
+    #
+    #     if processing_stats['failed']:
+    #         f.write("\nFAILED OPERATIONS:\n")
+    #         f.write("-" * 60 + "\n")
+    #         for failure in processing_stats['failed']:
+    #             f.write(f"Image: {failure['image']}\n")
+    #             f.write(f"Transform: {failure['transform']}\n")
+    #             f.write(f"Error: {failure['error']}\n\n")
+    #
+    #     if processing_stats['skipped']:
+    #         f.write("\nSKIPPED OPERATIONS:\n")
+    #         f.write("-" * 60 + "\n")
+    #         for skipped in processing_stats['skipped']:
+    #             f.write(f"Image: {skipped['image']}\n")
+    #             f.write(f"Reason: {skipped['reason']}\n\n")
+    #
+    # logger.info(f"\nSummary report saved to: {summary_file}")
+    # logger.info("\n=== All examples completed ===")
 
     # ========================================================60
 
-    # Batch processing of multiple angle rotation from a single image + JSON (OK!)
+    # Batch processing of multiple angle rotation from a SINGLE image + JSON (OK!)
 
     # image_name = "capt0044"
     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/rotation/"
@@ -1288,7 +1303,7 @@ if __name__ == "__main__":
 
     # ========================================================60
     # Draw bounding boxes of images using the info from JSON files.
-
+    #
     # # Setup logging
     # logging.basicConfig(level=logging.INFO,
     #                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -1296,9 +1311,13 @@ if __name__ == "__main__":
     # # --------------------------------------------------------60
     # # Batch processing, either "coco" and "robo" JSON format (OK!)
     #
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented"
-    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented"
-    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/bbox"
+    # # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
+    # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
+    # # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/bbox/"
+    #
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/originals/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E_bbox/"
     #
     # # Confidence range to plot
     # # min_confidence = 0.2

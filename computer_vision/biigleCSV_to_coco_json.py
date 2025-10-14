@@ -7,9 +7,9 @@ from PIL import Image
 import shutil
 
 
-class CSVObjectProcessor:
+class BiigleCSV_to_COCO_JSON:
     """
-    CSVObjectProcessor - Comprehensive Image Object Processing from CSV Annotations
+    BiigleCSV_to_COCO_JSON - Comprehensive Image Object Processing from CSV Annotations
 
     A class to process CSV files containing pixel coordinates of objects in images.
 
@@ -29,7 +29,7 @@ class CSVObjectProcessor:
     OVERVIEW AND PURPOSE
     ================================================================================
 
-    The CSVObjectProcessor class is designed to process CSV files containing pixel
+    The BiigleCSV_to_COCO_JSON class is designed to process CSV files containing pixel
     coordinates of annotated objects in images. It automates the workflow of reading
     object annotations, calculating bounding boxes, cropping individual objects, and
     generating structured metadata files for computer vision and machine learning tasks.
@@ -137,15 +137,15 @@ class CSVObjectProcessor:
 
     **Basic Usage - Process All Objects:**
     ```python
-    from csv_object_processor import CSVObjectProcessor
+    from csv_object_processor import BiigleCSV_to_COCO_JSON
 
     # Initialize processor with required paths
-    processor = CSVObjectProcessor(
+    processor = BiigleCSV_to_COCO_JSON(
      csv_file="annotations/objects.csv",
      images_path="images/source/",
      filename_pattern="capt*.jpg",
      output_crops_path="output/cropped_objects/",
-     labels_json_path="labels/categories.json"
+     json_label_tree_path="labels/categories.json"
     )
 
     # Process entire dataset
@@ -158,13 +158,13 @@ class CSVObjectProcessor:
     **Advanced Usage - Custom Configuration:**
     ``` python
     # Initialize with custom prefix and specific paths
-    processor = CSVObjectProcessor(
+    processor = BiigleCSV_to_COCO_JSON(
      csv_file="/data/annotations/dataset_v2.csv",
      images_path="/data/images/raw/",
      filename_pattern="capture_*.jpg",
      output_crops_path="/output/processed/",
      prefix_filename="dataset_v2",
-     labels_json_path="/data/labels/categories.json"
+     json_label_tree_path="/data/labels/categories.json"
     )
 
     # Load data first to inspect
@@ -253,9 +253,9 @@ class CSVObjectProcessor:
     """
 
     def __init__(self, csv_file, images_path, filename_pattern,
-                 output_crops_path, prefix_filename="", labels_json_path=None):
+                 output_crops_path, prefix_filename="", json_label_tree_path=None):
         """
-        Initialize the CSVObjectProcessor.
+        Initialize the BiigleCSV_to_COCO_JSON.
 
         Args:
             csv_file (str): Path to the CSV file containing object annotations
@@ -263,7 +263,7 @@ class CSVObjectProcessor:
             filename_pattern (str): Pattern to match image filenames (e.g., "capt*.jpg")
             output_crops_path (str): Path to the output directory for cropped images
             prefix_filename (str): Optional prefix for output filenames
-            labels_json_path (str): Path to JSON file containing category names mapping
+            json_label_tree_path (str): Path to JSON file containing category names mapping
         """
         # Convert string paths to Path objects
         self.csv_file = Path(csv_file)
@@ -271,8 +271,8 @@ class CSVObjectProcessor:
         self.filename_pattern = filename_pattern
         self.output_crops_path = Path(output_crops_path)
         self.prefix_filename = prefix_filename
-        self.labels_json_path = Path(
-            labels_json_path) if labels_json_path else None
+        self.json_label_tree_path = Path(
+            json_label_tree_path) if json_label_tree_path else None
 
         # Create output directory
         self.output_crops_path.mkdir(parents=True, exist_ok=True)
@@ -308,13 +308,13 @@ class CSVObjectProcessor:
         """
         category_names = {}
 
-        if not self.labels_json_path or not self.labels_json_path.exists():
+        if not self.json_label_tree_path or not self.json_label_tree_path.exists():
             self.logger.warning(
-                f"Labels JSON file not found at {self.labels_json_path}. Using default 'arthropod' name.")
+                f"Labels JSON file not found at {self.json_label_tree_path}. Using default 'arthropod' name.")
             return category_names
 
         try:
-            with open(self.labels_json_path, 'r', encoding='utf-8') as f:
+            with open(self.json_label_tree_path, 'r', encoding='utf-8') as f:
                 labels_data = json.load(f)
 
             # Extract labels and create mapping
@@ -326,11 +326,11 @@ class CSVObjectProcessor:
                     category_names[category_id] = category_name
 
             self.logger.info(
-                f"Loaded {len(category_names)} category names from {self.labels_json_path}")
+                f"Loaded {len(category_names)} category names from {self.json_label_tree_path}")
 
         except Exception as e:
             self.logger.error(
-                f"Error loading category names from {self.labels_json_path}: {e}")
+                f"Error loading category names from {self.json_label_tree_path}: {e}")
 
         return category_names
 
@@ -1159,13 +1159,13 @@ class CSVObjectProcessor:
 # # Example usage
 # if __name__ == "__main__":
 #     # Initialize the processor
-#     processor = CSVObjectProcessor(
+#     processor = BiigleCSV_to_COCO_JSON(
 #         csv_file="path/to/your/file.csv",
 #         images_path="path/to/images/directory",
 #         filename_pattern="capt*.jpg",
 #         output_crops_path="output/cropped_objects/",
 #         prefix_filename=""  # Optional prefix
-# 		labels_json_path="labels/categories.json"
+# 		json_label_tree_path="labels/categories.json"
 #     )
 #
 #     # Process all objects
@@ -1173,7 +1173,7 @@ class CSVObjectProcessor:
 #
 #
 # # Basic usage - merge all JSON files
-# processor = CSVObjectProcessor(
+# processor = BiigleCSV_to_COCO_JSON(
 #     csv_file="annotations.csv",
 #     images_path="images/",
 #     filename_pattern="capt*.jpg",
