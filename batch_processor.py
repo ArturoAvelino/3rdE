@@ -968,6 +968,7 @@ if __name__ == "__main__":
 # if __name__ == "__main__":
 
     # ##########################################################
+    # Data augmentation
     # Rotate images and their respective bounding boxes for data-augmentation
     # purposes
 
@@ -1301,29 +1302,38 @@ if __name__ == "__main__":
     # except Exception as e:
     #     logger.error(f"Example 4 failed: {e}")
 
-    # ========================================================60
+    # ########################################################60
+
     # Draw bounding boxes of images using the info from JSON files.
     #
-    # # Setup logging
+    # Setup logging
     # logging.basicConfig(level=logging.INFO,
     #                     format='%(asctime)s - %(levelname)s - %(message)s')
-    #
+
     # # --------------------------------------------------------60
     # # Batch processing, either "coco" and "robo" JSON format (OK!)
-    #
-    # # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
-    # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
-    # # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/bbox/"
-    #
+
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/data_augmented/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/bbox/"
+
     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/"
     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/originals/"
     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E_bbox/"
+
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo_bbox/"
+
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03/4_predictions/Workflow_Yolo8_DetectCountVisualize/BM4_E_capt0055/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03/4_predictions/Workflow_Yolo8_DetectCountVisualize/BM4_E_capt0055/"
     #
-    # # Confidence range to plot
-    # # min_confidence = 0.2
-    # # max_confidence = 1.0
+    # # # Confidence range to plot
+    # min_confidence = 0.1
+    # max_confidence = 1.0
     #
-    # # Advanced usage with customization
+    # # # Advanced usage with customization
     # drawer = BoundingBoxDrawer()
     # results = drawer.process_batch(
     #
@@ -1332,14 +1342,15 @@ if __name__ == "__main__":
     #     # input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
     #     # input_json_format="roboflow",
     #     # output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
-    #     # confidence_range=(min_confidence, max_confidence),
-    #     # suffix_output_imagefiles= f"_bbox_c_{min_confidence}_{max_confidence}",
+    #
+    #     confidence_range=(min_confidence, max_confidence),
+    #     suffix_output_imagefiles= f"_bbox_c_{min_confidence}-{max_confidence}",
     #
     #     input_image_dir=input_image_dir,
     #     input_json_dir=input_json_dir,
-    #     input_json_format="coco",
+    #     input_json_format="roboflow",
     #     output_dir=output_dir,
-    #     suffix_output_imagefiles=f"_bbox",
+    #     # suffix_output_imagefiles=f"_bbox",
     #
     #     font_size=60,
     #     bbox_color="white",

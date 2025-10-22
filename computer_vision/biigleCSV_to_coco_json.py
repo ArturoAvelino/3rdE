@@ -798,8 +798,7 @@ class BiigleCSV_to_COCO_JSON:
             f"Grouped {len(csv_data)} objects into {len(grouped_objects)} image groups")
         return grouped_objects
 
-    def create_merged_json_metadata(self, image_id, objects_list,
-                                    output_path=None):
+    def create_merged_json_metadata(self, image_id, objects_list, output_path=None):
         """
         Create a merged JSON metadata file for all objects belonging to the same image_id.
 
@@ -922,20 +921,151 @@ class BiigleCSV_to_COCO_JSON:
                 f"Error creating merged JSON for image_id {image_id}: {e}")
             raise
 
+
+    def create_merged_json_metadata_robo(self, image_id, objects_list, output_path=None):
+        """
+        Temporary function to create the JSON files to be uploaded to Robo. They
+        contain the insect ID instead of the insect species’s name in the
+        “categories”/“name” section of the generated merged JSON files.
+        """
+        try:
+            # Get image information
+            filename = self.image_mapping.get(image_id,
+                                              f"unknown_{image_id}.jpg")
+            sample_name = Path(filename).stem
+            image_path = self.images_path / filename
+
+            # Get image dimensions
+            if image_path.exists():
+                try:
+                    width, height = self.get_image_dimensions(image_path)
+                except Exception as e:
+                    self.logger.warning(
+                        f"Could not get dimensions for {image_path}, using defaults: {e}")
+                    width, height = 6000, 4000
+            else:
+                width, height = 6000, 4000
+
+            #old current_time = datetime.now().isoformat() + "-01:00"
+            current_date = datetime.now().strftime("%Y-%m-%d")
+            current_year = datetime.now().strftime("%Y")
+
+            # Create an annotation list
+            annotations = []
+            categories_dict = {}  # Use dict to avoid duplicates
+
+            for obj_data in objects_list:
+                # Calculate a bounding box for each object
+                bbox_info = self.calculate_bounding_box(obj_data['points'])
+
+                # Create annotation entry
+                annotation = {
+                    "id": int(obj_data['id']),
+                    "image_id": image_id,
+                    "category_id": int(obj_data['label_id']),
+                    "bbox": [
+                        bbox_info['min_x'], # top-left corner of the bounding box
+                        bbox_info['min_y'], # top-left corner of the bounding box
+                        bbox_info['box_width'],
+                        bbox_info['box_height']
+                    ],
+                    "area": bbox_info['box_area'],
+                    "segmentation": [],
+                    "iscrowd": 0
+                }
+                annotations.append(annotation)
+
+                # Add a category (using dict to avoid duplicates)
+                category_id = int(obj_data['label_id'])
+                if category_id not in categories_dict:
+                    #old category_name = self._get_category_name(category_id)
+
+                    # Below, the "in" stands for "insect"
+                    category_name = f"in{category_id}" # for robo
+                    categories_dict[category_id] = {
+                        "id": category_id,
+                        "name": category_name,
+                        "supercategory": "none"
+                    }
+
+            # Convert categories dict to list
+            categories = list(categories_dict.values())
+
+            # Create the merged JSON structure
+            merged_json = {
+                "info": {
+                    "year": current_year,
+                    "version": "1",
+                    "description": "arthropods bounding boxes",
+                    "contributor": "Arturo_Avelino",
+                    "url": "https://www.unine.ch/biolsol",
+                    "date_created": current_date
+                },
+                "licenses": [
+                    {
+                        "id": 1,
+                        "url": "https://www.unine.ch/biolsol",
+                        "name": "Research"
+                    }
+                ],
+                "categories": categories,
+                "images": [
+                    {
+                        "id": image_id,
+                        "license": 1,
+                        "file_name": filename,
+                        "height": height,
+                        "width": width,
+                        "date_captured": objects_list[0][
+                            'created_at'] if objects_list else current_date
+                    }
+                ],
+                "annotations": annotations
+            }
+
+            # Save to file if output_path is provided
+            if output_path:
+                output_path.mkdir(parents=True, exist_ok=True)
+                json_filename = f"{sample_name}_image_{image_id}_merged.json"
+                json_file_path = output_path / json_filename
+
+                with open(json_file_path, 'w', encoding='utf-8') as f:
+                    json.dump(merged_json, f, indent=4)
+
+                self.logger.info(
+                    f"Saved merged JSON for image_id {image_id} with {len(annotations)} objects to {json_file_path}")
+
+            return merged_json
+
+        except Exception as e:
+            self.logger.error(
+                f"Error creating merged JSON for image_id {image_id}: {e}")
+            raise
+
+
     def merge_json_files_by_image_id(self, output_merged_path=None):
         """
         Main method to merge all individual JSON files by image_id into consolidated files.
 
         Args:
             output_merged_path (str): Output directory for merged JSON files.
-                                    If None, creates 'merged_json' subdirectory in output_crops_path.
+                                    If None, creates 'merged_json' subdirectory
+                                    in output_crops_path.
+
+        NOTE:
+        All the lines with the comment “# to robo” are temporary and used to
+        create the output JSON files to upload to Robo. They contain the insect
+        ID instead of the insect species’s name in the “categories”/“name”
+        section of the generated JSON file.
         """
         try:
-            # Set default output path if none provided
+            # Set default output path directory if none provided
             if output_merged_path is None:
                 output_merged_path = self.output_crops_path / "merged_json"
+                output_merged_path_robo = self.output_crops_path / "merged_json_robo"  # for robo
             else:
                 output_merged_path = Path(output_merged_path)
+                output_merged_path_robo = Path(output_merged_path) # for robo
 
             # Load CSV data and group by image_id
             csv_data = self.load_csv_data()
@@ -950,6 +1080,7 @@ class BiigleCSV_to_COCO_JSON:
             processed_images = 0
 
             for image_id, objects_list in grouped_objects.items():
+                # Regular JSON file containing the species names.
                 try:
                     # Create merged JSON for this image_id
                     self.create_merged_json_metadata(image_id, objects_list,
@@ -960,6 +1091,23 @@ class BiigleCSV_to_COCO_JSON:
                     self.logger.error(
                         f"Failed to merge JSON for image_id {image_id}: {e}")
                     continue
+
+                # ----->
+                # Temporary implementation to create the JSON files to be used
+                # to upload to robo.
+                try:
+                    # Create merged JSON for this image_id
+                    self.create_merged_json_metadata_robo(image_id, objects_list,
+                                                     output_merged_path_robo)
+                    processed_images += 1
+
+                except Exception as e:
+                    self.logger.error(
+                        f"Failed to merge JSON for image_id {image_id}: {e}")
+                    continue
+                # <-----
+
+
 
             self.logger.info(
                 f"JSON merging complete: {processed_images}/{total_images} image groups processed successfully")
