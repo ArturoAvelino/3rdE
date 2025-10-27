@@ -1248,7 +1248,7 @@ class RoboflowProcessor:
         """
         bbox_data = []
 
-        # Handle new JSON format: check if json_data is a list
+        # Handle JSON format: check if json_data is a list
         if isinstance(json_data, list) and len(json_data) > 0:
             # Extract the first element from the array
             first_element = json_data[0]
