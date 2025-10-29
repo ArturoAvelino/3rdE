@@ -1478,4 +1478,19 @@ def generate_and_process_batch_configs(
 
 
 
+# ########################################################60
+# "Intersection over Union" (IOU) metric to match bounding boxes between Roboflow
+# and Biigle (COCO) formats.
 
+from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
+
+if __name__ == "__main__":
+    # Initialize the matcher
+    matcher = IoUMetric_for_BBoxMatch(
+        roboflow_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_robo.json',
+        biigle_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_biigle.json',
+        iou_threshold=0.8
+    )
+
+    # Perform matching and save to CSV
+    matcher.save_to_csv('/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/matching_results.csv')

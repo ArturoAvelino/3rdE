@@ -22,6 +22,32 @@ class IoUMetric_for_BBoxMatch:
     """
     High-performance class for matching bounding boxes between Roboflow and Biigle (COCO) formats
     using Intersection over Union (IoU) metric.
+
+    Key Features:
+
+        1. High Performance:
+            - Vectorized IoU calculation using NumPy broadcasting for computing all pairwise IoU scores in a single operation
+            - Processes hundreds of bounding boxes efficiently by avoiding nested loops
+            - Time complexity: O(N×M) with vectorized operations vs O(N×M) with Python loops, but ~10-100x faster in practice
+
+        2. Format Conversion:
+            - Automatically converts Roboflow's center-based format to min-max coordinates
+            - Automatically converts Biigle's (COCO) top-left format to min-max coordinates
+            - All comparisons use a consistent [x_min, y_min, x_max, y_max] format internally
+
+        3. Smart Matching Logic:
+            - For each Roboflow object, finds the Biigle object with the highest IoU score
+            - Only creates a match if the IoU ≥ threshold
+            - Returns empty string for Biigle ID and 0.0 IoU when no match is found
+
+        4. Robust IoU Calculation:
+            - Handles edge cases (no intersection, zero-area boxes)
+            - Prevents division by zero
+            - Uses NumPy's efficient array operations
+
+        5. CSV Output:
+            - Generates a clean CSV with exactly 4 columns as specified
+            - Includes summary statistics after processing
     """
     
     def __init__(self, roboflow_json_path: str, biigle_json_path: str, iou_threshold: float = 0.8):
@@ -276,14 +302,16 @@ class IoUMetric_for_BBoxMatch:
         print(f"Unmatched objects: {sum(1 for r in results if r['biigle_id'] == '')}")
 
 
-# Example usage
-if __name__ == "__main__":
-    # Initialize the matcher
-    matcher = IoUMetric_for_BBoxMatch(
-        roboflow_json_path='path/to/roboflow.json',
-        biigle_json_path='path/to/biigle.json',
-        iou_threshold=0.8
-    )
-    
-    # Perform matching and save to CSV
-    matcher.save_to_csv('matching_results.csv')
+# ####################################################
+# # Example usage
+# if __name__ == "__main__":
+#     # Initialize the matcher
+#     matcher = IoUMetric_for_BBoxMatch(
+#         roboflow_json_path='path/to/roboflow.json',
+#         biigle_json_path='path/to/biigle.json',
+#         iou_threshold=0.8
+#     )
+#
+#     # Perform matching and save to CSV
+#     matcher.save_to_csv('matching_results.csv')
+
