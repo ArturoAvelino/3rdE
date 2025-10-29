@@ -82,7 +82,8 @@ class IoUMetric_for_BBoxMatch:
                         'bbox': self._roboflow_to_minmax(
                             pred['x'], pred['y'], pred['width'], pred['height']
                         ),
-                        'class': pred['class']
+                        'class': pred['class'],
+                        'confidence': pred['confidence']
                     })
         
         # Load Biigle data
@@ -264,7 +265,8 @@ class IoUMetric_for_BBoxMatch:
                 'roboflow_id': roboflow_obj['detection_id'],
                 'biigle_id': biigle_id,
                 'iou_score': best_iou,
-                'class': roboflow_obj['class']
+                'class': roboflow_obj['class'],
+                'confidence': roboflow_obj['confidence']
             })
         
         return results
@@ -284,7 +286,7 @@ class IoUMetric_for_BBoxMatch:
         
         # Write to CSV
         with open(output_csv_path, 'w', newline='') as csvfile:
-            fieldnames = ['Roboflow ID', 'Biigle ID', 'IoU Score', 'Class']
+            fieldnames = ['Roboflow ID', 'Biigle ID', 'IoU Score', 'Class', 'Confidence']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
             writer.writeheader()
@@ -293,7 +295,8 @@ class IoUMetric_for_BBoxMatch:
                     'Roboflow ID': result['roboflow_id'],
                     'Biigle ID': result['biigle_id'],
                     'IoU Score': f"{result['iou_score']:.4f}",
-                    'Class': result['class']
+                    'Class': result['class'],
+                    'Confidence': f"{result['confidence']:.4f}"
                 })
         
         print(f"Matching complete! Results saved to: {output_csv_path}")
