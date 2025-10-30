@@ -631,25 +631,25 @@ def generate_and_process_batch_configs(
 # ##############################################################################
 # Remove background and segment the objects found in an image (OK!)
 
-def main():
-
-    # sample_name = "F13_CL"
-
-    # Setup logging (will create processing.log in the input directory)
-    log_output_dir = Path(
-        # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-        "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/output/"
-    )
-
-    if not log_output_dir.exists():
-        print(f"Error: Log save directory not found: {log_output_dir}")
-        return
-
-    setup_logging(log_output_dir)
-    logger = logging.getLogger(__name__)
-    logger.info("Starting batch processing of images ...")
-
-    try:
+# def main():
+#
+#     # sample_name = "F13_CL"
+#
+#     # Setup logging (will create processing.log in the input directory)
+#     log_output_dir = Path(
+#         # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+#         "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/"
+#     )
+#
+#     if not log_output_dir.exists():
+#         print(f"Error: Log save directory not found: {log_output_dir}")
+#         return
+#
+#     setup_logging(log_output_dir)
+#     logger = logging.getLogger(__name__)
+#     logger.info("Starting batch processing of images ...")
+#
+#     try:
 
         # # =========================================
         # # Remove the color background from images using clustering (OK).
@@ -658,55 +658,52 @@ def main():
 
         # # SINGLE IMAGE PROCESSING (OK!)
 
-        import numpy as np
-        # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
-        # custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
-
-        # -----------
-        # # For arthropods
-
-        # -----------
-        # # For amoebas
-        # n_clusters = 5
+        # import numpy as np
+        # # -----------
+        # # # For arthropods
+        #
+        # # -----------
+        # # # For amoebas
+        # # n_clusters = 5
+        # # custom_centers = np.asarray(
+        # #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+        # #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
+        # #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
+        # #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
+        # #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+        #
+        # n_clusters = 6
         # custom_centers = np.asarray(
         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-        #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
-        #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
-        #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
-        #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-
-        n_clusters = 6
-        custom_centers = np.asarray(
-            [[223.956243077072, 224.19688719488295, 223.72036967281022],
-            [130.10775578641318, 132.94751572010676, 133.99591970661163],
-            [196.0491677412308, 196.8564069144558, 196.3449798997889],
-            [88.50986629549402, 92.57300105848267, 97.07617553557779],
-            [254.19593980921056, 254.32944373622792, 254.32832820257102],
-            [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-
-        # -----------
-
-        processor = BackgroundRemover(
-            # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
-            image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
-            output_dir = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/output/",
-            n_clusters = n_clusters,  # Default: 5 for arthropods
-            kmeans_init_centers = custom_centers # (optional)
-        )
-
-        sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
-        processor.cluster_rgb_colors()
-        processor.plot_rgb_rawdata(sample_step=sampling_ratio)
-        processor.plot_rgb_clusters(sample_step=sampling_ratio)
-        processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-        processor.plot_replaced_colors_in_image()
-
-        # Remove (i.e., transform to white color or some other predefined color) some specific colors.
-
-        # # For arthropods: use "[0, 4]" when "n_clusters = 5" to remove the blue background.
-        # # For amoebas: use "[3]" when "n_clusters = 5", or "[4]" when "n_clusters = 6"
-        color_clusters_to_remove = [4]
-        processor.remove_background(background_clusters=color_clusters_to_remove)
+        #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
+        #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
+        #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
+        #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
+        #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+        #
+        # # -----------
+        #
+        # processor = BackgroundRemover(
+        #     # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
+        #     image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
+        #     output_dir = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/output/",
+        #     n_clusters = n_clusters,  # Default: 5 for arthropods
+        #     kmeans_init_centers = custom_centers # (optional)
+        # )
+        #
+        # sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
+        # processor.cluster_rgb_colors()
+        # processor.plot_rgb_rawdata(sample_step=sampling_ratio)
+        # processor.plot_rgb_clusters(sample_step=sampling_ratio)
+        # processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
+        # processor.plot_replaced_colors_in_image()
+        #
+        # # Remove (i.e., transform to white color or some other predefined color) some specific colors.
+        #
+        # # # For arthropods: use "[0, 4]" when "n_clusters = 5" to remove the blue background.
+        # # # For amoebas: use "[3]" when "n_clusters = 5", or "[4]" when "n_clusters = 6"
+        # color_clusters_to_remove = [4]
+        # processor.remove_background(background_clusters=color_clusters_to_remove)
 
         # # Or simply use the default value = "[0, 4]" (for arthropods):
         # processor.remove_background()
@@ -783,28 +780,35 @@ def main():
         # # Option 3 (OK): Complete workflow - Generate configs and process them
         # # generating the segmentation plot and the individual cropped images.
 
-        # ##sample_name =  "R21-A"
-
-        # ##logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
-
-        # ##results = generate_and_process_batch_configs(
-        # ##    sample_name = sample_name,
-        # ##    raw_image_pattern = f"{sample_name}*.jpg",
-        # ##    raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-        # ##    no_background_image_pattern = "*_no_bkgd.png",
-        # ##    no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-        # ##    max_distance=4.0,
-        # ##    min_pixels=1000,
-        # ##    padding=35,
-        # ##    cropping=True,
-        # ##    # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
-        # ##    use_nonwhitepixel_as_bboxcenter = True,
-        # ##    create_cropped_images = False,
-        # ##    include_segmentation = False
-        # ##)
-
-        # ##logger.info(
-        # ##    f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
+        # sample_name =  "Untitled74_m0002"
+        #
+        # logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
+        #
+        # results = generate_and_process_batch_configs(
+        #     sample_name = sample_name,
+        #
+        #     # raw_image_pattern = f"{sample_name}*.jpg",
+        #     # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        #     # no_background_image_pattern = "*_no_bkgd.png",
+        #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        #
+        #     raw_image_pattern=f"{sample_name}*.png",
+        #     raw_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/",
+        #     no_background_image_pattern="*_no_bkgd.png",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/",
+        #
+        #     max_distance=10.0,
+        #     min_pixels=1000,
+        #     padding=35,
+        #     cropping=True,
+        #     # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
+        #     use_nonwhitepixel_as_bboxcenter = False,
+        #     create_cropped_images = True,
+        #     include_segmentation = False
+        # )
+        #
+        # logger.info(
+        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
         # -----------------------------------------
         # Option 4 (OK): Process individual configuration file (for testing/debugging)
@@ -910,12 +914,12 @@ def main():
         # #     min_samples=5
         # # )
 
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {str(e)}")
-        raise
-
-if __name__ == "__main__":
-    main()
+#     except Exception as e:
+#         logger.error(f"An unexpected error occurred: {str(e)}")
+#         raise
+#
+# if __name__ == "__main__":
+#     main()
 
 # ########################################################60
 
@@ -1338,62 +1342,65 @@ if __name__ == "__main__":
 
 # Draw bounding boxes of images using the info from JSON files.
 
-# if __name__ == "__main__":
-#
-#     # # Setup logging
-#     logging.basicConfig(level=logging.INFO,
-#                         format='%(asctime)s - %(levelname)s - %(message)s')
-#
-#     # --------------------------------------------------------60
-#     # Batch processing, either "coco" and "robo" JSON format (OK!)
-#
-#     # # Confidence range to plot
-#     # min_confidence = 0.1; max_confidence = 0.4
-#     # min_confidence = 0.4; max_confidence = 0.7
-#     # min_confidence = 0.7; max_confidence = 1.0
-#     min_confidence = 0.1; max_confidence = 1.0
-#
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02_03_for_robo/uploaded_to_roboflow/originals/"
-#     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E_bbox/"
-#     #
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json/"
-#     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo_bbox/"
-#
-#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-#     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11/R21_A/bbox_{min_confidence}_{max_confidence}/"
-#
-#
-#     drawer = BoundingBoxDrawer()
-#     results = drawer.process_batch(
-#
-#         # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
-#         # input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
-#         # input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
-#         # input_json_format="roboflow",
-#         # output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
-#
-#         confidence_range=(min_confidence, max_confidence),
-#         suffix_output_imagefiles= f"_bbox_c_{min_confidence}-{max_confidence}",
-#
-#         input_image_dir=input_image_dir,
-#         input_json_dir=input_json_dir,
-#         input_json_format="roboflow",  # "coco" or "roboflow"
-#         output_dir=output_dir,
-#
-#         font_size=60,
-#         bbox_color="white",
-#         text_color="black",
-#         text_position="top",
-#         show_center=True,
-#         center_dot_size=12,
-#         show_id=True,
-#         show_label=True,
-#         show_summary=True,
-#     )
+if __name__ == "__main__":
+
+    # # Setup logging
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # --------------------------------------------------------60
+    # Batch processing, either "coco" and "robo" JSON format (OK!)
+
+    # # Confidence range to plot
+    # min_confidence = 0.1; max_confidence = 0.4
+    # min_confidence = 0.4; max_confidence = 0.7
+
+    min_confidence = 0.4; max_confidence = 1.0
+    # min_confidence = 0.7; max_confidence = 1.0
+    # min_confidence = 0.05; max_confidence = 1.0
+
+    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/R21-DL/"
+    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/R21-DL/"
+    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/R21-DL/R21-DL_c_{min_confidence}_{max_confidence}/"
+
+
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo_bbox/"
+
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11/R21_A/bbox_{min_confidence}_{max_confidence}/"
+
+
+    drawer = BoundingBoxDrawer()
+    results = drawer.process_batch(
+
+        # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
+        # input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
+        # input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
+        # input_json_format="roboflow",
+        # output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
+
+        confidence_range=(min_confidence, max_confidence),
+        suffix_output_imagefiles= f"_bbox_c_{min_confidence}-{max_confidence}",
+
+        input_image_dir=input_image_dir,
+        input_json_dir=input_json_dir,
+        input_json_format="roboflow",  # "coco" or "roboflow"
+        output_dir=output_dir,
+
+        font_size=60,
+        bbox_color="white",
+        text_color="black",
+        text_position="top",
+        show_center=True,
+        center_dot_size=12,
+        show_id=False,
+        show_label=True,
+        show_summary=True,
+    )
 
     # ------------------------------
     # Single file

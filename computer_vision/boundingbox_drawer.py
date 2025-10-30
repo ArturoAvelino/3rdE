@@ -592,8 +592,12 @@ class BoundingBoxDrawer:
         """Draw class summary text on the image."""
         # Prepare summary text lines
         summary_lines = []
+        total_count = 0
         for class_name, count in class_summary.items():
             summary_lines.append(f"{count} {class_name}")
+            total_count += int(count)
+
+        summary_lines.append(f"Total: {total_count}")
 
         if not summary_lines:
             return
