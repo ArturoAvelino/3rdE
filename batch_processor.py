@@ -631,262 +631,291 @@ def generate_and_process_batch_configs(
 # ##############################################################################
 # Remove background and segment the objects found in an image (OK!)
 
-    # def main():
+def main():
 
-    #     # sample_name = "F13_CL"
+    # sample_name = "F13_CL"
 
-    #     # Setup logging (will create processing.log in the input directory)
-    #     log_output_dir = Path(
-    #         # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-    #         "/Users/aavelino/Downloads/2025_09_10_Emilie/"
-    #     )
+    # Setup logging (will create processing.log in the input directory)
+    log_output_dir = Path(
+        # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+        "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/output/"
+    )
 
-    #     if not log_output_dir.exists():
-    #         print(f"Error: Log save directory not found: {log_output_dir}")
-    #         return
+    if not log_output_dir.exists():
+        print(f"Error: Log save directory not found: {log_output_dir}")
+        return
 
-    #     setup_logging(log_output_dir)
-    #     logger = logging.getLogger(__name__)
-    #     logger.info("Starting batch processing of images ...")
+    setup_logging(log_output_dir)
+    logger = logging.getLogger(__name__)
+    logger.info("Starting batch processing of images ...")
 
-    #     try:
+    try:
 
-    #         # =========================================
-    #         # Remove the color background from images using clustering (OK).
-    #         #
-    #         # Comment these lines if you don't want to remove background from the images.
+        # # =========================================
+        # # Remove the color background from images using clustering (OK).
+        # #
+        # # Comment these lines if you don't want to remove background from the images.
 
-    #         # # SINGLE IMAGE PROCESSING (OK!)
+        # # SINGLE IMAGE PROCESSING (OK!)
 
-    #         # import numpy as np
-    #         # # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
-    #         # custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
-    #         #
-    #         # processor = BackgroundRemover(
-    #         #     image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
-    #         #     # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/crop_45_capt0053_trimmed_no_bkgd.png",
-    #         #     output_dir = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/",
-    #         #     n_clusters = 5,  # Default: 5
-    #         #     # kmeans_init_centers = custom_centers # (optional)
-    #         # )
-    #         #
-    #         # sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
-    #         # processor.cluster_rgb_colors()
-    #         # processor.plot_rgb_rawdata(sample_step=sampling_ratio)
-    #         # processor.plot_rgb_clusters(sample_step=sampling_ratio)
-    #         # processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-    #         # processor.plot_replaced_colors_in_image()
-    #         #
-    #         # # Optional. Remove (i.e., transform to white color) some specific colors.
-    #         # color_clusters_to_remove = [0, 4]  # Use [0, 4] to remove the blue background in images.
-    #         # processor.remove_background(background_clusters=color_clusters_to_remove)
+        import numpy as np
+        # custom_centers = np.array([[255,0,0], [0,255,0], [0,0,255]])
+        # custom_centers = np.asarray([[79.49, 130.62, 189.84], [131.84, 107.86, 76.36], [178.59, 173.83, 159.51], [47.20, 28.64, 18.90], [114.45, 146.57, 187.97]])
 
+        # -----------
+        # # For arthropods
 
-    #         # -----------------------------------------
-    #         # BATCH PROCESSING (OK!)
+        # -----------
+        # # For amoebas
+        # n_clusters = 5
+        # custom_centers = np.asarray(
+        #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+        #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
+        #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
+        #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
+        #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
 
-    #         # sample_name =  "R04_B"
+        n_clusters = 6
+        custom_centers = np.asarray(
+            [[223.956243077072, 224.19688719488295, 223.72036967281022],
+            [130.10775578641318, 132.94751572010676, 133.99591970661163],
+            [196.0491677412308, 196.8564069144558, 196.3449798997889],
+            [88.50986629549402, 92.57300105848267, 97.07617553557779],
+            [254.19593980921056, 254.32944373622792, 254.32832820257102],
+            [166.00531786843334, 167.54070552126836, 166.61084057791894]])
 
-    #         # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-    #         # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
-    #         # logger.info(f"Input directory: {input_dir}")
-    #         # logger.info(f"Output directory: {output_dir}")
+        # -----------
 
-    #         # process_background_remover(input_dir=input_dir,
-    #         #                            output_dir=output_dir,
-    #         #                            image_pattern=f"{sample_name}*.jpg")
+        processor = BackgroundRemover(
+            # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
+            image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
+            output_dir = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/output/",
+            n_clusters = n_clusters,  # Default: 5 for arthropods
+            kmeans_init_centers = custom_centers # (optional)
+        )
 
-    #         # logger.info("Successfully completed batch processing")
+        sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
+        processor.cluster_rgb_colors()
+        processor.plot_rgb_rawdata(sample_step=sampling_ratio)
+        processor.plot_rgb_clusters(sample_step=sampling_ratio)
+        processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
+        processor.plot_replaced_colors_in_image()
 
-    #         # =========================================
-    #         # # Segmentation and cropping
-    #         # #
-    #         # -----------------------------------------
-    #         # # Option 1 (OK): Generate Configuration Files Only.
+        # Remove (i.e., transform to white color or some other predefined color) some specific colors.
 
-    #         # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
-    #         #
-    #         # config_files = generate_configuration_files_only(
-    #         #     sample_name="BM3-F",
-    #         #     raw_image_pattern="BM3-F*.jpg",
-    #         #     raw_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
-    #         #     no_background_image_pattern="*_no_bkgd.png",
-    #         #     no_background_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
-    #         #     max_distance=4.0,
-    #         #     min_pixels=1000,
-    #         #     padding=35,
-    #         #     cropping=True,
-    #         #     config_output_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
-    #         # )
-    #         #
-    #         # if config_files:
-    #         #     logger.info(
-    #         #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
-    #         #     logger.info(
-    #         #         "You can now process these configurations using the other options below.")
-    #         # else:
-    #         #     logger.error(
-    #         #         "No configuration files were generated. Please check your parameters.")
+        # # For arthropods: use "[0, 4]" when "n_clusters = 5" to remove the blue background.
+        # # For amoebas: use "[3]" when "n_clusters = 5", or "[4]" when "n_clusters = 6"
+        color_clusters_to_remove = [4]
+        processor.remove_background(background_clusters=color_clusters_to_remove)
 
-    #         # -----------------------------------------
-    #         # # Option 2 (OK): Process existing configuration files only
+        # # Or simply use the default value = "[0, 4]" (for arthropods):
+        # processor.remove_background()
 
-    #         # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
+        # -----------------------------------------
+        # BATCH PROCESSING (OK!)
 
-    #         # # If you already have configuration files and just want to process them
-    #         # config_directory = "/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
+        # sample_name =  "R04_B"
 
-    #         # if Path(config_directory).exists():
-    #         #     results_existing = process_batch_of_config_files(
-    #         #         config_directory=config_directory,
-    #         #         filename_pattern="*_config.json",
-    #         #         use_nonwhitepixel_as_bboxcenter=True,
-    #         #         create_cropped_images=False,
-    #         #         include_segmentation=False
-    #         #     )
+        # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+        # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
+        # logger.info(f"Input directory: {input_dir}")
+        # logger.info(f"Output directory: {output_dir}")
 
-    #         #     logger.info(
-    #         #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
-    #         # else:
-    #         #     logger.info(f"Config directory not found: {config_directory}")
+        # process_background_remover(input_dir=input_dir,
+        #                            output_dir=output_dir,
+        #                            image_pattern=f"{sample_name}*.jpg")
 
-    #         # -----------------------------------------
-    #         # # Option 3 (OK): Complete workflow - Generate configs and process them
-    #         # # generating the segmentation plot and the individual cropped images.
+        # logger.info("Successfully completed batch processing")
 
-    #         sample_name =  "R21-A"
+        # =========================================
+        # # Segmentation and cropping
+        # #
+        # -----------------------------------------
+        # # Option 1 (OK): Generate Configuration Files Only.
 
-    #         logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
+        # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
+        #
+        # config_files = generate_configuration_files_only(
+        #     sample_name="BM3-F",
+        #     raw_image_pattern="BM3-F*.jpg",
+        #     raw_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
+        #     no_background_image_pattern="*_no_bkgd.png",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
+        #     max_distance=4.0,
+        #     min_pixels=1000,
+        #     padding=35,
+        #     cropping=True,
+        #     config_output_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
+        # )
+        #
+        # if config_files:
+        #     logger.info(
+        #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
+        #     logger.info(
+        #         "You can now process these configurations using the other options below.")
+        # else:
+        #     logger.error(
+        #         "No configuration files were generated. Please check your parameters.")
 
-    #         results = generate_and_process_batch_configs(
-    #             sample_name = sample_name,
-    #             raw_image_pattern = f"{sample_name}*.jpg",
-    #             raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-    #             no_background_image_pattern = "*_no_bkgd.png",
-    #             no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-    #             max_distance=4.0,
-    #             min_pixels=1000,
-    #             padding=35,
-    #             cropping=True,
-    #             # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
-    #             use_nonwhitepixel_as_bboxcenter = True,
-    #             create_cropped_images = False,
-    #             include_segmentation = False
-    #         )
+        # -----------------------------------------
+        # # Option 2 (OK): Process existing configuration files only
 
-    #         logger.info(
-    #             f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
+        # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
 
-    #         # -----------------------------------------
-    #         # Option 4 (OK): Process individual configuration file (for testing/debugging)
-    #         # logger.info("=== OPTION 4: Single Configuration File Processing ===")
-    #         #
-    #         # single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
-    #         # if Path(single_config_path).exists():
-    #         #     processor_single = BatchConfigProcessor(
-    #         #         json_path=str(Path(single_config_path).parent),
-    #         #         filename_pattern=Path(single_config_path).name
-    #         #     )
-    #         #
-    #         #     # Process just this one file
-    #         #     single_result = processor_single.process_single_config(
-    #         #         Path(single_config_path))
-    #         #     if single_result:
-    #         #         logger.info("Single file processing successful")
-    #         #     else:
-    #         #         logger.error("Single file processing failed")
+        # # If you already have configuration files and just want to process them
+        # config_directory = "/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
 
-    #         # =========================================
-    #         # # Segmentation by color (No Ok, old)
+        # if Path(config_directory).exists():
+        #     results_existing = process_batch_of_config_files(
+        #         config_directory=config_directory,
+        #         filename_pattern="*_config.json",
+        #         use_nonwhitepixel_as_bboxcenter=True,
+        #         create_cropped_images=False,
+        #         include_segmentation=False
+        #     )
 
-    #         # processor = InstanceSegmentationByColor(
-    #         #     image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_trimmed_no_bkgd.png",
-    #         #     raw_image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/tmp_2/clustering_crops/capt0053_trimmed_segm/crop_45_capt0053_trimmed.png",
-    #         #     sample_name="BM4_E",
-    #         #     output_dir="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
-    #         #     n_clusters=5,
-    #         #     min_pixels=400,
-    #         #     padding=10
-    #         # )
+        #     logger.info(
+        #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
+        # else:
+        #     logger.info(f"Config directory not found: {config_directory}")
 
-    #         # results = processor.process()
+        # -----------------------------------------
+        # # Option 3 (OK): Complete workflow - Generate configs and process them
+        # # generating the segmentation plot and the individual cropped images.
 
-    #         # # =========================================
+        # ##sample_name =  "R21-A"
 
-    #         # OK!
-    #         # Read the width and height of bounding boxes from a batch of JSON files
-    #         # and save them in a single comma-separated value (.CSV) text file.
-    #         # This processing is useful for unsupervised clustering techniques to determine
-    #         # the most common bounding box sizes of objects. Based on this information,
-    #         # I can crop individual objects to a fixed size using the most common sizes
-    #         # to get images of the same pixel size as required for clustering and
-    #         # label propagation.
+        # ##logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
 
-    #         # processor = BatchBoundingBoxProcessor(
-    #         #     json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
-    #         #     filename_pattern="*_metadata.json",
-    #         #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
-    #         #     output_filename="extracted_bounding_boxes.csv"
-    #         # )
-    #         #
-    #         # # Get processing summary
-    #         # summary = processor.get_processing_summary()
-    #         # print(f"Will process {summary['total_files']} files")
-    #         # print(f"Output will be saved to: {summary['full_output_path']}")
-    #         #
-    #         # # Process all files
-    #         # success = processor.process_all_files()
-    #         #
-    #         # if success:
-    #         #     print("Processing completed successfully!")
-    #         # else:
-    #         #     print("Processing failed or no data was extracted.")
+        # ##results = generate_and_process_batch_configs(
+        # ##    sample_name = sample_name,
+        # ##    raw_image_pattern = f"{sample_name}*.jpg",
+        # ##    raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        # ##    no_background_image_pattern = "*_no_bkgd.png",
+        # ##    no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        # ##    max_distance=4.0,
+        # ##    min_pixels=1000,
+        # ##    padding=35,
+        # ##    cropping=True,
+        # ##    # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
+        # ##    use_nonwhitepixel_as_bboxcenter = True,
+        # ##    create_cropped_images = False,
+        # ##    include_segmentation = False
+        # ##)
 
-    #         # # =========================================
-    #         # OK!
-    #         # K-means clustering on the bounding-boxes sizes to determine the most
-    #         # common bbox sizes.
+        # ##logger.info(
+        # ##    f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
-    #         # processor = BoundingBoxClusteringProcessor(
-    #         #     cluster_number=6,
-    #         #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/extracted_bounding_boxes.csv",
-    #         #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
-    #         #     output_filename="clustering_results"
-    #         # )
+        # -----------------------------------------
+        # Option 4 (OK): Process individual configuration file (for testing/debugging)
+        # logger.info("=== OPTION 4: Single Configuration File Processing ===")
+        #
+        # single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
+        # if Path(single_config_path).exists():
+        #     processor_single = BatchConfigProcessor(
+        #         json_path=str(Path(single_config_path).parent),
+        #         filename_pattern=Path(single_config_path).name
+        #     )
+        #
+        #     # Process just this one file
+        #     single_result = processor_single.process_single_config(
+        #         Path(single_config_path))
+        #     if single_result:
+        #         logger.info("Single file processing successful")
+        #     else:
+        #         logger.error("Single file processing failed")
 
-    #         # # Execute the complete workflow
-    #         # summary = processor.process_complete_workflow(
-    #         #     algorithm='kmeans',
-    #         #     redefine_dims=False,
-    #         #     create_raw_plot=True,
-    #         #     random_state=42
-    #         # )
+        # =========================================
+        # # Segmentation by color (No Ok, old)
 
-    #         # print("Clustering Summary:")
-    #         # for key, value in summary.items():
-    #         #     print(f"  {key}: {value}")
+        # processor = InstanceSegmentationByColor(
+        #     image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_trimmed_no_bkgd.png",
+        #     raw_image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/tmp_2/clustering_crops/capt0053_trimmed_segm/crop_45_capt0053_trimmed.png",
+        #     sample_name="BM4_E",
+        #     output_dir="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
+        #     n_clusters=5,
+        #     min_pixels=400,
+        #     padding=10
+        # )
 
-    #         # # Example with DBSCAN
-    #         # # processor_dbscan = BoundingBoxClusteringProcessor(
-    #         # #     cluster_number=5,  # Not used for DBSCAN but required for initialization
-    #         # #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
-    #         # #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
-    #         # #     output_filename="clustering_results_dbscan"
-    #         # # )
-    #         # #
-    #         # # summary_dbscan = processor_dbscan.process_complete_workflow(
-    #         # #     algorithm='dbscan',
-    #         # #     redefine_dims=True,
-    #         # #     eps=0.5,
-    #         # #     min_samples=5
-    #         # # )
+        # results = processor.process()
 
-    #     except Exception as e:
-    #         logger.error(f"An unexpected error occurred: {str(e)}")
-    #         raise
+        # # =========================================
 
-    # if __name__ == "__main__":
-    #     main()
+        # OK!
+        # Read the width and height of bounding boxes from a batch of JSON files
+        # and save them in a single comma-separated value (.CSV) text file.
+        # This processing is useful for unsupervised clustering techniques to determine
+        # the most common bounding box sizes of objects. Based on this information,
+        # I can crop individual objects to a fixed size using the most common sizes
+        # to get images of the same pixel size as required for clustering and
+        # label propagation.
+
+        # processor = BatchBoundingBoxProcessor(
+        #     json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
+        #     filename_pattern="*_metadata.json",
+        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
+        #     output_filename="extracted_bounding_boxes.csv"
+        # )
+        #
+        # # Get processing summary
+        # summary = processor.get_processing_summary()
+        # print(f"Will process {summary['total_files']} files")
+        # print(f"Output will be saved to: {summary['full_output_path']}")
+        #
+        # # Process all files
+        # success = processor.process_all_files()
+        #
+        # if success:
+        #     print("Processing completed successfully!")
+        # else:
+        #     print("Processing failed or no data was extracted.")
+
+        # # =========================================
+        # OK!
+        # K-means clustering on the bounding-boxes sizes to determine the most
+        # common bbox sizes.
+
+        # processor = BoundingBoxClusteringProcessor(
+        #     cluster_number=6,
+        #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/extracted_bounding_boxes.csv",
+        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
+        #     output_filename="clustering_results"
+        # )
+
+        # # Execute the complete workflow
+        # summary = processor.process_complete_workflow(
+        #     algorithm='kmeans',
+        #     redefine_dims=False,
+        #     create_raw_plot=True,
+        #     random_state=42
+        # )
+
+        # print("Clustering Summary:")
+        # for key, value in summary.items():
+        #     print(f"  {key}: {value}")
+
+        # # Example with DBSCAN
+        # # processor_dbscan = BoundingBoxClusteringProcessor(
+        # #     cluster_number=5,  # Not used for DBSCAN but required for initialization
+        # #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
+        # #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+        # #     output_filename="clustering_results_dbscan"
+        # # )
+        # #
+        # # summary_dbscan = processor_dbscan.process_complete_workflow(
+        # #     algorithm='dbscan',
+        # #     redefine_dims=True,
+        # #     eps=0.5,
+        # #     min_samples=5
+        # # )
+
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    main()
 
 # ########################################################60
 
@@ -1468,17 +1497,17 @@ def generate_and_process_batch_configs(
 # "Intersection over Union" (IOU) metric to match bounding boxes between Roboflow
 # and Biigle (COCO) formats. (OK!)
 
-from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
-
-IoU_threshold = 0.6
-
-if __name__ == "__main__":
-    # Initialize the matcher
-    matcher = IoUMetric_for_BBoxMatch(
-        roboflow_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_robo.json',
-        biigle_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_biigle.json',
-        iou_threshold=IoU_threshold
-    )
-
-    # Perform matching and save to CSV
-    matcher.save_to_csv(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/matching_results_IoU_{IoU_threshold}.csv')
+# from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
+#
+# IoU_threshold = 0.6
+#
+# if __name__ == "__main__":
+#     # Initialize the matcher
+#     matcher = IoUMetric_for_BBoxMatch(
+#         roboflow_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_robo.json',
+#         biigle_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_biigle.json',
+#         iou_threshold=IoU_threshold
+#     )
+#
+#     # Perform matching and save to CSV
+#     matcher.save_to_csv(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/matching_results_IoU_{IoU_threshold}.csv')
