@@ -258,17 +258,17 @@ class IoUMetric_for_BBoxMatch:
             # Check if best match exceeds threshold
             if best_iou >= self.iou_threshold:
                 biigle_id = self.biigle_data[best_match_idx]['id']
-                class_id = self.biigle_data[best_match_idx]['class_id']
+                #old. class_id = self.biigle_data[best_match_idx]['class_id']
             else:
                 biigle_id = ''  # No match found
                 best_iou = 0.0
-                class_id = ''
+                #old. class_id = ''
             
             results.append({
                 'roboflow_id': roboflow_obj['detection_id'],
                 'biigle_id': biigle_id,
                 'iou_score': best_iou,
-                'class_id': class_id,
+                #old. 'class_id': class_id,
                 'class': roboflow_obj['class'],
                 'confidence': roboflow_obj['confidence']
             })
@@ -327,14 +327,14 @@ class IoUMetric_for_BBoxMatch:
                 'biigle_id': biigle_obj['id'],
                 'roboflow_id': roboflow_id,
                 'iou_score': best_iou,
-                'class_id': biigle_obj['class_id'] if roboflow_id != '' else 1,
+                #old. 'class_id': biigle_obj['class_id'] if roboflow_id != '' else 1,
                 'class': class_name,
                 'confidence': confidence
             })
 
         return results
 
-    def save_to_csv(self, output_csv_path: str) -> None:
+    def save_to_csv_robo_to_biigle(self, output_csv_path: str) -> None:
         """
         Perform matching and save results to a CSV file.
         
@@ -349,7 +349,9 @@ class IoUMetric_for_BBoxMatch:
         
         # Write to CSV
         with open(output_csv_path, 'w', newline='') as csvfile:
-            fieldnames = ['Roboflow_ID', 'Biigle_ID', 'Class_ID', 'Class', 'Confidence', 'IoU_Score']
+            #old. fieldnames = ['Roboflow_ID', 'Biigle_ID', 'Class_ID', 'Class', 'Confidence', 'IoU_Score']
+            fieldnames = ['Roboflow_ID', 'Biigle_ID', 'Class',
+                          'Confidence', 'IoU_Score']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
             writer.writeheader()
@@ -358,7 +360,7 @@ class IoUMetric_for_BBoxMatch:
                     'Roboflow_ID': result['roboflow_id'],
                     'Biigle_ID': result['biigle_id'],
                     'Class': result['class'],
-                    'Class_ID': result['class_id'],
+                    #old. 'Class_ID': result['class_id'],
                     'Confidence': f"{result['confidence']:.4f}",
                     'IoU_Score': f"{result['iou_score']:.4f}"
                 })
@@ -368,7 +370,7 @@ class IoUMetric_for_BBoxMatch:
         print(f"Matched objects: {sum(1 for r in results if r['biigle_id'] != '')}")
         print(f"Unmatched objects: {sum(1 for r in results if r['biigle_id'] == '')}")
 
-    def save_to_csv_Biigle_to_robo(self, output_csv_path: str) -> None:
+    def save_to_csv_biigle_to_robo(self, output_csv_path: str) -> None:
             """
             Perform matching (Biigle to Roboflow) and save results to a CSV file.
 
@@ -383,7 +385,9 @@ class IoUMetric_for_BBoxMatch:
 
             # Write to CSV
             with open(output_csv_path, 'w', newline='') as csvfile:
-                fieldnames = ['Biigle_ID', 'Roboflow_ID', 'Class_ID', 'Class', 'Confidence', 'IoU_Score']
+                #old. fieldnames = ['Biigle_ID', 'Roboflow_ID', 'Class_ID', 'Class', 'Confidence', 'IoU_Score']
+                fieldnames = ['Biigle_ID', 'Roboflow_ID', 'Class',
+                              'Confidence', 'IoU_Score']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
                 writer.writeheader()
@@ -391,7 +395,7 @@ class IoUMetric_for_BBoxMatch:
                     writer.writerow({
                         'Biigle_ID': result['biigle_id'],
                         'Roboflow_ID': result['roboflow_id'],
-                        'Class_ID': result['class_id'],
+                        #old. 'Class_ID': result['class_id'],
                         'Class': result['class'],
                         'Confidence': f"{result['confidence']:.4f}",
                         'IoU_Score': f"{result['iou_score']:.4f}"
@@ -402,7 +406,7 @@ class IoUMetric_for_BBoxMatch:
             print(f"Matched objects: {sum(1 for r in results if r['roboflow_id'] != '')}")
             print(f"Unmatched objects: {sum(1 for r in results if r['roboflow_id'] == '')}")
 
-    def save_to_csv_for_Biigle(self, output_csv_path: str) -> None:
+    def save_to_csv_for_biigle(self, output_csv_path: str) -> None:
             """
             Perform matching (Biigle to Roboflow) and save results to a CSV file.
 
