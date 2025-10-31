@@ -1524,5 +1524,8 @@ if __name__ == "__main__":
         iou_threshold=IoU_threshold
     )
 
-    # Perform matching and save to CSV
-    matcher.save_to_csv(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/matching_results_IoU_{IoU_threshold}.csv')
+    # Roboflow to Biigle matching
+    matcher.save_to_csv(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo_to_biigle_match_IoU_{IoU_threshold}.csv')
+
+    # Biigle to Roboflow matching
+    matcher.save_to_csv_Biigle_to_robo(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/biigle_to_robo_IoU_{IoU_threshold}.csv')

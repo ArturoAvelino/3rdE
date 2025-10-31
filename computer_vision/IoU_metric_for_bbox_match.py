@@ -275,6 +275,65 @@ class IoUMetric_for_BBoxMatch:
         
         return results
     
+    def match_boxes_Biigle_to_robo(self) -> List[Dict]:
+        """
+        Match Biigle objects to Roboflow objects based on IoU threshold.
+        For each Biigle object, find the best matching Roboflow object.
+
+        Returns:
+            List of match results with Biigle ID, Roboflow ID, IoU score, and class
+        """
+        if not self.biigle_data:
+            return []
+
+        # Convert to numpy arrays for vectorized computation
+        roboflow_boxes = np.array([
+            [obj['bbox'].x_min, obj['bbox'].y_min, obj['bbox'].x_max, obj['bbox'].y_max]
+            for obj in self.roboflow_data
+        ])
+
+        biigle_boxes = np.array([
+            [obj['bbox'].x_min, obj['bbox'].y_min, obj['bbox'].x_max, obj['bbox'].y_max]
+            for obj in self.biigle_data
+        ])
+
+        # Calculate IoU matrix for all pairs
+        iou_matrix = self.calculate_iou_vectorized(roboflow_boxes, biigle_boxes)
+
+        # Find best matches
+        results = []
+        for j, biigle_obj in enumerate(self.biigle_data):
+            # Get IoU scores for current Biigle object with all Roboflow objects
+            # Note: iou_matrix[i, j] where i is roboflow, j is biigle
+            # So for each biigle j, we need column j
+            iou_scores = iou_matrix[:, j]
+
+            # Find the best match
+            best_match_idx = np.argmax(iou_scores)
+            best_iou = iou_scores[best_match_idx]
+
+            # Check if best match exceeds threshold
+            if best_iou >= self.iou_threshold:
+                roboflow_id = self.roboflow_data[best_match_idx]['detection_id']
+                class_name = self.roboflow_data[best_match_idx]['class']
+                confidence = self.roboflow_data[best_match_idx]['confidence']
+            else:
+                roboflow_id = ''  # No match found
+                best_iou = 0.0
+                class_name = 'Unclassified'
+                confidence = 0.0
+
+            results.append({
+                'biigle_id': biigle_obj['id'],
+                'roboflow_id': roboflow_id,
+                'iou_score': best_iou,
+                'class_id': biigle_obj['class_id'] if roboflow_id != '' else 1,
+                'class': class_name,
+                'confidence': confidence
+            })
+
+        return results
+
     def save_to_csv(self, output_csv_path: str) -> None:
         """
         Perform matching and save results to a CSV file.
@@ -290,18 +349,18 @@ class IoUMetric_for_BBoxMatch:
         
         # Write to CSV
         with open(output_csv_path, 'w', newline='') as csvfile:
-            fieldnames = ['Roboflow ID', 'Biigle ID', 'Class ID', 'Class', 'Confidence', 'IoU Score']
+            fieldnames = ['Roboflow_ID', 'Biigle_ID', 'Class_ID', 'Class', 'Confidence', 'IoU_Score']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
             writer.writeheader()
             for result in results:
                 writer.writerow({
-                    'Roboflow ID': result['roboflow_id'],
-                    'Biigle ID': result['biigle_id'],
+                    'Roboflow_ID': result['roboflow_id'],
+                    'Biigle_ID': result['biigle_id'],
                     'Class': result['class'],
-                    'Class ID': result['class_id'],
+                    'Class_ID': result['class_id'],
                     'Confidence': f"{result['confidence']:.4f}",
-                    'IoU Score': f"{result['iou_score']:.4f}"
+                    'IoU_Score': f"{result['iou_score']:.4f}"
                 })
         
         print(f"Matching complete! Results saved to: {output_csv_path}")
@@ -309,6 +368,39 @@ class IoUMetric_for_BBoxMatch:
         print(f"Matched objects: {sum(1 for r in results if r['biigle_id'] != '')}")
         print(f"Unmatched objects: {sum(1 for r in results if r['biigle_id'] == '')}")
 
+    def save_to_csv_Biigle_to_robo(self, output_csv_path: str) -> None:
+            """
+            Perform matching (Biigle to Roboflow) and save results to a CSV file.
+
+            Args:
+                output_csv_path: Path to the output CSV file
+            """
+            # Load data
+            self.load_data()
+
+            # Perform matching
+            results = self.match_boxes_Biigle_to_robo()
+
+            # Write to CSV
+            with open(output_csv_path, 'w', newline='') as csvfile:
+                fieldnames = ['Biigle_ID', 'Roboflow_ID', 'Class_ID', 'Class', 'Confidence', 'IoU_Score']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                writer.writeheader()
+                for result in results:
+                    writer.writerow({
+                        'Biigle_ID': result['biigle_id'],
+                        'Roboflow_ID': result['roboflow_id'],
+                        'Class_ID': result['class_id'],
+                        'Class': result['class'],
+                        'Confidence': f"{result['confidence']:.4f}",
+                        'IoU_Score': f"{result['iou_score']:.4f}"
+                    })
+
+            print(f"Matching complete! Results saved to: {output_csv_path}")
+            print(f"Total Biigle objects: {len(results)}")
+            print(f"Matched objects: {sum(1 for r in results if r['roboflow_id'] != '')}")
+            print(f"Unmatched objects: {sum(1 for r in results if r['roboflow_id'] == '')}")
 
 # ####################################################
 # # Example usage
@@ -320,6 +412,9 @@ class IoUMetric_for_BBoxMatch:
 #         iou_threshold=0.8
 #     )
 #
-#     # Perform matching and save to CSV
-#     matcher.save_to_csv('matching_results.csv')
+#     # Roboflow to Biigle matching
+#     matcher.save_to_csv('roboflow_to_biigle.csv')
+#
+#     # Biigle to Roboflow matching
+#     matcher.save_to_csv_Biigle_to_robo('biigle_to_roboflow.csv')
 
