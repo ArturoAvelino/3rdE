@@ -1342,65 +1342,73 @@ def generate_and_process_batch_configs(
 
 # Draw bounding boxes of images using the info from JSON files.
 
-if __name__ == "__main__":
-
-    # # Setup logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s')
-
-    # --------------------------------------------------------60
-    # Batch processing, either "coco" and "robo" JSON format (OK!)
-
-    # # Confidence range to plot
-    # min_confidence = 0.1; max_confidence = 0.4
-    # min_confidence = 0.4; max_confidence = 0.7
-
-    min_confidence = 0.4; max_confidence = 1.0
-    # min_confidence = 0.7; max_confidence = 1.0
-    # min_confidence = 0.05; max_confidence = 1.0
-
-    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/R21-DL/"
-    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/R21-DL/"
-    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/R21-DL/R21-DL_c_{min_confidence}_{max_confidence}/"
-
-
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
-    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json/"
-    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo_bbox/"
-
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11/R21_A/bbox_{min_confidence}_{max_confidence}/"
-
-
-    drawer = BoundingBoxDrawer()
-    results = drawer.process_batch(
-
-        # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
-        # input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
-        # input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
-        # input_json_format="roboflow",
-        # output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
-
-        confidence_range=(min_confidence, max_confidence),
-        suffix_output_imagefiles= f"_bbox_c_{min_confidence}-{max_confidence}",
-
-        input_image_dir=input_image_dir,
-        input_json_dir=input_json_dir,
-        input_json_format="roboflow",  # "coco" or "roboflow"
-        output_dir=output_dir,
-
-        font_size=60,
-        bbox_color="white",
-        text_color="black",
-        text_position="top",
-        show_center=True,
-        center_dot_size=12,
-        show_id=False,
-        show_label=True,
-        show_summary=True,
-    )
+# if __name__ == "__main__":
+#
+#     # # Setup logging
+#     logging.basicConfig(level=logging.INFO,
+#                         format='%(asctime)s - %(levelname)s - %(message)s')
+#
+#     # --------------------------------------------------------60
+#     # Batch processing, either "coco" and "robo" JSON format (OK!)
+#
+#     # # Confidence range to plot
+#     # min_confidence = 0.1; max_confidence = 0.4
+#     # min_confidence = 0.4; max_confidence = 0.7
+#
+#     min_confidence = 0.4; max_confidence = 1.0
+#     # min_confidence = 0.7; max_confidence = 1.0
+#     # min_confidence = 0.05; max_confidence = 1.0
+#
+#
+#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
+#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json/"
+#     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo_bbox/"
+#
+#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
+#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
+#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
+#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11/R21_A/bbox_{min_confidence}_{max_confidence}/"
+#
+#     # # --------------------------30
+#     # # 337 sample
+#
+#     # R21_A
+#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/R21_A/"
+#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/R21_A/"
+#     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/R21_A/R21_A_c_{min_confidence}_{max_confidence}/"
+#
+#     # # R21-DL
+#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/R21-DL/"
+#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/R21-DL/"
+#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/R21-DL/R21-DL_c_{min_confidence}_{max_confidence}/"
+#
+#     drawer = BoundingBoxDrawer()
+#     results = drawer.process_batch(
+#
+#         # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
+#         # input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
+#         # input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
+#         # input_json_format="roboflow",
+#         # output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
+#
+#         confidence_range=(min_confidence, max_confidence),
+#         suffix_output_imagefiles= f"_bbox_c_{min_confidence}-{max_confidence}",
+#
+#         input_image_dir=input_image_dir,
+#         input_json_dir=input_json_dir,
+#         input_json_format="roboflow",  # "coco" or "roboflow"
+#         output_dir=output_dir,
+#
+#         font_size=60,
+#         bbox_color="white",
+#         text_color="black",
+#         text_position="top",
+#         show_center=True,
+#         center_dot_size=12,
+#         show_id=False,
+#         show_label=True,
+#         show_summary=True,
+#     )
 
     # ------------------------------
     # Single file
@@ -1504,17 +1512,17 @@ if __name__ == "__main__":
 # "Intersection over Union" (IOU) metric to match bounding boxes between Roboflow
 # and Biigle (COCO) formats. (OK!)
 
-# from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
-#
-# IoU_threshold = 0.6
-#
-# if __name__ == "__main__":
-#     # Initialize the matcher
-#     matcher = IoUMetric_for_BBoxMatch(
-#         roboflow_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_robo.json',
-#         biigle_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_biigle.json',
-#         iou_threshold=IoU_threshold
-#     )
-#
-#     # Perform matching and save to CSV
-#     matcher.save_to_csv(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/matching_results_IoU_{IoU_threshold}.csv')
+from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
+
+IoU_threshold = 0.6
+
+if __name__ == "__main__":
+    # Initialize the matcher
+    matcher = IoUMetric_for_BBoxMatch(
+        roboflow_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_robo.json',
+        biigle_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_biigle.json',
+        iou_threshold=IoU_threshold
+    )
+
+    # Perform matching and save to CSV
+    matcher.save_to_csv(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/matching_results_IoU_{IoU_threshold}.csv')

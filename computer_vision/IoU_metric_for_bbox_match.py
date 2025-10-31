@@ -286,7 +286,7 @@ class IoUMetric_for_BBoxMatch:
         
         # Write to CSV
         with open(output_csv_path, 'w', newline='') as csvfile:
-            fieldnames = ['Roboflow ID', 'Biigle ID', 'IoU Score', 'Class', 'Confidence']
+            fieldnames = ['Roboflow ID', 'Biigle ID', 'Class', 'Confidence', 'IoU Score']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
             writer.writeheader()
@@ -294,9 +294,9 @@ class IoUMetric_for_BBoxMatch:
                 writer.writerow({
                     'Roboflow ID': result['roboflow_id'],
                     'Biigle ID': result['biigle_id'],
-                    'IoU Score': f"{result['iou_score']:.4f}",
                     'Class': result['class'],
-                    'Confidence': f"{result['confidence']:.4f}"
+                    'Confidence': f"{result['confidence']:.4f}",
+                    'IoU Score': f"{result['iou_score']:.4f}"
                 })
         
         print(f"Matching complete! Results saved to: {output_csv_path}")
