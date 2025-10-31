@@ -1529,3 +1529,6 @@ if __name__ == "__main__":
 
     # Biigle to Roboflow matching
     matcher.save_to_csv_Biigle_to_robo(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/biigle_to_robo_IoU_{IoU_threshold}.csv')
+
+    # Generate CSV file with the labels from Biigle input
+    matcher.save_to_csv_for_Biigle(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/labels_for_biigle_{IoU_threshold}.csv')

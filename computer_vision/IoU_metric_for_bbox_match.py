@@ -402,6 +402,38 @@ class IoUMetric_for_BBoxMatch:
             print(f"Matched objects: {sum(1 for r in results if r['roboflow_id'] != '')}")
             print(f"Unmatched objects: {sum(1 for r in results if r['roboflow_id'] == '')}")
 
+    def save_to_csv_for_Biigle(self, output_csv_path: str) -> None:
+            """
+            Perform matching (Biigle to Roboflow) and save results to a CSV file.
+
+            Args:
+                output_csv_path: Path to the output CSV file
+            """
+            # Load data
+            self.load_data()
+
+            # Perform matching
+            results = self.match_boxes_Biigle_to_robo()
+
+            # Write to CSV
+            with open(output_csv_path, 'w', newline='') as csvfile:
+                fieldnames = ['annotation_id', 'label_id', 'confidence', 'IoU_Score']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                writer.writeheader()
+                for result in results:
+                    writer.writerow({
+                        'annotation_id': result['biigle_id'],
+                        'label_id': result['class'],
+                        'confidence': f"{result['confidence']:.4f}",
+                        'IoU_Score': f"{result['iou_score']:.4f}"
+                    })
+
+            print(f"Matching complete! Results saved to: {output_csv_path}")
+            print(f"Total Biigle objects: {len(results)}")
+            print(f"Matched objects: {sum(1 for r in results if r['roboflow_id'] != '')}")
+            print(f"Unmatched objects: {sum(1 for r in results if r['roboflow_id'] == '')}")
+
 # ####################################################
 # # Example usage
 # if __name__ == "__main__":
