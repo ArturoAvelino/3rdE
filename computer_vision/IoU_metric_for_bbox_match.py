@@ -96,6 +96,7 @@ class IoUMetric_for_BBoxMatch:
             bbox = ann['bbox']  # [x_top_left, y_top_left, width, height]
             self.biigle_data.append({
                 'id': ann['id'],
+                'class_id': ann['category_id'],
                 'bbox': self._biigle_to_minmax(bbox[0], bbox[1], bbox[2], bbox[3])
             })
     
@@ -257,14 +258,17 @@ class IoUMetric_for_BBoxMatch:
             # Check if best match exceeds threshold
             if best_iou >= self.iou_threshold:
                 biigle_id = self.biigle_data[best_match_idx]['id']
+                class_id = self.biigle_data[best_match_idx]['class_id']
             else:
                 biigle_id = ''  # No match found
                 best_iou = 0.0
+                class_id = ''
             
             results.append({
                 'roboflow_id': roboflow_obj['detection_id'],
                 'biigle_id': biigle_id,
                 'iou_score': best_iou,
+                'class_id': class_id,
                 'class': roboflow_obj['class'],
                 'confidence': roboflow_obj['confidence']
             })
@@ -286,7 +290,7 @@ class IoUMetric_for_BBoxMatch:
         
         # Write to CSV
         with open(output_csv_path, 'w', newline='') as csvfile:
-            fieldnames = ['Roboflow ID', 'Biigle ID', 'Class', 'Confidence', 'IoU Score']
+            fieldnames = ['Roboflow ID', 'Biigle ID', 'Class ID', 'Class', 'Confidence', 'IoU Score']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
             writer.writeheader()
@@ -295,6 +299,7 @@ class IoUMetric_for_BBoxMatch:
                     'Roboflow ID': result['roboflow_id'],
                     'Biigle ID': result['biigle_id'],
                     'Class': result['class'],
+                    'Class ID': result['class_id'],
                     'Confidence': f"{result['confidence']:.4f}",
                     'IoU Score': f"{result['iou_score']:.4f}"
                 })
