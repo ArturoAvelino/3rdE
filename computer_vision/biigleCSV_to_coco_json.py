@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from PIL import Image
-import shutil
+#old import shutil
 
 
 class BiigleCSV_to_COCO_JSON:
@@ -252,18 +252,18 @@ class BiigleCSV_to_COCO_JSON:
 
     """
 
-    def __init__(self, csv_file, images_path, filename_pattern,
-                 output_crops_path, prefix_filename="", json_label_tree_path=None):
+    def __init__(self, csv_file, images_path, filename_pattern='*.jpg',
+                output_crops_path=None, prefix_filename='', json_label_tree_path=None):
         """
         Initialize the BiigleCSV_to_COCO_JSON.
 
         Args:
-            csv_file (str): Path to the CSV file containing object annotations
-            images_path (str): Path to the directory containing source images
-            filename_pattern (str): Pattern to match image filenames (e.g., "capt*.jpg")
-            output_crops_path (str): Path to the output directory for cropped images
-            prefix_filename (str): Optional prefix for output filenames
-            json_label_tree_path (str): Path to JSON file containing category names mapping
+            csv_file (str): Path to the CSV file containing annotation data
+            images_path (str): Path to the directory containing images
+            filename_pattern (str): Pattern for matching image files
+            output_crops_path (str): Path for output crops (optional)
+            prefix_filename (str): Prefix for output filenames
+            json_label_tree_path (str): Path to JSON file with label tree
         """
         # Convert string paths to Path objects
         self.csv_file = Path(csv_file)
@@ -280,11 +280,16 @@ class BiigleCSV_to_COCO_JSON:
         # Set up logging
         self._setup_logging()
 
-        # Create image mapping
-        self.image_mapping = self._create_image_mapping()
+        # Load image mapping from CSV instead of hardcoded values
+        self.image_mapping = self._create_image_mapping_from_csv()
 
-        # Load category names mapping
-        self.category_names = self._load_category_names()
+        # For the hardcoded images ID's with their image filenames use instead
+        # the following code line (uncomment it and comment the line above):
+        # self.image_mapping = self._create_image_mapping_hardcoded()
+
+        # Load category names if label tree provided
+        self.category_names = self._load_category_names() if json_label_tree_path else {}
+
 
     def _setup_logging(self):
         """Set up logging configuration."""
@@ -380,7 +385,59 @@ class BiigleCSV_to_COCO_JSON:
     #         return {}
 
 
-    def _create_image_mapping(self):
+    def _create_image_mapping_from_csv(self):
+        """
+        Create mapping from image_id to filename by reading directly from the CSV file.
+
+        This method reads the CSV file and extracts unique combinations of image_id
+        and filename from the 'image_id' and 'filename' columns.
+
+        Returns:
+            dict: Mapping from image_id to filename
+
+        Raises:
+            FileNotFoundError: If the CSV file doesn't exist
+            KeyError: If required columns are missing from the CSV
+            ValueError: If the CSV file is empty or malformed
+        """
+        import pandas as pd
+        import os
+
+        try:
+            # Check if CSV file exists
+            if not os.path.exists(self.csv_file):
+                raise FileNotFoundError(f"CSV file not found: {self.csv_file}")
+
+            # Read the CSV file
+            df = pd.read_csv(self.csv_file)
+
+            # Validate required columns exist
+            required_columns = ['image_id', 'filename']
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            if missing_columns:
+                raise KeyError(f"Missing required columns in CSV: {missing_columns}")
+
+            # Check if DataFrame is empty
+            if df.empty:
+                raise ValueError("CSV file is empty")
+
+            # Create mapping from image_id to filename
+            # Drop duplicates to get unique image_id-filename pairs
+            image_mapping = df[['image_id', 'filename']].drop_duplicates()
+
+            # Convert to dictionary
+            mapping_dict = dict(zip(image_mapping['image_id'], image_mapping['filename']))
+
+            self.logger.info(f"Created image mapping from CSV with {len(mapping_dict)} unique images")
+
+            return mapping_dict
+
+        except Exception as e:
+            self.logger.error(f"Error creating image mapping from CSV: {str(e)}")
+            raise
+
+
+    def _create_image_mapping_hardcoded(self):
         """
         Create mapping from image_id to filename based on the provided mapping.
 
