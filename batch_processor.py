@@ -1524,11 +1524,11 @@ if __name__ == "__main__":
         iou_threshold=IoU_threshold
     )
 
-    # Roboflow to Biigle matching
-    matcher.save_to_csv_robo_to_biigle(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo_to_biigle_match_IoU_{IoU_threshold}.csv')
+    ## Roboflow to Biigle matching
+    # matcher.save_to_csv_robo_to_biigle(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo_to_biigle_match_IoU_{IoU_threshold}.csv')
 
-    # Biigle to Roboflow matching
-    matcher.save_to_csv_biigle_to_robo(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/biigle_to_robo_IoU_{IoU_threshold}.csv')
+    ## Biigle to Roboflow matching
+    # matcher.save_to_csv_biigle_to_robo(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/biigle_to_robo_IoU_{IoU_threshold}.csv')
 
     # Generate CSV file with the labels from Biigle input
     matcher.save_to_csv_for_biigle(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/labels_for_biigle_{IoU_threshold}.csv')

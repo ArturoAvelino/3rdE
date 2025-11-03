@@ -328,7 +328,7 @@ class IoUMetric_for_BBoxMatch:
                 'roboflow_id': roboflow_id,
                 'iou_score': best_iou,
                 #old. 'class_id': biigle_obj['class_id'] if roboflow_id != '' else 1,
-                'class': class_name,
+                'class': f"'{class_name}'",
                 'confidence': confidence
             })
 

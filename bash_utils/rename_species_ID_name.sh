@@ -1,3 +1,6 @@
+# Convert species names to species IDs using the label tree
+# provided by Guillame on 26 june 2025.
+#
 # To run this script, in a terminal go where the files are located
 # and the type:
 #     bash thisfile.sh
