@@ -936,44 +936,44 @@ def generate_and_process_batch_configs(
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-if __name__ == "__main__":
-
-    ## ========================================================60
-    ## Batch processor
-
-    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
-
-
-    processor = BiigleCSV_to_COCO_JSON(
-
-        ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
-        csv_file="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_subsample_tmp.csv",
-        json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
-        images_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/",  # from cropping
-        filename_pattern="*.jpg",
-        output_crops_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops", # output from cropping
-
-
-        # # # "biigle_volume_02" (first half of the"BM4_E" sample):
-        # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
-        # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
-        # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
-        # filename_pattern="capt*.jpg",
-        # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
-
-        # # "biigle_volume_04" ("BM13_B_margo" sample):
-        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
-        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
-        # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
-        # filename_pattern = "BM13_B_margo*.jpg",
-        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
-    )
-
-    # Process all objects
-    processor.process_all_objects()
-
-    # Merge JSON files (saves to output/merged_json/)
-    processor.merge_json_files_by_image_id()
+# if __name__ == "__main__":
+#
+#     ## ========================================================60
+#     ## Batch processor
+#
+#     from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+#
+#
+#     processor = BiigleCSV_to_COCO_JSON(
+#
+#         ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
+#         csv_file="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_subsample_tmp.csv",
+#         json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
+#         images_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/",  # from cropping
+#         filename_pattern="*.jpg",
+#         output_crops_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops", # output from cropping
+#
+#
+#         # # # "biigle_volume_02" (first half of the"BM4_E" sample):
+#         # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
+#         # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
+#         # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
+#         # filename_pattern="capt*.jpg",
+#         # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
+#
+#         # # "biigle_volume_04" ("BM13_B_margo" sample):
+#         # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
+#         # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
+#         # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
+#         # filename_pattern = "BM13_B_margo*.jpg",
+#         # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
+#     )
+#
+#     # Process all objects
+#     processor.process_all_objects()
+#
+#     # Merge JSON files (saves to output/merged_json/)
+#     processor.merge_json_files_by_image_id()
 
     # --------------------------------------------------------60
 
@@ -1356,37 +1356,27 @@ if __name__ == "__main__":
 #     # min_confidence = 0.1; max_confidence = 0.4
 #     # min_confidence = 0.4; max_confidence = 0.7
 #
-#     min_confidence = 0.4; max_confidence = 1.0
+#     min_confidence = 0.01; max_confidence = 1.0
 #     # min_confidence = 0.7; max_confidence = 1.0
 #     # min_confidence = 0.05; max_confidence = 1.0
 #
 #
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json/"
-#     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo_bbox/"
-#
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11/R21_A/bbox_{min_confidence}_{max_confidence}/"
+#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/tmp/"
+#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/tmp/"
+#     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/tmp/bboxes/c_{min_confidence}_{max_confidence}/"
 #
 #     # # --------------------------30
 #     # # 337 sample
 #
 #     # all
-#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/all_original_images_tmp/"
-#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/"
-#     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/c_{min_confidence}_{max_confidence}/"
+#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/all_original_images_tmp/"
+#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/"
+#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/c_{min_confidence}_{max_confidence}/"
 #
 #     # R21_A
 #     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/R21_A/"
 #     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/R21_A/"
 #     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/R21_A/R21_A_c_{min_confidence}_{max_confidence}/"
-#
-#     # # R21-DL
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/R21-DL/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/R21-DL/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/R21-DL/R21-DL_c_{min_confidence}_{max_confidence}/"
 #
 #     drawer = BoundingBoxDrawer()
 #     results = drawer.process_batch(
@@ -1411,7 +1401,7 @@ if __name__ == "__main__":
 #         text_position="top",
 #         show_center=True,
 #         center_dot_size=12,
-#         show_id=True,
+#         show_id=False,
 #         show_label=True,
 #         show_summary=True,
 #     )
@@ -1538,3 +1528,38 @@ if __name__ == "__main__":
 #
 #     # Generate CSV file with the labels from Biigle input
 #     matcher.save_to_csv_for_biigle(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/labels_for_biigle_{IoU_threshold}.csv')
+
+# ########################################################60
+# My function to find all the unique lines in a text file (OK!)
+
+from my_utils.remove_duplicated_lines import remove_duplicate_lines
+
+# Example usage
+if __name__ == "__main__":
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+
+    # Example 1: Basic usage
+    result = remove_duplicate_lines(
+        input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/csv2.csv",
+        output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/output"
+    )
+
+    if result['success']:
+        print(f"✓ Success! Removed {result['duplicates_removed']} duplicates")
+        print(f"  Output saved to: {result['output_file']}")
+    else:
+        print(f"✗ Failed: {result['error']}")
+
+    ## Example 2: Custom options
+    # result = remove_duplicate_lines(
+    #     input_file_path="/path/to/input.txt",
+    #     output_directory="/path/to/output",
+    #     case_sensitive=False,
+    #     strip_whitespace=True,
+    #     keep_empty_lines=False,
+    #     output_filename="cleaned_data.txt"
+    # )
