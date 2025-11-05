@@ -315,7 +315,7 @@ class BiigleCSV_to_COCO_JSON:
 
         if not self.json_label_tree_path or not self.json_label_tree_path.exists():
             self.logger.warning(
-                f"Labels JSON file not found at {self.json_label_tree_path}. Using default 'arthropod' name.")
+                f"Labels JSON file not found at {self.json_label_tree_path}. Using default 'unknown' name.")
             return category_names
 
         try:
@@ -347,9 +347,9 @@ class BiigleCSV_to_COCO_JSON:
             category_id (int): The category ID
 
         Returns:
-            str: Category name, defaults to "arthropod" if not found
+            str: Category name, defaults to "unknown" if not found
         """
-        return self.category_names.get(category_id, "arthropod")
+        return self.category_names.get(category_id, "unknown")
 
 
     # def _create_image_mapping(self):
