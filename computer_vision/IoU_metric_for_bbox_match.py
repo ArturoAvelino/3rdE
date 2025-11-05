@@ -3,6 +3,8 @@ import csv
 import numpy as np
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
+from datetime import datetime
+import os
 
 
 @dataclass
@@ -48,6 +50,10 @@ class IoUMetric_for_BBoxMatch:
         5. CSV Output:
             - Generates a clean CSV with exactly 4 columns as specified
             - Includes summary statistics after processing
+
+        6. Logging:
+            - Automatically generates log files with matching statistics
+            - Appends timestamped entries to existing log files
     """
     
     def __init__(self, roboflow_json_path: str, biigle_json_path: str, iou_threshold: float = 0.8):
@@ -334,26 +340,82 @@ class IoUMetric_for_BBoxMatch:
 
         return results
 
+    def _write_log_entry(self, log_file_path: str, method_name: str, results: List[Dict]) -> None:
+        """
+        Write a log entry with matching statistics to a plain text log file.
+
+        Args:
+            log_file_path: Path to the log file
+            method_name: Name of the matching method that was called
+            results: List of matching results
+        """
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Calculate statistics
+        total_roboflow = len(self.roboflow_data)
+        total_biigle = len(self.biigle_data)
+
+        if 'roboflow_id' in results[0]:
+            # Roboflow to Biigle matching
+            matched = sum(1 for r in results if r['biigle_id'] != '')
+            unmatched = sum(1 for r in results if r['biigle_id'] == '')
+            direction = "Roboflow → Biigle"
+        else:
+            # Biigle to Roboflow matching
+            matched = sum(1 for r in results if r['roboflow_id'] != '')
+            unmatched = sum(1 for r in results if r['roboflow_id'] == '')
+            direction = "Biigle → Roboflow"
+
+        # Create log entry
+        log_entry = f"""
+{'='*80}
+Timestamp: {timestamp}
+Matching Direction: {direction}
+Method Called: {method_name}
+{'='*80}
+
+Configuration:
+  - Roboflow JSON: {self.roboflow_json_path}
+  - Biigle JSON: {self.biigle_json_path}
+  - IoU Threshold: {self.iou_threshold}
+
+Statistics:
+  - Total Roboflow objects: {total_roboflow}
+  - Total Biigle objects: {total_biigle}
+  - Matched objects: {matched}
+  - Unmatched objects: {unmatched}
+  - Match rate: {(matched/len(results)*100):.2f}%
+
+{'='*80}
+
+"""
+
+        # Append to log file
+        with open(log_file_path, 'a', encoding='utf-8') as log_file:
+            log_file.write(log_entry)
+
+        print(f"Log entry written to: {log_file_path}")
+
     def save_to_csv_robo_to_biigle(self, output_csv_path: str) -> None:
         """
         Perform matching and save results to a CSV file.
-        
+
         Args:
             output_csv_path: Path to the output CSV file
         """
         # Load data
         self.load_data()
-        
+
         # Perform matching
         results = self.match_boxes()
-        
+
         # Write to CSV
         with open(output_csv_path, 'w', newline='') as csvfile:
             #old. fieldnames = ['Roboflow_ID', 'Biigle_ID', 'Class_ID', 'Class', 'Confidence', 'IoU_Score']
             fieldnames = ['Roboflow_ID', 'Biigle_ID', 'Class',
                           'Confidence', 'IoU_Score']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            
+
             writer.writeheader()
             for result in results:
                 writer.writerow({
@@ -364,11 +426,15 @@ class IoUMetric_for_BBoxMatch:
                     'Confidence': f"{result['confidence']:.4f}",
                     'IoU_Score': f"{result['iou_score']:.4f}"
                 })
-        
+
         print(f"Matching complete! Results saved to: {output_csv_path}")
         print(f"Total Roboflow objects: {len(results)}")
         print(f"Matched objects: {sum(1 for r in results if r['biigle_id'] != '')}")
         print(f"Unmatched objects: {sum(1 for r in results if r['biigle_id'] == '')}")
+
+        # Generate log file path and write log entry
+        log_file_path = os.path.splitext(output_csv_path)[0] + '_log.txt'
+        self._write_log_entry(log_file_path, 'save_to_csv_robo_to_biigle', results)
 
     def save_to_csv_biigle_to_robo(self, output_csv_path: str) -> None:
             """
@@ -406,6 +472,10 @@ class IoUMetric_for_BBoxMatch:
             print(f"Matched objects: {sum(1 for r in results if r['roboflow_id'] != '')}")
             print(f"Unmatched objects: {sum(1 for r in results if r['roboflow_id'] == '')}")
 
+            # Generate log file path and write log entry
+            log_file_path = os.path.splitext(output_csv_path)[0] + '_log.txt'
+            self._write_log_entry(log_file_path, 'save_to_csv_biigle_to_robo', results)
+
     def save_to_csv_for_biigle(self, output_csv_path: str) -> None:
             """
             Perform matching (Biigle to Roboflow) and save results to a CSV file.
@@ -437,6 +507,11 @@ class IoUMetric_for_BBoxMatch:
             print(f"Total Biigle objects: {len(results)}")
             print(f"Matched objects: {sum(1 for r in results if r['roboflow_id'] != '')}")
             print(f"Unmatched objects: {sum(1 for r in results if r['roboflow_id'] == '')}")
+
+            # Generate log file path and write log entry
+            log_file_path = os.path.splitext(output_csv_path)[0] + '_log.txt'
+            self._write_log_entry(log_file_path, 'save_to_csv_for_biigle', results)
+
 
 # ####################################################
 # # Example usage

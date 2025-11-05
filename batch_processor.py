@@ -936,44 +936,45 @@ def generate_and_process_batch_configs(
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+#
+#     ## ========================================================60
+#     ## Batch processor
+#
+#     from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+#
+#
+#     processor = BiigleCSV_to_COCO_JSON(
+#
+#         ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
+#         csv_file="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part1_1.csv",
+#         json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
+#         images_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/",  # from cropping
+#         filename_pattern="*.jpg",
+#         output_crops_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops", # output from cropping
+#
+#
+#         # # # "biigle_volume_02" (first half of the"BM4_E" sample):
+#         # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
+#         # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
+#         # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
+#         # filename_pattern="capt*.jpg",
+#         # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
+#
+#         # # "biigle_volume_04" ("BM13_B_margo" sample):
+#         # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
+#         # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
+#         # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
+#         # filename_pattern = "BM13_B_margo*.jpg",
+#         # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
+#     )
+#
+#     # Process all objects
+#     processor.process_all_objects()
+#
+#     # Merge JSON files and save them into a "output/merged_json/" folder
+#     processor.merge_json_files_by_image_id()
 
-    ## ========================================================60
-    ## Batch processor
-
-    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
-
-
-    processor = BiigleCSV_to_COCO_JSON(
-
-        ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
-        csv_file="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_subsample_Emilie_IDs.csv",
-        json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
-        images_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/",  # from cropping
-        filename_pattern="*.jpg",
-        output_crops_path="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops", # output from cropping
-
-
-        # # # "biigle_volume_02" (first half of the"BM4_E" sample):
-        # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
-        # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
-        # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
-        # filename_pattern="capt*.jpg",
-        # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
-
-        # # "biigle_volume_04" ("BM13_B_margo" sample):
-        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
-        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
-        # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
-        # filename_pattern = "BM13_B_margo*.jpg",
-        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
-    )
-
-    # Process all objects
-    processor.process_all_objects()
-
-    # Merge JSON files (saves to output/merged_json/)
-    processor.merge_json_files_by_image_id()
 
     # --------------------------------------------------------60
 
@@ -1360,49 +1361,43 @@ if __name__ == "__main__":
 #     # min_confidence = 0.7; max_confidence = 1.0
 #     # min_confidence = 0.05; max_confidence = 1.0
 #
-#
-#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/tmp/"
-#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/tmp/"
-#     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/1_images_miniset/tmp/bboxes/c_{min_confidence}_{max_confidence}/"
-#
 #     # # --------------------------30
 #     # # 337 sample
 #
-#     # all
+#     ## Roboflow predictions
 #     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/all_original_images_tmp/"
 #     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/"
 #     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/c_{min_confidence}_{max_confidence}/"
+#     # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
+#     # input_json_format = "roboflow"
 #
-#     # R21_A
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/R21_A/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/R21_A/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/R21_A/R21_A_c_{min_confidence}_{max_confidence}/"
+#     ## Biigle segmentation bboxes
+#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/"
+#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/"
+#     output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_bbox/"
+#     suffix_output_imagefiles = "_bbox_biigle"
+#     input_json_format = "coco"
+#
 #
 #     drawer = BoundingBoxDrawer()
 #     results = drawer.process_batch(
 #
-#         # input_image_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles/BM3-F",
-#         # input_image_dir= "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/from_biigle",
-#         # input_json_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/robo_JSON",
-#         # input_json_format="roboflow",
-#         # output_dir=f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/BM3-F/bboxes_c_{min_confidence}_{max_confidence}",
-#
 #         confidence_range=(min_confidence, max_confidence),
-#         suffix_output_imagefiles= f"_bbox_c_{min_confidence}-{max_confidence}",
 #
-#         input_image_dir=input_image_dir,
-#         input_json_dir=input_json_dir,
-#         input_json_format="roboflow",  # "coco" or "roboflow"
-#         output_dir=output_dir,
+#         input_image_dir = input_image_dir,
+#         input_json_dir  = input_json_dir,
+#         output_dir = output_dir,
+#         suffix_output_imagefiles=suffix_output_imagefiles,
+#         input_json_format = input_json_format,  # "coco" or "roboflow"
 #
 #         font_size=60,
 #         bbox_color="white",
 #         text_color="black",
 #         text_position="top",
-#         show_center=True,
+#         show_center=False,
 #         center_dot_size=12,
-#         show_id=False,
-#         show_label=True,
+#         show_id=True,
+#         show_label=False,
 #         show_summary=True,
 #     )
 
@@ -1508,26 +1503,29 @@ if __name__ == "__main__":
 # "Intersection over Union" (IOU) metric to match bounding boxes between Roboflow
 # and Biigle (COCO) formats. (OK!)
 
-# from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
-#
-# IoU_threshold = 0.6
-#
-# if __name__ == "__main__":
-#     # Initialize the matcher
-#     matcher = IoUMetric_for_BBoxMatch(
-#         roboflow_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_robo.json',
-#         biigle_json_path='/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/capt0055_biigle.json',
-#         iou_threshold=IoU_threshold
-#     )
-#
-#     ## Roboflow to Biigle matching
-#     # matcher.save_to_csv_robo_to_biigle(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/robo_to_biigle_match_IoU_{IoU_threshold}.csv')
-#
-#     ## Biigle to Roboflow matching
-#     # matcher.save_to_csv_biigle_to_robo(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/biigle_to_robo_IoU_{IoU_threshold}.csv')
-#
-#     # Generate CSV file with the labels from Biigle input
-#     matcher.save_to_csv_for_biigle(f'/Users/aavelino/Downloads/BiosoilAI/9_matching_IoU/test1/labels_for_biigle_{IoU_threshold}.csv')
+from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
+
+image_name = "BM3-C_r5c5"
+IoU_value = 0.55
+output_folder = '/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_IoU/'
+
+if __name__ == "__main__":
+    # Initialize the matcher
+    matcher = IoUMetric_for_BBoxMatch(
+        roboflow_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/{image_name}.json',
+        biigle_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/{image_name}.json',
+        iou_threshold=IoU_value
+    )
+
+    ## Roboflow to Biigle matching
+    matcher.save_to_csv_robo_to_biigle(f'{output_folder}/{image_name}_robo_to_biigle_IoU_{IoU_value}.csv')
+
+    ## Biigle to Roboflow matching
+    matcher.save_to_csv_biigle_to_robo(f'{output_folder}/{image_name}_biigle_to_robo_IoU_{IoU_value}.csv')
+
+    ## Generate CSV file with the labels from Biigle input
+    matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
+
 
 # ########################################################60
 # My function to find all the unique lines in a text file (OK!)
