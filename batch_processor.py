@@ -632,96 +632,97 @@ def generate_and_process_batch_configs(
 # Remove background and segment the objects found in an image (OK!)
 
 # def main():
-#
+
 #     # sample_name = "F13_CL"
-#
+
 #     # Setup logging (will create processing.log in the input directory)
 #     log_output_dir = Path(
 #         # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
 #         "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/"
 #     )
-#
+
 #     if not log_output_dir.exists():
 #         print(f"Error: Log save directory not found: {log_output_dir}")
 #         return
-#
+
 #     setup_logging(log_output_dir)
 #     logger = logging.getLogger(__name__)
 #     logger.info("Starting batch processing of images ...")
-#
+
 #     try:
 
-        # # =========================================
-        # # Remove the color background from images using clustering (OK).
-        # #
-        # # Comment these lines if you don't want to remove background from the images.
+#         # =========================================
+#         # Remove the color background from images using clustering (OK).
+#         #
+#         # Comment these lines if you don't want to remove background from the images.
 
-        # # SINGLE IMAGE PROCESSING (OK!)
+#         # SINGLE IMAGE PROCESSING (OK!)
 
-        # import numpy as np
-        # # -----------
-        # # # For arthropods
-        #
-        # # -----------
-        # # # For amoebas
-        # # n_clusters = 5
-        # # custom_centers = np.asarray(
-        # #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-        # #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
-        # #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
-        # #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
-        # #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-        #
-        # n_clusters = 6
-        # custom_centers = np.asarray(
-        #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-        #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
-        #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
-        #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
-        #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
-        #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-        #
-        # # -----------
-        #
-        # processor = BackgroundRemover(
-        #     # image_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/capt0053.jpg",
-        #     image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
-        #     output_dir = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/output/",
-        #     n_clusters = n_clusters,  # Default: 5 for arthropods
-        #     kmeans_init_centers = custom_centers # (optional)
-        # )
-        #
-        # sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
-        # processor.cluster_rgb_colors()
-        # processor.plot_rgb_rawdata(sample_step=sampling_ratio)
-        # processor.plot_rgb_clusters(sample_step=sampling_ratio)
-        # processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-        # processor.plot_replaced_colors_in_image()
-        #
-        # # Remove (i.e., transform to white color or some other predefined color) some specific colors.
-        #
-        # # # For arthropods: use "[0, 4]" when "n_clusters = 5" to remove the blue background.
-        # # # For amoebas: use "[3]" when "n_clusters = 5", or "[4]" when "n_clusters = 6"
-        # color_clusters_to_remove = [4]
-        # processor.remove_background(background_clusters=color_clusters_to_remove)
+#         import numpy as np
+#         # -----------
+#         # # For arthropods
+#         n_clusters = 5
+#         color_clusters_to_remove = [0, 4]
 
-        # # Or simply use the default value = "[0, 4]" (for arthropods):
-        # processor.remove_background()
+#         # -----------
+#         # # For amoebas
+#         # n_clusters = 5
+#         # custom_centers = np.asarray(
+#         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+#         #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
+#         #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
+#         #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
+#         #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+#         # color_clusters_to_remove = [3]
+
+#         # n_clusters = 6
+#         # custom_centers = np.asarray(
+#         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+#         #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
+#         #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
+#         #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
+#         #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
+#         #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+#         # color_clusters_to_remove = [4]
+
+#         # -----------
+
+#         processor = BackgroundRemover(
+#             image_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/capt0053.jpg",
+#             # image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
+#             output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/",
+#             n_clusters = n_clusters  # Default: 5 for arthropods
+#             # kmeans_init_centers = custom_centers # (optional)
+#         )
+
+#         sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
+#         processor.cluster_rgb_colors()
+#         processor.plot_rgb_rawdata(sample_step=sampling_ratio)
+#         processor.plot_rgb_clusters(sample_step=sampling_ratio)
+#         processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
+#         processor.plot_replaced_colors_in_image()
+
+#         # Remove (i.e., transform to white color or some other predefined color) some specific colors.
+#         processor.remove_background(background_clusters=color_clusters_to_remove)
+
+#         # Or simply use the default value = "[0, 4]" (for arthropods):
+#         processor.remove_background()
+
 
         # -----------------------------------------
         # BATCH PROCESSING (OK!)
 
         # sample_name =  "R04_B"
-
+        #
         # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
         # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
         # logger.info(f"Input directory: {input_dir}")
         # logger.info(f"Output directory: {output_dir}")
-
+        #
         # process_background_remover(input_dir=input_dir,
         #                            output_dir=output_dir,
         #                            image_pattern=f"{sample_name}*.jpg")
-
+        #
         # logger.info("Successfully completed batch processing")
 
         # =========================================
@@ -914,10 +915,12 @@ def generate_and_process_batch_configs(
         # #     min_samples=5
         # # )
 
+
+
 #     except Exception as e:
 #         logger.error(f"An unexpected error occurred: {str(e)}")
 #         raise
-#
+
 # if __name__ == "__main__":
 #     main()
 
@@ -1361,6 +1364,13 @@ def generate_and_process_batch_configs(
 #     # min_confidence = 0.7; max_confidence = 1.0
 #     # min_confidence = 0.05; max_confidence = 1.0
 #
+#     ## Some individual images
+#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/"
+#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/tmp/"
+#     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/tmp/c_{min_confidence}_{max_confidence}/"
+#     suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
+#     input_json_format = "roboflow"
+#
 #     # # --------------------------30
 #     # # 337 sample
 #
@@ -1371,12 +1381,12 @@ def generate_and_process_batch_configs(
 #     # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
 #     # input_json_format = "roboflow"
 #
-#     ## Biigle segmentation bboxes
-#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/"
-#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/"
-#     output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_bbox/"
-#     suffix_output_imagefiles = "_bbox_biigle"
-#     input_json_format = "coco"
+#     # ## Biigle segmentation bboxes
+#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/"
+#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/"
+#     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_bbox/"
+#     # suffix_output_imagefiles = "_bbox_biigle"
+#     # input_json_format = "coco"
 #
 #
 #     drawer = BoundingBoxDrawer()
@@ -1394,10 +1404,10 @@ def generate_and_process_batch_configs(
 #         bbox_color="white",
 #         text_color="black",
 #         text_position="top",
-#         show_center=False,
+#         show_center=True,
 #         center_dot_size=12,
 #         show_id=True,
-#         show_label=False,
+#         show_label=True,
 #         show_summary=True,
 #     )
 
@@ -1503,28 +1513,28 @@ def generate_and_process_batch_configs(
 # "Intersection over Union" (IOU) metric to match bounding boxes between Roboflow
 # and Biigle (COCO) formats. (OK!)
 
-from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
-
-image_name = "BM3-C_r5c5"
-IoU_value = 0.55
-output_folder = '/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_IoU/'
-
-if __name__ == "__main__":
-    # Initialize the matcher
-    matcher = IoUMetric_for_BBoxMatch(
-        roboflow_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/{image_name}.json',
-        biigle_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/{image_name}.json',
-        iou_threshold=IoU_value
-    )
-
-    ## Roboflow to Biigle matching
-    matcher.save_to_csv_robo_to_biigle(f'{output_folder}/{image_name}_robo_to_biigle_IoU_{IoU_value}.csv')
-
-    ## Biigle to Roboflow matching
-    matcher.save_to_csv_biigle_to_robo(f'{output_folder}/{image_name}_biigle_to_robo_IoU_{IoU_value}.csv')
-
-    ## Generate CSV file with the labels from Biigle input
-    matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
+# from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
+#
+# image_name = "BM3-C_r5c5"
+# IoU_value = 0.55
+# output_folder = '/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_IoU/'
+#
+# if __name__ == "__main__":
+#     # Initialize the matcher
+#     matcher = IoUMetric_for_BBoxMatch(
+#         roboflow_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/{image_name}.json',
+#         biigle_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/{image_name}.json',
+#         iou_threshold=IoU_value
+#     )
+#
+#     ## Roboflow to Biigle matching
+#     matcher.save_to_csv_robo_to_biigle(f'{output_folder}/{image_name}_robo_to_biigle_IoU_{IoU_value}.csv')
+#
+#     ## Biigle to Roboflow matching
+#     matcher.save_to_csv_biigle_to_robo(f'{output_folder}/{image_name}_biigle_to_robo_IoU_{IoU_value}.csv')
+#
+#     ## Generate CSV file with the labels from Biigle input
+#     matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
 
 
 # ########################################################60
@@ -1561,3 +1571,39 @@ if __name__ == "__main__":
     #     keep_empty_lines=False,
     #     output_filename="cleaned_data.txt"
     # )
+
+# ########################################################60
+
+# Example usage
+if __name__ == "__main__":
+
+    from computer_vision.IoU_batch_processor import BatchIoUProcessor
+
+    # Initialize with custom patterns
+    processor = BatchIoUProcessor(
+        biigle_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part1_1/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json/tmp_biigle/",
+        biigle_pattern="*.json",
+
+        roboflow_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/tmp_robo/",
+        roboflow_pattern="*.json",
+
+        output_dir="/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part1_1/2_IoU_biigle_vs_yolo/",
+
+        iou_threshold=0.5
+    )
+
+    # Find and inspect pairs before processing
+    pairs = processor.find_file_pairs()
+    print(f"Found {len(pairs)} matching pairs")
+
+    # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
+    results = processor.process_batch(output_format="robo_to_biigle")
+    processor.generate_summary_report(results) # Generate summary report
+
+    results = processor.process_batch(output_format="biigle_to_robo")
+    processor.generate_summary_report(results) # Generate summary report
+
+    results = processor.process_batch(output_format="for_biigle")
+    processor.generate_summary_report(results) # Generate summary report
+
+
