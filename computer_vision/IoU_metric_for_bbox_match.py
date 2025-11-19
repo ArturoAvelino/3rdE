@@ -329,12 +329,19 @@ class IoUMetric_for_BBoxMatch:
                 class_name = 'Unclassified'
                 confidence = 0.0
 
+            # Use Biigle label for the object if it is different to "1" (= 'Unclassified').
+            if biigle_obj['class_id'] != 1:
+                class_name_id = biigle_obj['class_id']
+                class_name = f'in{class_name_id}'
+                confidence = 0.99
+
             results.append({
                 'biigle_id': biigle_obj['id'],
                 'roboflow_id': roboflow_id,
                 'iou_score': best_iou,
-                #old. 'class_id': biigle_obj['class_id'] if roboflow_id != '' else 1,
-                'class': f"'{class_name}'",
+                #old1. 'class_id': biigle_obj['class_id'] if roboflow_id != '' else 1,   # original
+                #old2. 'class': f"'{class_name}'",  # with quotation marks
+                'class': class_name,
                 'confidence': confidence
             })
 
@@ -491,14 +498,14 @@ Statistics:
 
             # Write to CSV
             with open(output_csv_path, 'w', newline='') as csvfile:
-                fieldnames = ['annotation_id', 'label_id', 'confidence', 'IoU_Score']
+                fieldnames = ['annotation_id', 'label_name', 'confidence', 'IoU_Score']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
                 writer.writeheader()
                 for result in results:
                     writer.writerow({
                         'annotation_id': result['biigle_id'],
-                        'label_id': result['class'],
+                        'label_name': result['class'],
                         'confidence': f"{result['confidence']:.4f}",
                         'IoU_Score': f"{result['iou_score']:.4f}"
                     })

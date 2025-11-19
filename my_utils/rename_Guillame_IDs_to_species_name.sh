@@ -1,9 +1,20 @@
-# Convert species names to species IDs using the label tree
+# In the JSON files contained the yolo predictions output by roboflow,
+# convert species IDs to species names, using the label tree
 # provided by Guillaume on 26 june 2025.
 #
 # To run this script, in a terminal go where the files are located
 # and the type:
 #     bash thisfile.sh
+
+# ----------
+
+# Add the "[" at the begining of the line:
+find . -type f -name "*.json" -exec sed -i '' 's/^/[/' {} +
+
+# Add the "[" at the end of the line:
+find . -type f -name "*.json" -exec sed -i '' 's/$/]/' {} +
+
+# ----------
 
 find . -type f -name "*.json" -exec sed -i '' 's/\"in87\"/\"Acari\"/g' {} +
 find . -type f -name "*.json" -exec sed -i '' 's/\"in88\"/\"Amblypygi\"/g' {} +
@@ -98,8 +109,5 @@ find . -type f -name "*.json" -exec sed -i '' 's/\"in176\"/\"Thysanoptera\"/g' {
 find . -type f -name "*.json" -exec sed -i '' 's/\"in177\"/\"Unclassified\"/g' {} +
 find . -type f -name "*.json" -exec sed -i '' 's/\"in178\"/\"Uropygi\"/g' {} +
 
-# Add the "[" at the begining of the line:
-find . -type f -name "*.json" -exec sed -i '' 's/^/[/' {} +
-
-# Add the "[" at the end of the line:
-find . -type f -name "*.json" -exec sed -i '' 's/$/]/' {} +
+# The "insect" category:
+find . -type f -name "*.json" -exec sed -i '' 's/\"in1000\"/\"insect\"/g' {} +
