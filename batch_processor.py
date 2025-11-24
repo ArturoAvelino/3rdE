@@ -1547,36 +1547,36 @@ def generate_and_process_batch_configs(
 # ========================================================60
 # Batch processing (OK)
 
-if __name__ == "__main__":
-
-    from computer_vision.IoU_batch_processor import BatchIoUProcessor
-
-    # Initialize with custom patterns
-    processor = BatchIoUProcessor(
-        biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part1_1/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json",
-        biigle_pattern = "*.json",
-
-        roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_4k6k_classes/settings_1/JSONs/",
-        roboflow_pattern = "*.json",
-
-        output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part1_1/2_IoU_biigle_vs_yolo",
-
-        iou_threshold=0.5
-    )
-
-    # Find and inspect pairs before processing
-    pairs = processor.find_file_pairs()
-    print(f"Found {len(pairs)} matching pairs")
-
-    # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
-    results = processor.process_batch(output_format="robo_to_biigle")
-    processor.generate_summary_report(results) # Generate summary report
-
-    results = processor.process_batch(output_format="biigle_to_robo")
-    processor.generate_summary_report(results) # Generate summary report
-
-    results = processor.process_batch(output_format="for_biigle")
-    processor.generate_summary_report(results) # Generate summary report
+# if __name__ == "__main__":
+#
+#     from computer_vision.IoU_batch_processor import BatchIoUProcessor
+#
+#     # Initialize with custom patterns
+#     processor = BatchIoUProcessor(
+#         biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json",
+#         biigle_pattern = "*.json",
+#
+#         roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_4k6k_classes/settings_1/JSONs/",
+#         roboflow_pattern = "*.json",
+#
+#         output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/2_IoU_biigle_vs_yolo",
+#
+#         iou_threshold=0.5
+#     )
+#
+#     # Find and inspect pairs before processing
+#     pairs = processor.find_file_pairs()
+#     print(f"Found {len(pairs)} matching pairs")
+#
+#     # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
+#     results = processor.process_batch(output_format="robo_to_biigle")
+#     processor.generate_summary_report(results) # Generate summary report
+#
+#     results = processor.process_batch(output_format="biigle_to_robo")
+#     processor.generate_summary_report(results) # Generate summary report
+#
+#     results = processor.process_batch(output_format="for_biigle")
+#     processor.generate_summary_report(results) # Generate summary report
 
 # ========================================================60
 # Single pair of files (OK!)
@@ -1610,7 +1610,6 @@ if __name__ == "__main__":
 
 # from my_utils.remove_duplicated_lines import remove_duplicate_lines
 #
-# # Example usage
 # if __name__ == "__main__":
 #     # Configure logging
 #     logging.basicConfig(
@@ -1620,8 +1619,9 @@ if __name__ == "__main__":
 #
 #     # Example 1: Basic usage
 #     result = remove_duplicate_lines(
-#         input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/csv2.csv",
-#         output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/output"
+#         input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/csv1.csv",
+#         output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/",
+#         output_filename="id_image_uniques.csv"
 #     )
 #
 #     if result['success']:

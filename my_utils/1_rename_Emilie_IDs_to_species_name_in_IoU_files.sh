@@ -1,4 +1,4 @@
-# Convert species ID's from biigle to Emilie's IDs.
+# Convert species (Emilie's) ID's used in Roboflow to Emilie's species names.
 #
 # To run this script, in a terminal go where the files are located
 # and the type:

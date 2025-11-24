@@ -5,8 +5,9 @@
 #     bash thisfile.sh
 
 
-# Add the header
+# Add the headers
 find . -type f -name "*.csv" -exec sed -i '' 's/,label_name,/,label_id,label_name,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Class,/,label_id,label_name,/g' {} +
 
 
 # Add the Biigle ID's for each Emilie's species names.
@@ -39,3 +40,30 @@ find . -type f -name "*.csv" -exec sed -i '' 's/,Staphylinidae,/,4243,Staphylini
 find . -type f -name "*.csv" -exec sed -i '' 's/,Symphyla,/,4213,Symphyla,/g' {} +
 find . -type f -name "*.csv" -exec sed -i '' 's/,Thysanoptera,/,4227,Thysanoptera,/g' {} +
 find . -type f -name "*.csv" -exec sed -i '' 's/,Unclassified,/,4196,Unclassified,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Araneae,/,4201,Araneae,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Diplopoda,/,4209,Diplopoda,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Diptera,/,4221,Diptera,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Formicidae,/,4224,Formicidae,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Isotomidae,/,4286,Isotomidae,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Sarcoptiformes,/,4658,Sarcoptiformes,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Other Hymenoptera,/,4223,Other Hymenoptera,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Katiannidae,/,4465,Katiannidae,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Mesostigmata,/,4492,Mesostigmata,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Metazoa,/,4198,Metazoa,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Onychiuridae,/,4402,Onychiuridae,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Poduromorpha,/,4340,Poduromorpha,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Sminthurididae,/,4481,Sminthurididae,/g' {} +
+find . -type f -name "*.csv" -exec sed -i '' 's/,Symphypleona,/,4440,Symphypleona,/g' {} +
+
+
+# old
+# Add the Biigle ID's for Guillaume's species names that are not in Emilie's label tree (v4).
+# There are some species that are not in Emilie's label tree (v4).
+
+# find . -type f -name "*.csv" -exec sed -i '' 's/,Katiannidae,/,0270,Katiannidae,/g' {} +
+# find . -type f -name "*.csv" -exec sed -i '' 's/,Mesostigmata,/,0297,Mesostigmata,/g' {} +
+# find . -type f -name "*.csv" -exec sed -i '' 's/,Metazoa,/,0003,Metazoa,/g' {} +
+# find . -type f -name "*.csv" -exec sed -i '' 's/,Onychiuridae,/,0207,Onychiuridae,/g' {} +
+# find . -type f -name "*.csv" -exec sed -i '' 's/,Poduromorpha,/,0145,Poduromorpha,/g' {} +
+# find . -type f -name "*.csv" -exec sed -i '' 's/,Sminthurididae,/,0286,Sminthurididae,/g' {} +
+# find . -type f -name "*.csv" -exec sed -i '' 's/,Symphypleona,/,0245,Symphypleona,/g' {} +
