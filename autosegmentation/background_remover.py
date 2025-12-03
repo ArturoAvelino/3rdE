@@ -500,7 +500,7 @@ class BackgroundRemover:
             if self.logger:
                 self.logger.info(f"Saved cluster plot to {plot_path}")
 
-        # plt.show() # Uncomment to display an interactive 3D plot
+        plt.show() # Uncomment to display an interactive 3D plot
         plt.close()
         return self
 

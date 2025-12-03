@@ -638,7 +638,7 @@ def generate_and_process_batch_configs(
 #     # Setup logging (will create processing.log in the input directory)
 #     log_output_dir = Path(
 #         # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-#         "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/"
+#         "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/"
 #     )
 
 #     if not log_output_dir.exists():
@@ -940,30 +940,30 @@ def generate_and_process_batch_configs(
 # and save them in a single comma-separated value (.CSV) text file.
 
 # if __name__ == "__main__":
-
+#
 #     ## ========================================================60
 #     ## Batch processor
-
+#
 #     from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
-
-
+#
+#
 #     processor = BiigleCSV_to_COCO_JSON(
-
+#
 #         ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
 #         csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3.csv",
 #         json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
 #         images_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/",  # for cropping
 #         filename_pattern = "*.jpg",
 #         output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops", # output from cropping
-
-
+#
+#
 #         # # # "biigle_volume_02" (first half of the"BM4_E" sample):
 #         # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
 #         # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
 #         # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
 #         # filename_pattern="capt*.jpg",
 #         # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
-
+#
 #         # # "biigle_volume_04" ("BM13_B_margo" sample):
 #         # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
 #         # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
@@ -971,10 +971,10 @@ def generate_and_process_batch_configs(
 #         # filename_pattern = "BM13_B_margo*.jpg",
 #         # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
 #     )
-
+#
 #     # Process all objects
 #     processor.process_all_objects()
-
+#
 #     # Merge JSON files and save them into a "output/merged_json/" folder
 #     processor.merge_json_files_by_image_id()
 
@@ -1348,101 +1348,121 @@ def generate_and_process_batch_configs(
 # Draw bounding boxes of images using the info from JSON files.
 
 # if __name__ == "__main__":
-
+#
 #     # # Setup logging
 #     logging.basicConfig(level=logging.INFO,
 #                         format='%(asctime)s - %(levelname)s - %(message)s')
-
+#
 #     # --------------------------------------------------------60
 #     # Batch processing, either "coco" and "robo" JSON format (OK!)
-
+#
 #     # # Confidence range to plot
 #     # min_confidence = 0.1; max_confidence = 0.4
 #     # min_confidence = 0.4; max_confidence = 0.7
-
+#
 #     min_confidence = 0.01; max_confidence = 1.0
 #     # min_confidence = 0.7; max_confidence = 1.0
 #     # min_confidence = 0.05; max_confidence = 1.0
-
-
-
+#
+#
 #     # # --------------------------30
-#     # # Test set
+#     # # Amoeba
+#
+#     input_image_dir = "/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/"
+#
+#     # # annotated images by Martin
+#     input_json_dir = "/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/individual_jsons"
+#     output_dir = f"/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/bboxes"
+#     suffix_output_imagefiles = f"_bbox"
+#     input_json_format = "coco"
+#
+#     font_size = 20
+#     bbox_color = "yellow"
+#     text_color = "black"
+#     show_summary = False
 
-#     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/test_set/images/"
+    # # --------------------------30
+    # # Test set
 
-#     # # annotated images by Guillame
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/test_set/JSON/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/test_set/bboxes/"
-#     # suffix_output_imagefiles = f"_bbox_annotated"
-#     # input_json_format = "coco"
+    # font_size = 60
+    # bbox_color = "white"
+    # text_color = "black"
+    # show_summary=True,
 
-#     # # y11_classes
-#     input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes/models/Y11_f_640px_classes/testset_predictions/JSONs/"
-#     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes/models/Y11_f_640px_classes/testset_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
-#     suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
-#     input_json_format = "roboflow"
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/test_set/images/"
 
-#     # # y11_animals
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/animal_vs_noanimal/models/Y11_4033images_fast/testset_predictions/JSONs/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/animal_vs_noanimal/models/Y11_4033images_fast/testset_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
-#     # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
-#     # input_json_format = "roboflow"
+    # # annotated images by Guillame
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/test_set/JSON/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/test_set/bboxes/"
+    # suffix_output_imagefiles = f"_bbox_annotated"
+    # input_json_format = "coco"
 
-#     # # --------------------------30
-#     # # 337 sample
+    # # y11_classes
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes/models/Y11_f_640px_classes/testset_predictions/JSONs/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes/models/Y11_f_640px_classes/testset_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
+    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
+    # input_json_format = "roboflow"
 
-#     # # R21-DL. Yolo11_classes
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_640px_classes/JSONs/R21-DL/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_640px_classes/bboxes/c_{min_confidence}_{max_confidence}/"
-#     # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
-#     # input_json_format = "roboflow"
+    # # y11_animals
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/animal_vs_noanimal/models/Y11_4033images_fast/testset_predictions/JSONs/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/animal_vs_noanimal/models/Y11_4033images_fast/testset_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
+    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
+    # input_json_format = "roboflow"
 
-#     # # R21-DL. Yolo11_animals
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_animals/JSONs/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_animals/bboxes/c_{min_confidence}_{max_confidence}/"
-#     # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
-#     # input_json_format = "roboflow"
+    # # --------------------------30
+    # # 337 sample
 
-#     ## Roboflow predictions
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/all_original_images_tmp/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/"
-#     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/c_{min_confidence}_{max_confidence}/"
-#     # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
-#     # input_json_format = "roboflow"
+    # # R21-DL. Yolo11_classes
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_640px_classes/JSONs/R21-DL/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_640px_classes/bboxes/c_{min_confidence}_{max_confidence}/"
+    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
+    # input_json_format = "roboflow"
 
-#     # ## Biigle segmentation bboxes
-#     # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/"
-#     # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/"
-#     # output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_bbox/"
-#     # suffix_output_imagefiles = "_bbox_biigle"
-#     # input_json_format = "coco"
+    # # R21-DL. Yolo11_animals
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_animals/JSONs/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_animals/bboxes/c_{min_confidence}_{max_confidence}/"
+    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
+    # input_json_format = "roboflow"
 
-#     # # --------------------------30
+    ## Roboflow predictions
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/all_original_images_tmp/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/bboxes/c_{min_confidence}_{max_confidence}/"
+    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}-{max_confidence}"
+    # input_json_format = "roboflow"
 
-#     drawer = BoundingBoxDrawer()
-#     results = drawer.process_batch(
+    # ## Biigle segmentation bboxes
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/1_original_337_imagesfiles_all_tmp/"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_bbox/"
+    # suffix_output_imagefiles = "_bbox_biigle"
+    # input_json_format = "coco"
 
-#         confidence_range=(min_confidence, max_confidence),
+    # # --------------------------30
 
-#         input_image_dir = input_image_dir,
-#         input_json_dir  = input_json_dir,
-#         output_dir = output_dir,
-#         suffix_output_imagefiles=suffix_output_imagefiles,
-#         input_json_format = input_json_format,  # "coco" or "roboflow"
-
-#         font_size=60,
-#         bbox_color="white",
-#         text_color="black",
-#         text_position="top",
-#         show_center=False,
-#         center_dot_size=12,
-#         show_id=False,
-#         show_label=True,
-#         show_summary=True,
-#     )
+    # drawer = BoundingBoxDrawer()
+    # results = drawer.process_batch(
+    #
+    #     confidence_range=(min_confidence, max_confidence),
+    #
+    #     input_image_dir = input_image_dir,
+    #     input_json_dir  = input_json_dir,
+    #     output_dir = output_dir,
+    #     suffix_output_imagefiles=suffix_output_imagefiles,
+    #     input_json_format = input_json_format,  # "coco" or "roboflow"
+    #
+    #     font_size = font_size,
+    #     bbox_color = bbox_color,
+    #     text_color = text_color,
+    #     text_position="top",
+    #     show_center=False,
+    #     center_dot_size=12,
+    #     show_id=False,
+    #     show_label=True,
+    #     show_summary=show_summary,
+    # )
 
     # ------------------------------
     # Single file
@@ -1639,6 +1659,63 @@ def generate_and_process_batch_configs(
     #     keep_empty_lines=False,
     #     output_filename="cleaned_data.txt"
     # )
+
+# ########################################################60
+# Function that splits a single JSON file with COCO format, which
+# contains annotations for multiple images, into individual JSON files,
+# with one file per image. (OK!)
+
+# from computer_vision.coco_json_file_splitter import COCOSplitter
+#
+#
+# if __name__ == "__main__":
+#     # Setup logging
+#     logging.basicConfig(
+#         level=logging.INFO,
+#         format='%(asctime)s - %(levelname)s - %(message)s'
+#     )
+#
+#     # Initialize the splitter
+#     splitter = COCOSplitter(
+#         output_directory="/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/individual_jsons/",
+#         include_only_used_categories=True,  # Only include used categories
+#         skip_images_without_annotations=True  # Skip images with no annotations
+#     )
+#
+#     # Split the combined JSON file
+#     results = splitter.split_coco_json("/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/annotations.json")
+#
+#     # Check results
+#     print(f"Successfully created {sum(results.values())} JSON files")
+
+# ########################################################60
+# Function to count the number of labeled insects from a CSV file downloaded
+# from Biigle. (OK!)
+
+from tools.counts_labeled_insects_by_classID import count_and_export_values
+
+
+count_and_export_values(
+    input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/all_volumnes.csv',
+    output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/',
+    column_name='label_id'
+)
+
+
+# ########################################################60
+# Function to use supervision library for evaluating models performance
+
+# import cv2
+# # from inference import get_model
+#
+#
+# if __name__ == "__main__":
+#     # Configure logging
+#     logging.basicConfig(
+#         level=logging.INFO,
+#         format='%(asctime)s - %(levelname)s - %(message)s'
+#     )
+
 
 # ########################################################60
 
