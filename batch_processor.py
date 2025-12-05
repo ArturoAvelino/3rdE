@@ -1692,15 +1692,47 @@ def generate_and_process_batch_configs(
 # Function to count the number of labeled insects from a CSV file downloaded
 # from Biigle. (OK!)
 
-from tools.counts_labeled_insects_by_classID import count_and_export_values
+# from tools.counts_labeled_insects_by_classID import count_and_export_values
+#
+#
+# count_and_export_values(
+#     input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/all_volumnes.csv',
+#     output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/',
+#     column_name='label_id'
+# )
 
+# ########################################################60
+# Script to generate a tree diagram from a label tree JSON file exported from
+# Biigle. (OK!)
 
-count_and_export_values(
-    input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/all_volumnes.csv',
-    output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/',
-    column_name='label_id'
-)
+from tools.label_tree_diagram import generate_tree_diagram
+import os
 
+if __name__ == "__main__":
+    # You can change these paths to test locally
+    INPUT_FILE = '/Users/aavelino/Downloads/BiosoilAI/Label_trees/2025_12_03/labels.csv'
+    OUTPUT_DIR = '/Users/aavelino/Downloads/BiosoilAI/Label_trees/2025_12_03/'
+    OUTPUT_FILE = 'label_tree_diagram.txt'
+    OUTPUT_FILE_TABS = 'label_tree_diagram_tabs.txt'
+
+    # Generate dummy file for testing if it doesn't exist
+    if not os.path.exists(INPUT_FILE):
+        print(f"Creating dummy input file: {INPUT_FILE}")
+        with open(INPUT_FILE, 'w', encoding='utf-8') as f:
+            f.write("id,name,parent_id,color,label_tree_id,source_id\n")
+            f.write("4491,Other Acari,4200,ce0f8f,6,\n")
+            f.write("4200,Acari,4199,2a74e4,6,\n")
+            f.write("4199,Arachnida,4198,31e475,6,\n")
+            f.write("4198,Metazoa,,c20ba9,6,\n")
+            f.write("4206,Crustacea,4198,c20ba9,6,\n")
+            f.write("4208,Myriapoda,4198,c20ba9,6,\n")
+            f.write("4201,Araneae +5mm,4199,31e475,6,\n")
+            f.write("4492,Mesostigmata (Gamase),4200,31e475,6,\n")
+            f.write("4208,Myriapoda,4198,c20ba9,6,\n")
+            f.write("4201,Araneae +5mm,4199,31e475,6,\n")
+            f.write("4492,Mesostigmata (Gamase),4200,31e475,6,\n")
+
+    generate_tree_diagram(INPUT_FILE, OUTPUT_DIR, OUTPUT_FILE, OUTPUT_FILE_TABS)
 
 # ########################################################60
 # Function to use supervision library for evaluating models performance

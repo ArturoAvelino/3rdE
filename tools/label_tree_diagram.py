@@ -5,13 +5,14 @@ from collections import defaultdict
 
 
 class TreeDiagramGenerator:
-    def __init__(self, input_path, output_dir, output_filename):
+    def __init__(self, input_path, output_dir, output_filename, output_filename_tabs=None):
         self.input_path = input_path
         self.output_dir = output_dir
         self.output_filename = output_filename
+        self.output_filename_tabs = output_filename_tabs
         self.nodes = {}  # Stores actual row data: id -> row_dict
         self.children_map = defaultdict(
-            list)  # Stores relationships: parent_id -> [child_ids]
+            list) # Stores relationships: parent_id -> [child_ids]
 
     def _load_data(self):
         """Reads the CSV and builds the adjacency list."""
@@ -109,8 +110,36 @@ class TreeDiagramGenerator:
 
             # Add the vertical spacing gap between siblings, connecting the lines
             if not is_last_child:
-                file_handle.write(f"{prefix}|\n")
-                file_handle.write(f"{prefix}|\n")
+                # Only add spacing if the current child was a branch (had children)
+                # This separates complex branches but keeps leaves compact
+                if self.children_map.get(child_id):
+                    file_handle.write(f"{prefix}|\n")
+
+    def _write_node_recursive_tabs(self, file_handle, node_id, depth=0):
+        """
+        Recursive function to write the tree structure using 4-space tabs.
+
+        Args:
+            file_handle: Open file object to write to.
+            node_id: Current node ID.
+            depth: Current depth in the tree (starts at 0).
+        """
+        # Get children and sort them alphabetically
+        children = self.children_map.get(node_id, [])
+        children.sort(key=lambda x: self.nodes[x]['name'])
+
+        # Indentation using 4 spaces per depth level (plus one level for current node relative to parent)
+        # The root is at depth 0 (no indentation), children at depth 1 (4 spaces), etc.
+        indent = "    " * depth
+
+        for child_id in children:
+            child_name = self.nodes[child_id]['name']
+
+            # Write the child line with indentation
+            file_handle.write(f"{indent}{child_name} ({child_id})\n")
+
+            # Recursively write the child's subtree
+            self._write_node_recursive_tabs(file_handle, child_id, depth + 1)
 
     def generate(self):
         """Main execution method."""
@@ -139,6 +168,7 @@ class TreeDiagramGenerator:
         full_output_path = os.path.join(self.output_dir, self.output_filename)
 
         try:
+            # Generate the standard tree diagram (with pipes)
             with open(full_output_path, 'w', encoding='utf-8') as f:
                 for i, root_id in enumerate(roots):
                     # Write root name
@@ -154,37 +184,60 @@ class TreeDiagramGenerator:
 
             print(f"Success! Tree diagram generated at: {full_output_path}")
 
+            # Generate the second diagram (with tabs) if filename provided
+            if self.output_filename_tabs:
+                full_output_path_tabs = os.path.join(self.output_dir, self.output_filename_tabs)
+                with open(full_output_path_tabs, 'w', encoding='utf-8') as f:
+                    for i, root_id in enumerate(roots):
+                        # Write root name
+                        root_name = self.nodes[root_id]['name']
+                        f.write(f"{root_name} ({root_id})\n")
+
+                        # Recursively write children using tabs logic
+                        # Start indentation at 1 level deep (4 spaces) because root is level 0
+                        self._write_node_recursive_tabs(f, root_id, depth=1)
+
+                        # Add extra space between separate root trees if there are multiple
+                        if i < len(roots) - 1:
+                            f.write("\n") # Single newline for cleaner separation in tab mode
+
+                print(f"Success! Tab-indented tree diagram generated at: {full_output_path_tabs}")
+
         except IOError as e:
             print(f"Error writing to file: {e}")
 
-
 # Helper function to run the generator
-def generate_tree_diagram(input_csv, output_dir, output_filename):
-    generator = TreeDiagramGenerator(input_csv, output_dir, output_filename)
+def generate_tree_diagram(input_csv, output_dir, output_filename, output_filename_tabs=None):
+    generator = TreeDiagramGenerator(input_csv, output_dir, output_filename, output_filename_tabs)
     generator.generate()
 
 # ########################################################60
 # Use example
 
-if __name__ == "__main__":
-    # Example usage
-    # You can change these paths to test locally
-    INPUT_FILE = 'input.csv'
-    OUTPUT_DIR = 'output_diagrams'
-    OUTPUT_FILE = 'tree_structure.txt'
+# if __name__ == "__main__":
+#     # Example usage
+#     # You can change these paths to test locally
+#     INPUT_FILE = 'input.csv'
+#     OUTPUT_DIR = 'output_diagrams'
+#     OUTPUT_FILE = 'tree_structure.txt'
+#     OUTPUT_FILE_TABS = 'tree_structure_tabs.txt'
 
-    # Generate dummy file for testing if it doesn't exist
-    if not os.path.exists(INPUT_FILE):
-        print(f"Creating dummy input file: {INPUT_FILE}")
-        with open(INPUT_FILE, 'w', encoding='utf-8') as f:
-            f.write("id,name,parent_id,color,label_tree_id,source_id\n")
-            f.write("4491,Other Acari,4200,ce0f8f,6,\n")
-            f.write("4200,Acari,4199,2a74e4,6,\n")
-            f.write("4199,Arachnida,4198,31e475,6,\n")
-            f.write("4198,Metazoa,,c20ba9,6,\n")
-            f.write("4206,Crustacea,4198,c20ba9,6,\n")
-            f.write("4208,Myriapoda,4198,c20ba9,6,\n")
-            f.write("4201,Araneae +5mm,4199,31e475,6,\n")
-            f.write("4492,Mesostigmata (Gamase),4200,31e475,6,\n")
+#     # Generate dummy file for testing if it doesn't exist
+#     if not os.path.exists(INPUT_FILE):
+#         print(f"Creating dummy input file: {INPUT_FILE}")
+#         with open(INPUT_FILE, 'w', encoding='utf-8') as f:
+#             f.write("id,name,parent_id,color,label_tree_id,source_id\n")
+#             f.write("4491,Other Acari,4200,ce0f8f,6,\n")
+#             f.write("4200,Acari,4199,2a74e4,6,\n")
+#             f.write("4199,Arachnida,4198,31e475,6,\n")
+#             f.write("4198,Metazoa,,c20ba9,6,\n")
+#             f.write("4206,Crustacea,4198,c20ba9,6,\n")
+#             f.write("4208,Myriapoda,4198,c20ba9,6,\n")
+#             f.write("4201,Araneae +5mm,4199,31e475,6,\n")
+#             f.write("4492,Mesostigmata (Gamase),4200,31e475,6,\n")
+#             f.write("4208,Myriapoda,4198,c20ba9,6,\n")
+#             f.write("4201,Araneae +5mm,4199,31e475,6,\n")
+#             f.write("4492,Mesostigmata (Gamase),4200,31e475,6,\n")
 
-    generate_tree_diagram(INPUT_FILE, OUTPUT_DIR, OUTPUT_FILE)
+#         generate_tree_diagram(INPUT_FILE, OUTPUT_DIR, OUTPUT_FILE, OUTPUT_FILE_TABS)
+
