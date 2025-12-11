@@ -631,700 +631,704 @@ def generate_and_process_batch_configs(
 # ##############################################################################
 # Remove background and segment the objects found in an image (OK!)
 
-# def main():
+    # def main():
 
-#     # sample_name = "F13_CL"
+    #     # sample_name = "F13_CL"
 
-#     # Setup logging (will create processing.log in the input directory)
-#     log_output_dir = Path(
-#         # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-#         "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/"
-#     )
+    #     # Setup logging (will create processing.log in the input directory)
+    #     log_output_dir = Path(
+    #         # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+    #         "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/"
+    #     )
 
-#     if not log_output_dir.exists():
-#         print(f"Error: Log save directory not found: {log_output_dir}")
-#         return
+    #     if not log_output_dir.exists():
+    #         print(f"Error: Log save directory not found: {log_output_dir}")
+    #         return
 
-#     setup_logging(log_output_dir)
-#     logger = logging.getLogger(__name__)
-#     logger.info("Starting batch processing of images ...")
+    #     setup_logging(log_output_dir)
+    #     logger = logging.getLogger(__name__)
+    #     logger.info("Starting batch processing of images ...")
 
-#     try:
+    #     try:
 
-#         # =========================================
-#         # Remove the color background from images using clustering (OK).
-#         #
-#         # Comment these lines if you don't want to remove background from the images.
+    #         # =========================================
+    #         # Remove the color background from images using clustering (OK).
+    #         #
+    #         # Comment these lines if you don't want to remove background from the images.
 
-#         # SINGLE IMAGE PROCESSING (OK!)
+    #         # SINGLE IMAGE PROCESSING (OK!)
 
-#         import numpy as np
-#         # -----------
-#         # # For arthropods
-#         n_clusters = 5
-#         color_clusters_to_remove = [0, 4]
+    #         import numpy as np
+    #         # -----------
+    #         # # For arthropods
+    #         n_clusters = 5
+    #         color_clusters_to_remove = [0, 4]
 
-#         # -----------
-#         # # For amoebas
-#         # n_clusters = 5
-#         # custom_centers = np.asarray(
-#         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-#         #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
-#         #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
-#         #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
-#         #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-#         # color_clusters_to_remove = [3]
+    #         # -----------
+    #         # # For amoebas
+    #         # n_clusters = 5
+    #         # custom_centers = np.asarray(
+    #         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+    #         #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
+    #         #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
+    #         #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
+    #         #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+    #         # color_clusters_to_remove = [3]
 
-#         # n_clusters = 6
-#         # custom_centers = np.asarray(
-#         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-#         #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
-#         #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
-#         #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
-#         #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
-#         #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-#         # color_clusters_to_remove = [4]
+    #         # n_clusters = 6
+    #         # custom_centers = np.asarray(
+    #         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+    #         #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
+    #         #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
+    #         #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
+    #         #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
+    #         #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+    #         # color_clusters_to_remove = [4]
 
-#         # -----------
+    #         # -----------
 
-#         processor = BackgroundRemover(
-#             image_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/capt0053.jpg",
-#             # image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
-#             output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/",
-#             n_clusters = n_clusters  # Default: 5 for arthropods
-#             # kmeans_init_centers = custom_centers # (optional)
-#         )
+    #         processor = BackgroundRemover(
+    #             image_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/capt0053.jpg",
+    #             # image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
+    #             output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/",
+    #             n_clusters = n_clusters  # Default: 5 for arthropods
+    #             # kmeans_init_centers = custom_centers # (optional)
+    #         )
 
-#         sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
-#         processor.cluster_rgb_colors()
-#         processor.plot_rgb_rawdata(sample_step=sampling_ratio)
-#         processor.plot_rgb_clusters(sample_step=sampling_ratio)
-#         processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-#         processor.plot_replaced_colors_in_image()
+    #         sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
+    #         processor.cluster_rgb_colors()
+    #         processor.plot_rgb_rawdata(sample_step=sampling_ratio)
+    #         processor.plot_rgb_clusters(sample_step=sampling_ratio)
+    #         processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
+    #         processor.plot_replaced_colors_in_image()
 
-#         # Remove (i.e., transform to white color or some other predefined color) some specific colors.
-#         processor.remove_background(background_clusters=color_clusters_to_remove)
+    #         # Remove (i.e., transform to white color or some other predefined color) some specific colors.
+    #         processor.remove_background(background_clusters=color_clusters_to_remove)
 
-#         # Or simply use the default value = "[0, 4]" (for arthropods):
-#         processor.remove_background()
-
-
-        # -----------------------------------------
-        # BATCH PROCESSING (OK!)
-
-        # sample_name =  "R04_B"
-        #
-        # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-        # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
-        # logger.info(f"Input directory: {input_dir}")
-        # logger.info(f"Output directory: {output_dir}")
-        #
-        # process_background_remover(input_dir=input_dir,
-        #                            output_dir=output_dir,
-        #                            image_pattern=f"{sample_name}*.jpg")
-        #
-        # logger.info("Successfully completed batch processing")
-
-        # =========================================
-        # # Segmentation and cropping
-        # #
-        # -----------------------------------------
-        # # Option 1 (OK): Generate Configuration Files Only.
-
-        # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
-        #
-        # config_files = generate_configuration_files_only(
-        #     sample_name="BM3-F",
-        #     raw_image_pattern="BM3-F*.jpg",
-        #     raw_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
-        #     no_background_image_pattern="*_no_bkgd.png",
-        #     no_background_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
-        #     max_distance=4.0,
-        #     min_pixels=1000,
-        #     padding=35,
-        #     cropping=True,
-        #     config_output_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
-        # )
-        #
-        # if config_files:
-        #     logger.info(
-        #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
-        #     logger.info(
-        #         "You can now process these configurations using the other options below.")
-        # else:
-        #     logger.error(
-        #         "No configuration files were generated. Please check your parameters.")
-
-        # -----------------------------------------
-        # # Option 2 (OK): Process existing configuration files only
-
-        # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
-
-        # # If you already have configuration files and just want to process them
-        # config_directory = "/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
-
-        # if Path(config_directory).exists():
-        #     results_existing = process_batch_of_config_files(
-        #         config_directory=config_directory,
-        #         filename_pattern="*_config.json",
-        #         use_nonwhitepixel_as_bboxcenter=True,
-        #         create_cropped_images=False,
-        #         include_segmentation=False
-        #     )
-
-        #     logger.info(
-        #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
-        # else:
-        #     logger.info(f"Config directory not found: {config_directory}")
-
-        # -----------------------------------------
-        # # Option 3 (OK): Complete workflow - Generate configs and process them
-        # # generating the segmentation plot and the individual cropped images.
-
-        # sample_name =  "Untitled74_m0002"
-        #
-        # logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
-        #
-        # results = generate_and_process_batch_configs(
-        #     sample_name = sample_name,
-        #
-        #     # raw_image_pattern = f"{sample_name}*.jpg",
-        #     # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-        #     # no_background_image_pattern = "*_no_bkgd.png",
-        #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-        #
-        #     raw_image_pattern=f"{sample_name}*.png",
-        #     raw_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/",
-        #     no_background_image_pattern="*_no_bkgd.png",
-        #     no_background_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/",
-        #
-        #     max_distance=10.0,
-        #     min_pixels=1000,
-        #     padding=35,
-        #     cropping=True,
-        #     # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
-        #     use_nonwhitepixel_as_bboxcenter = False,
-        #     create_cropped_images = True,
-        #     include_segmentation = False
-        # )
-        #
-        # logger.info(
-        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
-
-        # -----------------------------------------
-        # Option 4 (OK): Process individual configuration file (for testing/debugging)
-        # logger.info("=== OPTION 4: Single Configuration File Processing ===")
-        #
-        # single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
-        # if Path(single_config_path).exists():
-        #     processor_single = BatchConfigProcessor(
-        #         json_path=str(Path(single_config_path).parent),
-        #         filename_pattern=Path(single_config_path).name
-        #     )
-        #
-        #     # Process just this one file
-        #     single_result = processor_single.process_single_config(
-        #         Path(single_config_path))
-        #     if single_result:
-        #         logger.info("Single file processing successful")
-        #     else:
-        #         logger.error("Single file processing failed")
-
-        # =========================================
-        # # Segmentation by color (No Ok, old)
-
-        # processor = InstanceSegmentationByColor(
-        #     image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_trimmed_no_bkgd.png",
-        #     raw_image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/tmp_2/clustering_crops/capt0053_trimmed_segm/crop_45_capt0053_trimmed.png",
-        #     sample_name="BM4_E",
-        #     output_dir="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
-        #     n_clusters=5,
-        #     min_pixels=400,
-        #     padding=10
-        # )
-
-        # results = processor.process()
-
-        # # =========================================
-
-        # OK!
-        # Read the width and height of bounding boxes from a batch of JSON files
-        # and save them in a single comma-separated value (.CSV) text file.
-        # This processing is useful for unsupervised clustering techniques to determine
-        # the most common bounding box sizes of objects. Based on this information,
-        # I can crop individual objects to a fixed size using the most common sizes
-        # to get images of the same pixel size as required for clustering and
-        # label propagation.
-
-        # processor = BatchBoundingBoxProcessor(
-        #     json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
-        #     filename_pattern="*_metadata.json",
-        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
-        #     output_filename="extracted_bounding_boxes.csv"
-        # )
-        #
-        # # Get processing summary
-        # summary = processor.get_processing_summary()
-        # print(f"Will process {summary['total_files']} files")
-        # print(f"Output will be saved to: {summary['full_output_path']}")
-        #
-        # # Process all files
-        # success = processor.process_all_files()
-        #
-        # if success:
-        #     print("Processing completed successfully!")
-        # else:
-        #     print("Processing failed or no data was extracted.")
-
-        # # =========================================
-        # OK!
-        # K-means clustering on the bounding-boxes sizes to determine the most
-        # common bbox sizes.
-
-        # processor = BoundingBoxClusteringProcessor(
-        #     cluster_number=6,
-        #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/extracted_bounding_boxes.csv",
-        #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
-        #     output_filename="clustering_results"
-        # )
-
-        # # Execute the complete workflow
-        # summary = processor.process_complete_workflow(
-        #     algorithm='kmeans',
-        #     redefine_dims=False,
-        #     create_raw_plot=True,
-        #     random_state=42
-        # )
-
-        # print("Clustering Summary:")
-        # for key, value in summary.items():
-        #     print(f"  {key}: {value}")
-
-        # # Example with DBSCAN
-        # # processor_dbscan = BoundingBoxClusteringProcessor(
-        # #     cluster_number=5,  # Not used for DBSCAN but required for initialization
-        # #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
-        # #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
-        # #     output_filename="clustering_results_dbscan"
-        # # )
-        # #
-        # # summary_dbscan = processor_dbscan.process_complete_workflow(
-        # #     algorithm='dbscan',
-        # #     redefine_dims=True,
-        # #     eps=0.5,
-        # #     min_samples=5
-        # # )
+    #         # Or simply use the default value = "[0, 4]" (for arthropods):
+    #         processor.remove_background()
 
 
+            # -----------------------------------------
+            # BATCH PROCESSING (OK!)
 
-#     except Exception as e:
-#         logger.error(f"An unexpected error occurred: {str(e)}")
-#         raise
+            # sample_name =  "R04_B"
+            #
+            # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+            # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
+            # logger.info(f"Input directory: {input_dir}")
+            # logger.info(f"Output directory: {output_dir}")
+            #
+            # process_background_remover(input_dir=input_dir,
+            #                            output_dir=output_dir,
+            #                            image_pattern=f"{sample_name}*.jpg")
+            #
+            # logger.info("Successfully completed batch processing")
 
-# if __name__ == "__main__":
-#     main()
+            # =========================================
+            # # Segmentation and cropping
+            # #
+            # -----------------------------------------
+            # # Option 1 (OK): Generate Configuration Files Only.
+
+            # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
+            #
+            # config_files = generate_configuration_files_only(
+            #     sample_name="BM3-F",
+            #     raw_image_pattern="BM3-F*.jpg",
+            #     raw_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
+            #     no_background_image_pattern="*_no_bkgd.png",
+            #     no_background_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
+            #     max_distance=4.0,
+            #     min_pixels=1000,
+            #     padding=35,
+            #     cropping=True,
+            #     config_output_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
+            # )
+            #
+            # if config_files:
+            #     logger.info(
+            #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
+            #     logger.info(
+            #         "You can now process these configurations using the other options below.")
+            # else:
+            #     logger.error(
+            #         "No configuration files were generated. Please check your parameters.")
+
+            # -----------------------------------------
+            # # Option 2 (OK): Process existing configuration files only
+
+            # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
+
+            # # If you already have configuration files and just want to process them
+            # config_directory = "/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
+
+            # if Path(config_directory).exists():
+            #     results_existing = process_batch_of_config_files(
+            #         config_directory=config_directory,
+            #         filename_pattern="*_config.json",
+            #         use_nonwhitepixel_as_bboxcenter=True,
+            #         create_cropped_images=False,
+            #         include_segmentation=False
+            #     )
+
+            #     logger.info(
+            #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
+            # else:
+            #     logger.info(f"Config directory not found: {config_directory}")
+
+            # -----------------------------------------
+            # # Option 3 (OK): Complete workflow - Generate configs and process them
+            # # generating the segmentation plot and the individual cropped images.
+
+            # sample_name =  "Untitled74_m0002"
+            #
+            # logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
+            #
+            # results = generate_and_process_batch_configs(
+            #     sample_name = sample_name,
+            #
+            #     # raw_image_pattern = f"{sample_name}*.jpg",
+            #     # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+            #     # no_background_image_pattern = "*_no_bkgd.png",
+            #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+            #
+            #     raw_image_pattern=f"{sample_name}*.png",
+            #     raw_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/",
+            #     no_background_image_pattern="*_no_bkgd.png",
+            #     no_background_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/",
+            #
+            #     max_distance=10.0,
+            #     min_pixels=1000,
+            #     padding=35,
+            #     cropping=True,
+            #     # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
+            #     use_nonwhitepixel_as_bboxcenter = False,
+            #     create_cropped_images = True,
+            #     include_segmentation = False
+            # )
+            #
+            # logger.info(
+            #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
+
+            # -----------------------------------------
+            # Option 4 (OK): Process individual configuration file (for testing/debugging)
+            # logger.info("=== OPTION 4: Single Configuration File Processing ===")
+            #
+            # single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
+            # if Path(single_config_path).exists():
+            #     processor_single = BatchConfigProcessor(
+            #         json_path=str(Path(single_config_path).parent),
+            #         filename_pattern=Path(single_config_path).name
+            #     )
+            #
+            #     # Process just this one file
+            #     single_result = processor_single.process_single_config(
+            #         Path(single_config_path))
+            #     if single_result:
+            #         logger.info("Single file processing successful")
+            #     else:
+            #         logger.error("Single file processing failed")
+
+            # =========================================
+            # # Segmentation by color (No Ok, old)
+
+            # processor = InstanceSegmentationByColor(
+            #     image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/crop_45_capt0053_trimmed_no_bkgd.png",
+            #     raw_image_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation/tmp_2/clustering_crops/capt0053_trimmed_segm/crop_45_capt0053_trimmed.png",
+            #     sample_name="BM4_E",
+            #     output_dir="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/capt0053_segmentation",
+            #     n_clusters=5,
+            #     min_pixels=400,
+            #     padding=10
+            # )
+
+            # results = processor.process()
+
+            # # =========================================
+
+            # OK!
+            # Read the width and height of bounding boxes from a batch of JSON files
+            # and save them in a single comma-separated value (.CSV) text file.
+            # This processing is useful for unsupervised clustering techniques to determine
+            # the most common bounding box sizes of objects. Based on this information,
+            # I can crop individual objects to a fixed size using the most common sizes
+            # to get images of the same pixel size as required for clustering and
+            # label propagation.
+
+            # processor = BatchBoundingBoxProcessor(
+            #     json_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
+            #     filename_pattern="*_metadata.json",
+            #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
+            #     output_filename="extracted_bounding_boxes.csv"
+            # )
+            #
+            # # Get processing summary
+            # summary = processor.get_processing_summary()
+            # print(f"Will process {summary['total_files']} files")
+            # print(f"Output will be saved to: {summary['full_output_path']}")
+            #
+            # # Process all files
+            # success = processor.process_all_files()
+            #
+            # if success:
+            #     print("Processing completed successfully!")
+            # else:
+            #     print("Processing failed or no data was extracted.")
+
+            # # =========================================
+            # OK!
+            # K-means clustering on the bounding-boxes sizes to determine the most
+            # common bbox sizes.
+
+            # processor = BoundingBoxClusteringProcessor(
+            #     cluster_number=6,
+            #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/extracted_bounding_boxes.csv",
+            #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/clustering_crops/4_bbox_sizes/",
+            #     output_filename="clustering_results"
+            # )
+
+            # # Execute the complete workflow
+            # summary = processor.process_complete_workflow(
+            #     algorithm='kmeans',
+            #     redefine_dims=False,
+            #     create_raw_plot=True,
+            #     random_state=42
+            # )
+
+            # print("Clustering Summary:")
+            # for key, value in summary.items():
+            #     print(f"  {key}: {value}")
+
+            # # Example with DBSCAN
+            # # processor_dbscan = BoundingBoxClusteringProcessor(
+            # #     cluster_number=5,  # Not used for DBSCAN but required for initialization
+            # #     input_file_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/extracted_bounding_boxes.csv",
+            # #     output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/bbox_sizes/",
+            # #     output_filename="clustering_results_dbscan"
+            # # )
+            # #
+            # # summary_dbscan = processor_dbscan.process_complete_workflow(
+            # #     algorithm='dbscan',
+            # #     redefine_dims=True,
+            # #     eps=0.5,
+            # #     min_samples=5
+            # # )
+
+
+
+    #     except Exception as e:
+    #         logger.error(f"An unexpected error occurred: {str(e)}")
+    #         raise
+
+    # if __name__ == "__main__":
+    #     main()
 
 # ########################################################60
 
 # Convert Biigle CSV file to COCO JSON file (OK!)
 
-# From the CSV file containing the bounding boxes
-# and the output path for the extracted images
-# and the output filename for the extracted images
-# from the JSON file containing the metadata
-# for the bounding boxes.
-# The processor will extract the bounding boxes
-# and save them in a single comma-separated value (.CSV) text file.
-# This file will be used for the next processing step.
-# The processor will then extract the bounding boxes
-# and save them in a single comma-separated value (.CSV) text file.
+    # From the CSV file containing the bounding boxes
+    # and the output path for the extracted images
+    # and the output filename for the extracted images
+    # from the JSON file containing the metadata
+    # for the bounding boxes.
+    # The processor will extract the bounding boxes
+    # and save them in a single comma-separated value (.CSV) text file.
+    # This file will be used for the next processing step.
+    # The processor will then extract the bounding boxes
+    # and save them in a single comma-separated value (.CSV) text file.
 
-# if __name__ == "__main__":
-#
-#     ## ========================================================60
-#     ## Batch processor
-#
-#     from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
-#
-#
-#     processor = BiigleCSV_to_COCO_JSON(
-#
-#         ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
-#         csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3.csv",
-#         json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
-#         images_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/",  # for cropping
-#         filename_pattern = "*.jpg",
-#         output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops", # output from cropping
-#
-#
-#         # # # "biigle_volume_02" (first half of the"BM4_E" sample):
-#         # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
-#         # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
-#         # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
-#         # filename_pattern="capt*.jpg",
-#         # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
-#
-#         # # "biigle_volume_04" ("BM13_B_margo" sample):
-#         # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
-#         # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
-#         # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
-#         # filename_pattern = "BM13_B_margo*.jpg",
-#         # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
-#     )
-#
-#     # Process all objects
-#     processor.process_all_objects()
-#
-#     # Merge JSON files and save them into a "output/merged_json/" folder
-#     processor.merge_json_files_by_image_id()
+    # if __name__ == "__main__":
+    #
+    #     ## ========================================================60
+    #     ## Batch processor
+    #
+    #     from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+    #
+    #
+    #     processor = BiigleCSV_to_COCO_JSON(
+    #
+    #         ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
+    #         csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3.csv",
+    #         json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
+    #         images_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/",  # for cropping
+    #         filename_pattern = "*.jpg",
+    #         output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops", # output from cropping
+    #
+    #
+    #         # # # "biigle_volume_02" (first half of the"BM4_E" sample):
+    #         # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
+    #         # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
+    #         # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
+    #         # filename_pattern="capt*.jpg",
+    #         # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
+    #
+    #         # # "biigle_volume_04" ("BM13_B_margo" sample):
+    #         # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
+    #         # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
+    #         # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
+    #         # filename_pattern = "BM13_B_margo*.jpg",
+    #         # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
+    #     )
+    #
+    #     # Process all objects
+    #     processor.process_all_objects()
+    #
+    #     # Merge JSON files and save them into a "output/merged_json/" folder
+    #     processor.merge_json_files_by_image_id()
 
 
-    # --------------------------------------------------------60
+        # --------------------------------------------------------60
 
-    # Simple usage - process all configs in a directory
-    #c results = process_batch_of_config_files(
-    #c     config_directory="/path/to/configs",
-    #c     filename_pattern="*.json"
-    #c )
+        # Simple usage - process all configs in a directory
+        #c results = process_batch_of_config_files(
+        #c     config_directory="/path/to/configs",
+        #c     filename_pattern="*.json"
+        #c )
 
-    # Complete workflow
-    #c results = generate_and_process_batch_configs(
-    #c     sample_name="BM4_E",
-    #c     raw_image_pattern="*.jpg",
-    #c     raw_image_batch_path="/path/to/raw/images/",
-    #c     no_background_image_pattern="*_no_bkgd.png",
-    #c     no_background_image_batch_path="/path/to/processed/images/",
-    #c     cropping=True
-    #c )
+        # Complete workflow
+        #c results = generate_and_process_batch_configs(
+        #c     sample_name="BM4_E",
+        #c     raw_image_pattern="*.jpg",
+        #c     raw_image_batch_path="/path/to/raw/images/",
+        #c     no_background_image_pattern="*_no_bkgd.png",
+        #c     no_background_image_batch_path="/path/to/processed/images/",
+        #c     cropping=True
+        #c )
 
-    # Custom processor for specific needs
-    #c processor = BatchConfigProcessor(
-    #c     json_path="/path/to/configs",
-    #c     filename_pattern="experiment_*_config.json"
-    #c )
-    #c results = processor.process_all_configs()
+        # Custom processor for specific needs
+        #c processor = BatchConfigProcessor(
+        #c     json_path="/path/to/configs",
+        #c     filename_pattern="experiment_*_config.json"
+        #c )
+        #c results = processor.process_all_configs()
 
 # ########################################################60
 
 # Data augmentation (OK!)
 
-    # # Rotate images and their respective bounding boxes for data-augmentation
-    # # purposes
+# Rotate images and their respective bounding boxes for data-augmentation
+# purposes
 
-    # if __name__ == "__main__":
-    #
-    #     # ========================================================60
-    #     # Batch processing of multiple JSON files and multiple angles (OPTIMIZED!)
-    #
-    #     from pathlib import Path
-    #     import glob
-    #     import shutil
-    #     from computer_vision.data_augmentation \
-    #         import ImageBoundingBoxTransformer, transform_image_and_boxes
-    #
-    #     json_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json_robo/"
-    #     image_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
-    #     output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/4_data_augmentation/"
-    #
-    #     # Validate directories exist before processing
-    #     json_path = Path(json_path_dir)
-    #     image_path = Path(image_path_dir)
-    #     output_path = Path(output_dir)
-    #
-    #     if not json_path.exists():
-    #         raise FileNotFoundError(f"JSON directory not found: {json_path_dir}")
-    #     if not image_path.exists():
-    #         raise FileNotFoundError(f"Image directory not found: {image_path_dir}")
-    #
-    #     # Create an output directory if it doesn't exist
-    #     output_path.mkdir(parents=True, exist_ok=True)
-    #
-    #     # Setup logging
-    #     logging_dir = output_path
-    #     setup_logging(logging_dir)
-    #     logger = logging.getLogger(__name__)
-    #     logger.info("\n=== Example 5: Batch processing (Enhanced) ===")
-    #
-    #     # Find all the JSON files with COCO format containing the bounding boxes data
-    #     json_files = sorted(json_path.glob(
-    #         "*.json"))  # Use Path.glob() and sort for deterministic order
-    #
-    #     if not json_files:
-    #         logger.warning(f"No JSON files found in {json_path_dir}")
-    #         raise ValueError("No JSON files to process")
-    #
-    #     logger.info(f"Found {len(json_files)} JSON files to process")
-    #
-    #     # Check available disk space (in bytes)
-    #     disk_usage = shutil.disk_usage(output_path)
-    #     free_space_gb = disk_usage.free / (1024 ** 3)
-    #     logger.info(f"Available disk space: {free_space_gb:.2f} GB")
-    #
-    #     # Estimate required space (rough estimate: 5MB per augmented image)
-    #     estimated_space_gb = len(json_files) * len([90, 120]) * len(
-    #         [False, True]) * len([False, True]) * 5 / 1024
-    #     logger.info(f"Estimated space required: {estimated_space_gb:.2f} GB")
-    #
-    #     if free_space_gb < estimated_space_gb * 1.5:  # 50% safety margin
+# if __name__ == "__main__":
+
+    # # ========================================================60
+    # # Batch processing of multiple JSON files and multiple angles (OPTIMIZED!)
+
+    # from pathlib import Path
+    # import glob
+    # import shutil
+    # from computer_vision.data_augmentation \
+    #     import ImageBoundingBoxTransformer, transform_image_and_boxes
+
+    # json_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops/merged_json_robo/"
+    # image_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo/"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/4_data_augmentation/"
+
+    # # Validate directories exist before processing
+    # json_path = Path(json_path_dir)
+    # image_path = Path(image_path_dir)
+    # output_path = Path(output_dir)
+
+    # if not json_path.exists():
+    #     raise FileNotFoundError(f"JSON directory not found: {json_path_dir}")
+    # if not image_path.exists():
+    #     raise FileNotFoundError(f"Image directory not found: {image_path_dir}")
+
+    # # Create an output directory if it doesn't exist
+    # output_path.mkdir(parents=True, exist_ok=True)
+
+    # # Setup logging
+    # logging_dir = output_path
+    # setup_logging(logging_dir)
+    # logger = logging.getLogger(__name__)
+    # logger.info("\n=== Example 5: Batch processing (Enhanced) ===")
+
+    # # Find all the JSON files with COCO format containing the bounding boxes data
+    # json_files = sorted(json_path.glob(
+    #     "*.json"))  # Use Path.glob() and sort for deterministic order
+
+    # if not json_files:
+    #     logger.warning(f"No JSON files found in {json_path_dir}")
+    #     raise ValueError("No JSON files to process")
+
+    # logger.info(f"Found {len(json_files)} JSON files to process")
+
+    # # Check available disk space (in bytes)
+    # disk_usage = shutil.disk_usage(output_path)
+    # free_space_gb = disk_usage.free / (1024 ** 3)
+    # logger.info(f"Available disk space: {free_space_gb:.2f} GB")
+
+    # # Estimate required space (rough estimate: 5MB per augmented image)
+    # estimated_space_gb = len(json_files) * len([90, 120]) * len(
+    #     [False, True]) * len([False, True]) * 5 / 1024
+    # logger.info(f"Estimated space required: {estimated_space_gb:.2f} GB")
+
+    # if free_space_gb < estimated_space_gb * 1.5:  # 50% safety margin
+    #     logger.warning(
+    #         f"Low disk space! Available: {free_space_gb:.2f}GB, Required: ~{estimated_space_gb:.2f}GB")
+
+    # # Processing parameters
+    # # angles = [90, 120]
+    # angles = [10, 30, 60, 75, 90, 105, 120, 150, 170]
+    # flips_h = [False, True]
+    # flips_v = [False, True]
+
+    # # Calculate total operations for progress tracking
+    # total_operations = len(json_files) * len(angles) * len(flips_h) * len(
+    #     flips_v)
+    # completed_operations = 0
+    # failed_operations = 0
+    # skipped_operations = 0
+
+    # logger.info(
+    #     f"Starting batch processing: {total_operations} total operations")
+    # logger.info(
+    #     f"JSON files: {len(json_files)}, Angles: {angles}, Flips H/V: {flips_h}/{flips_v}")
+
+    # # Track processing statistics
+    # processing_stats = {
+    #     'successful': [],
+    #     'failed': [],
+    #     'skipped': []
+    # }
+
+    # # Main processing loop - optimized structure
+    # for json_file in json_files:
+    #     image_name = json_file.stem
+    #     image_file = image_path / f"{image_name}.jpg"
+
+    #     # Validate that a corresponding image exists before processing
+    #     if not image_file.exists():
     #         logger.warning(
-    #             f"Low disk space! Available: {free_space_gb:.2f}GB, Required: ~{estimated_space_gb:.2f}GB")
-    #
-    #     # Processing parameters
-    #     # angles = [90, 120]
-    #     angles = [10, 30, 60, 75, 90, 105, 120, 150, 170]
-    #     flips_h = [False, True]
-    #     flips_v = [False, True]
-    #
-    #     # Calculate total operations for progress tracking
-    #     total_operations = len(json_files) * len(angles) * len(flips_h) * len(
-    #         flips_v)
-    #     completed_operations = 0
-    #     failed_operations = 0
-    #     skipped_operations = 0
-    #
-    #     logger.info(
-    #         f"Starting batch processing: {total_operations} total operations")
-    #     logger.info(
-    #         f"JSON files: {len(json_files)}, Angles: {angles}, Flips H/V: {flips_h}/{flips_v}")
-    #
-    #     # Track processing statistics
-    #     processing_stats = {
-    #         'successful': [],
-    #         'failed': [],
-    #         'skipped': []
-    #     }
-    #
-    #     # Main processing loop - optimized structure
-    #     for json_file in json_files:
-    #         image_name = json_file.stem
-    #         image_file = image_path / f"{image_name}.jpg"
-    #
-    #         # Validate that a corresponding image exists before processing
-    #         if not image_file.exists():
-    #             logger.warning(
-    #                 f"Image file not found for {image_name}, skipping all transformations")
-    #             skipped_operations += len(angles) * len(flips_h) * len(flips_v)
-    #             processing_stats['skipped'].append({
-    #                 'image': image_name,
-    #                 'reason': 'Image file not found'
-    #             })
-    #             continue
-    #
-    #         logger.info(f"\n{'=' * 60}")
-    #         logger.info(f"Processing image set: {image_name}")
-    #         logger.info(f"{'=' * 60}")
-    #
-    #         # Process all transformation combinations for this image
-    #         for flip_v in flips_v:
-    #             for flip_h in flips_h:
-    #                 for angle in angles:
-    #                     completed_operations += 1
-    #                     progress_pct = (
-    #                                                completed_operations / total_operations) * 100
-    #
-    #                     try:
-    #                         # Generate descriptive transformation label
-    #                         transform_label = f"angle={angle}°, flipH={flip_h}, flipV={flip_v}"
-    #                         logger.info(
-    #                             f"[{completed_operations}/{total_operations} - {progress_pct:.1f}%] "
-    #                             f"Processing: {image_name} | {transform_label}")
-    #
-    #                         # Build output filename pattern
-    #                         output_filename = f"{image_name}_rot{angle}_flipH_{flip_h}_flipV_{flip_v}"
-    #
-    #                         # Check if the output already exists (skip if present to avoid reprocessing)
-    #                         output_img = output_path / f"{output_filename}.jpg"
-    #                         output_json = output_path / f"{output_filename}.json"
-    #
-    #                         if output_img.exists() and output_json.exists():
-    #                             logger.info(
-    #                                 f"Output already exists, skipping: {output_filename}")
-    #                             skipped_operations += 1
-    #                             processing_stats['skipped'].append({
-    #                                 'image': image_name,
-    #                                 'transform': transform_label,
-    #                                 'reason': 'Already processed'
-    #                             })
-    #                             continue
-    #
-    #                         # Perform transformation
-    #                         img_path, json_path_out = transform_image_and_boxes(
-    #                             image_path=str(image_file),
-    #                             json_path=str(json_file),
-    #                             output_dir=str(output_path),
-    #                             angle=angle,
-    #                             flip_horizontal=flip_h,
-    #                             flip_vertical=flip_v,
-    #                             fill_color=(79.48, 130.62, 189.84),
-    #                             # Blue fill color (RGB)
-    #                             output_filename_pattern=output_filename,
-    #                         )
-    #
-    #                         logger.info(
-    #                             f"✓ Success: Image={img_path.name}, JSON={json_path_out.name}")
-    #                         processing_stats['successful'].append({
-    #                             'image': image_name,
-    #                             'transform': transform_label,
-    #                             'output': output_filename
-    #                         })
-    #
-    #                     except FileNotFoundError as e:
-    #                         failed_operations += 1
-    #                         error_msg = f"File not found: {e}"
-    #                         logger.error(
-    #                             f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-    #                         processing_stats['failed'].append({
-    #                             'image': image_name,
-    #                             'transform': transform_label,
-    #                             'error': error_msg
-    #                         })
-    #
-    #                     except ValueError as e:
-    #                         failed_operations += 1
-    #                         error_msg = f"Invalid value: {e}"
-    #                         logger.error(
-    #                             f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-    #                         processing_stats['failed'].append({
-    #                             'image': image_name,
-    #                             'transform': transform_label,
-    #                             'error': error_msg
-    #                         })
-    #
-    #                     except PermissionError as e:
-    #                         failed_operations += 1
-    #                         error_msg = f"Permission denied: {e}"
-    #                         logger.error(
-    #                             f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-    #                         processing_stats['failed'].append({
-    #                             'image': image_name,
-    #                             'transform': transform_label,
-    #                             'error': error_msg
-    #                         })
-    #
-    #                     except Exception as e:
-    #                         failed_operations += 1
-    #                         error_msg = f"Unexpected error: {type(e).__name__}: {e}"
-    #                         logger.error(
-    #                             f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
-    #                         logger.exception("Full stack trace:")
-    #                         processing_stats['failed'].append({
-    #                             'image': image_name,
-    #                             'transform': transform_label,
-    #                             'error': error_msg
-    #                         })
-    #
-    #                     # Check disk space periodically (every 10 operations)
-    #                     if completed_operations % 10 == 0:
-    #                         current_disk = shutil.disk_usage(output_path)
-    #                         current_free_gb = current_disk.free / (1024 ** 3)
-    #                         logger.info(
-    #                             f"Disk space check: {current_free_gb:.2f} GB available")
-    #
-    #                         if current_free_gb < 1.0:  # Less than 1GB remaining
-    #                             logger.critical(
-    #                                 f"CRITICAL: Low disk space ({current_free_gb:.2f} GB)! Stopping processing.")
-    #                             raise RuntimeError(
-    #                                 "Insufficient disk space to continue processing")
-    #
-    #     # Generate final summary report
+    #             f"Image file not found for {image_name}, skipping all transformations")
+    #         skipped_operations += len(angles) * len(flips_h) * len(flips_v)
+    #         processing_stats['skipped'].append({
+    #             'image': image_name,
+    #             'reason': 'Image file not found'
+    #         })
+    #         continue
+
     #     logger.info(f"\n{'=' * 60}")
-    #     logger.info("=== BATCH PROCESSING SUMMARY ===")
+    #     logger.info(f"Processing image set: {image_name}")
     #     logger.info(f"{'=' * 60}")
-    #     logger.info(f"Total operations: {total_operations}")
-    #     logger.info(
-    #         f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)")
-    #     logger.info(
-    #         f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)")
-    #     logger.info(
-    #         f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)")
-    #
-    #     # Log failed operations details
+
+    #     # Process all transformation combinations for this image
+    #     for flip_v in flips_v:
+    #         for flip_h in flips_h:
+    #             for angle in angles:
+    #                 completed_operations += 1
+    #                 progress_pct = (
+    #                                            completed_operations / total_operations) * 100
+
+    #                 try:
+    #                     # Generate descriptive transformation label
+    #                     transform_label = f"angle={angle}°, flipH={flip_h}, flipV={flip_v}"
+    #                     logger.info(
+    #                         f"[{completed_operations}/{total_operations} - {progress_pct:.1f}%] "
+    #                         f"Processing: {image_name} | {transform_label}")
+
+    #                     # Build output filename pattern
+    #                     output_filename = f"{image_name}_rot{angle}_flipH_{flip_h}_flipV_{flip_v}"
+
+    #                     # Check if the output already exists (skip if present to avoid reprocessing)
+    #                     output_img = output_path / f"{output_filename}.jpg"
+    #                     output_json = output_path / f"{output_filename}.json"
+
+    #                     if output_img.exists() and output_json.exists():
+    #                         logger.info(
+    #                             f"Output already exists, skipping: {output_filename}")
+    #                         skipped_operations += 1
+    #                         processing_stats['skipped'].append({
+    #                             'image': image_name,
+    #                             'transform': transform_label,
+    #                             'reason': 'Already processed'
+    #                         })
+    #                         continue
+
+    #                     # Perform transformation
+    #                     img_path, json_path_out = transform_image_and_boxes(
+    #                         image_path=str(image_file),
+    #                         json_path=str(json_file),
+    #                         output_dir=str(output_path),
+    #                         angle=angle,
+    #                         flip_horizontal=flip_h,
+    #                         flip_vertical=flip_v,
+    #                         fill_color=(79.48, 130.62, 189.84),
+    #                         # Blue fill color (RGB)
+    #                         output_filename_pattern=output_filename,
+    #                     )
+
+    #                     logger.info(
+    #                         f"✓ Success: Image={img_path.name}, JSON={json_path_out.name}")
+    #                     processing_stats['successful'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'output': output_filename
+    #                     })
+
+    #                 except FileNotFoundError as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"File not found: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+
+    #                 except ValueError as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"Invalid value: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+
+    #                 except PermissionError as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"Permission denied: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+
+    #                 except Exception as e:
+    #                     failed_operations += 1
+    #                     error_msg = f"Unexpected error: {type(e).__name__}: {e}"
+    #                     logger.error(
+    #                         f"✗ Failed: {image_name} | {transform_label} | {error_msg}")
+    #                     logger.exception("Full stack trace:")
+    #                     processing_stats['failed'].append({
+    #                         'image': image_name,
+    #                         'transform': transform_label,
+    #                         'error': error_msg
+    #                     })
+
+    #                 # Check disk space periodically (every 10 operations)
+    #                 if completed_operations % 10 == 0:
+    #                     current_disk = shutil.disk_usage(output_path)
+    #                     current_free_gb = current_disk.free / (1024 ** 3)
+    #                     logger.info(
+    #                         f"Disk space check: {current_free_gb:.2f} GB available")
+
+    #                     if current_free_gb < 1.0:  # Less than 1GB remaining
+    #                         logger.critical(
+    #                             f"CRITICAL: Low disk space ({current_free_gb:.2f} GB)! Stopping processing.")
+    #                         raise RuntimeError(
+    #                             "Insufficient disk space to continue processing")
+
+    # # Generate final summary report
+    # logger.info(f"\n{'=' * 60}")
+    # logger.info("=== BATCH PROCESSING SUMMARY ===")
+    # logger.info(f"{'=' * 60}")
+    # logger.info(f"Total operations: {total_operations}")
+    # logger.info(
+    #     f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)")
+    # logger.info(
+    #     f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)")
+    # logger.info(
+    #     f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)")
+
+    # # Log failed operations details
+    # if processing_stats['failed']:
+    #     logger.warning(f"\n{'=' * 60}")
+    #     logger.warning("FAILED OPERATIONS DETAILS:")
+    #     logger.warning(f"{'=' * 60}")
+    #     for failure in processing_stats['failed']:
+    #         logger.warning(
+    #             f"• {failure['image']} | {failure['transform']} | Error: {failure['error']}")
+
+    # # Save summary report to file
+    # summary_file = output_path / "batch_processing_summary.txt"
+    # with open(summary_file, 'w') as f:
+    #     f.write("=" * 60 + "\n")
+    #     f.write("BATCH PROCESSING SUMMARY REPORT\n")
+    #     f.write("=" * 60 + "\n\n")
+    #     f.write(f"Total operations: {total_operations}\n")
+    #     f.write(
+    #         f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)\n")
+    #     f.write(
+    #         f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)\n")
+    #     f.write(
+    #         f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)\n\n")
+
     #     if processing_stats['failed']:
-    #         logger.warning(f"\n{'=' * 60}")
-    #         logger.warning("FAILED OPERATIONS DETAILS:")
-    #         logger.warning(f"{'=' * 60}")
+    #         f.write("\nFAILED OPERATIONS:\n")
+    #         f.write("-" * 60 + "\n")
     #         for failure in processing_stats['failed']:
-    #             logger.warning(
-    #                 f"• {failure['image']} | {failure['transform']} | Error: {failure['error']}")
-    #
-    #     # Save summary report to file
-    #     summary_file = output_path / "batch_processing_summary.txt"
-    #     with open(summary_file, 'w') as f:
-    #         f.write("=" * 60 + "\n")
-    #         f.write("BATCH PROCESSING SUMMARY REPORT\n")
-    #         f.write("=" * 60 + "\n\n")
-    #         f.write(f"Total operations: {total_operations}\n")
-    #         f.write(
-    #             f"Successful: {len(processing_stats['successful'])} ({len(processing_stats['successful']) / total_operations * 100:.1f}%)\n")
-    #         f.write(
-    #             f"Failed: {len(processing_stats['failed'])} ({len(processing_stats['failed']) / total_operations * 100:.1f}%)\n")
-    #         f.write(
-    #             f"Skipped: {len(processing_stats['skipped'])} ({len(processing_stats['skipped']) / total_operations * 100:.1f}%)\n\n")
-    #
-    #         if processing_stats['failed']:
-    #             f.write("\nFAILED OPERATIONS:\n")
-    #             f.write("-" * 60 + "\n")
-    #             for failure in processing_stats['failed']:
-    #                 f.write(f"Image: {failure['image']}\n")
-    #                 f.write(f"Transform: {failure['transform']}\n")
-    #                 f.write(f"Error: {failure['error']}\n\n")
-    #
-    #         if processing_stats['skipped']:
-    #             f.write("\nSKIPPED OPERATIONS:\n")
-    #             f.write("-" * 60 + "\n")
-    #             for skipped in processing_stats['skipped']:
-    #                 f.write(f"Image: {skipped['image']}\n")
-    #                 f.write(f"Reason: {skipped['reason']}\n\n")
-    #
-    #     logger.info(f"\nSummary report saved to: {summary_file}")
-    #     logger.info("\n=== All examples completed ===")
+    #             f.write(f"Image: {failure['image']}\n")
+    #             f.write(f"Transform: {failure['transform']}\n")
+    #             f.write(f"Error: {failure['error']}\n\n")
 
-    # ========================================================60
+    #     if processing_stats['skipped']:
+    #         f.write("\nSKIPPED OPERATIONS:\n")
+    #         f.write("-" * 60 + "\n")
+    #         for skipped in processing_stats['skipped']:
+    #             f.write(f"Image: {skipped['image']}\n")
+    #             f.write(f"Reason: {skipped['reason']}\n\n")
 
-    # Batch processing of multiple angle rotation from a SINGLE image + JSON (OK!)
+    # logger.info(f"\nSummary report saved to: {summary_file}")
+    # logger.info("\n=== All examples completed ===")
 
-    # image_name = "capt0044"
-    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/rotation/"
-    #
+    # # ========================================================60
+    # # Batch processing of multiple angle rotation from a SINGLE image + JSON (OK!)
+
+    # from computer_vision.data_augmentation import transform_image_and_boxes
+
+    # # # Arthropods
+    # # image_name = "capt0044"
+    # # image_path=f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro-2/Images/BM4_E/{image_name}.jpg"
+    # # json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/{image_name}.json",
+    # # output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/rotation/"
+
+    # # Amoebas
+    # image_name = "f39jpeg_m0083"
+    # image_path=f"/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/{image_name}.jpg"
+    # json_path=f"/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/individual_jsons/{image_name}.json"
+    # output_dir = "/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/rotations/"
+
     # logging_dir = Path(output_dir)
     # setup_logging(logging_dir)
     # logger = logging.getLogger(__name__)
-    # logger.info("\n=== Example 5: Batch processing ===")
-    #
+
     # angles = [10, 30, 60, 75, 90, 105, 120, 150, 170]
     # flipsH = [False, True]
     # flipsV = [False, True]
-    #
+
     # for flipV in flipsV:
     #     for flipH in flipsH:
     #         for angle in angles:
     #             try:
     #                 img_path, json_path = transform_image_and_boxes(
-    #                     # image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/{image_name}.jpg",
-    #                     # json_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/171_Staphylinidae/{image_name}.json",
-    #
-    #                     image_path=f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro-2/Images/BM4_E/{image_name}.jpg",
+    #                     image_path=image_path,
     #                     json_path=json_path,
-    #
+
     #                     output_dir=output_dir,
     #                     angle=angle,
     #                     flip_horizontal=flipH,
     #                     flip_vertical=flipV,
-    #                     fill_color=(79.48, 130.62, 189.84),
-    #                     # Blue fill color (RGB)
+    #                     # fill_color=(79.48, 130.62, 189.84), # Blue fill color (RGB) for arthropods
+    #                     fill_color=(255, 255, 255), # White fill color (RGB) for amoeba
     #                     output_filename_pattern=f"{image_name}_rot{angle}_flipH_{flipH}_flipV_{flipV}",
     #                 )
     #                 logger.info(f"Processed angle {angle}: {img_path.name}")
     #             except Exception as e:
     #                 logger.error(f"Failed to process angle {angle}: {e}")
-    #
-    # logger.info("\n=== All examples completed ===")
 
-    # --------------------------------------------------------60
-    # Single file (OK!)
+    # logger.info("\n=== All rotations completed ===")
 
-    # logger.info(
-    #     "\n=== Example 4: Using class directly with custom filename ===")
+    # # --------------------------------------------------------60
+    # # Single file (OK!)
+
     # try:
     #     transformer = ImageBoundingBoxTransformer(
     #         image_path=f"/Users/aavelino/Downloads/BiosoilAI/7_data_augmentation/tests/Staphylinidae/{image_name}.jpg",
@@ -1336,9 +1340,9 @@ def generate_and_process_batch_configs(
     #         fill_color=(79.48,130.62,189.84),  # Blue fill color (RGB)
     #         output_filename_pattern=f"{image_name}_rot{angle}_flipH_{flip_horizontal}_flipV_{flip_vertical}",
     #     )
-    #
+
     #     img_path, json_path = transformer.process()
-    #
+
     #     logger.info(f"Output saved to: {img_path} and {json_path}")
     # except Exception as e:
     #     logger.error(f"Example 4 failed: {e}")
@@ -1348,34 +1352,34 @@ def generate_and_process_batch_configs(
 # Draw bounding boxes of images using the info from JSON files.
 
 # if __name__ == "__main__":
-#
+
 #     # # Setup logging
 #     logging.basicConfig(level=logging.INFO,
 #                         format='%(asctime)s - %(levelname)s - %(message)s')
-#
+
 #     # --------------------------------------------------------60
 #     # Batch processing, either "coco" and "robo" JSON format (OK!)
-#
+
 #     # # Confidence range to plot
 #     # min_confidence = 0.1; max_confidence = 0.4
 #     # min_confidence = 0.4; max_confidence = 0.7
-#
+
 #     min_confidence = 0.01; max_confidence = 1.0
 #     # min_confidence = 0.7; max_confidence = 1.0
 #     # min_confidence = 0.05; max_confidence = 1.0
-#
-#
+
+
 #     # # --------------------------30
 #     # # Amoeba
-#
-#     input_image_dir = "/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/"
-#
+
+#     input_image_dir = "/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/rotations/"
+
 #     # # annotated images by Martin
-#     input_json_dir = "/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/individual_jsons"
-#     output_dir = f"/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/bboxes"
+#     input_json_dir = "/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/rotations"
+#     output_dir = f"/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/rotations/bboxes"
 #     suffix_output_imagefiles = f"_bbox"
 #     input_json_format = "coco"
-#
+
 #     font_size = 20
 #     bbox_color = "yellow"
 #     text_color = "black"
@@ -1444,15 +1448,15 @@ def generate_and_process_batch_configs(
 
     # drawer = BoundingBoxDrawer()
     # results = drawer.process_batch(
-    #
+
     #     confidence_range=(min_confidence, max_confidence),
-    #
+
     #     input_image_dir = input_image_dir,
     #     input_json_dir  = input_json_dir,
     #     output_dir = output_dir,
     #     suffix_output_imagefiles=suffix_output_imagefiles,
     #     input_json_format = input_json_format,  # "coco" or "roboflow"
-    #
+
     #     font_size = font_size,
     #     bbox_color = bbox_color,
     #     text_color = text_color,
@@ -1464,7 +1468,7 @@ def generate_and_process_batch_configs(
     #     show_summary=show_summary,
     # )
 
-    # ------------------------------
+    # ========================================================60
     # Single file
 
     # # Process a single COCO format file. OK!
@@ -1567,139 +1571,139 @@ def generate_and_process_batch_configs(
 # ========================================================60
 # Batch processing (OK)
 
-# if __name__ == "__main__":
-#
-#     from computer_vision.IoU_batch_processor import BatchIoUProcessor
-#
-#     # Initialize with custom patterns
-#     processor = BatchIoUProcessor(
-#         biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json",
-#         biigle_pattern = "*.json",
-#
-#         roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_4k6k_classes/settings_1/JSONs/",
-#         roboflow_pattern = "*.json",
-#
-#         output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/2_IoU_biigle_vs_yolo",
-#
-#         iou_threshold=0.5
-#     )
-#
-#     # Find and inspect pairs before processing
-#     pairs = processor.find_file_pairs()
-#     print(f"Found {len(pairs)} matching pairs")
-#
-#     # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
-#     results = processor.process_batch(output_format="robo_to_biigle")
-#     processor.generate_summary_report(results) # Generate summary report
-#
-#     results = processor.process_batch(output_format="biigle_to_robo")
-#     processor.generate_summary_report(results) # Generate summary report
-#
-#     results = processor.process_batch(output_format="for_biigle")
-#     processor.generate_summary_report(results) # Generate summary report
+    # if __name__ == "__main__":
+    #
+    #     from computer_vision.IoU_batch_processor import BatchIoUProcessor
+    #
+    #     # Initialize with custom patterns
+    #     processor = BatchIoUProcessor(
+    #         biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json",
+    #         biigle_pattern = "*.json",
+    #
+    #         roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_4k6k_classes/settings_1/JSONs/",
+    #         roboflow_pattern = "*.json",
+    #
+    #         output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/2_IoU_biigle_vs_yolo",
+    #
+    #         iou_threshold=0.5
+    #     )
+    #
+    #     # Find and inspect pairs before processing
+    #     pairs = processor.find_file_pairs()
+    #     print(f"Found {len(pairs)} matching pairs")
+    #
+    #     # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
+    #     results = processor.process_batch(output_format="robo_to_biigle")
+    #     processor.generate_summary_report(results) # Generate summary report
+    #
+    #     results = processor.process_batch(output_format="biigle_to_robo")
+    #     processor.generate_summary_report(results) # Generate summary report
+    #
+    #     results = processor.process_batch(output_format="for_biigle")
+    #     processor.generate_summary_report(results) # Generate summary report
 
-# ========================================================60
-# Single pair of files (OK!)
+    # ========================================================60
+    # Single pair of files (OK!)
 
-# from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
-#
-# image_name = "BM3-C_r5c5"
-# IoU_value = 0.55
-# output_folder = '/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_IoU/'
-#
-# if __name__ == "__main__":
-#     # Initialize the matcher
-#     matcher = IoUMetric_for_BBoxMatch(
-#         roboflow_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/{image_name}.json',
-#         biigle_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/{image_name}.json',
-#         iou_threshold=IoU_value
-#     )
-#
-#     ## Roboflow to Biigle matching
-#     matcher.save_to_csv_robo_to_biigle(f'{output_folder}/{image_name}_robo_to_biigle_IoU_{IoU_value}.csv')
-#
-#     ## Biigle to Roboflow matching
-#     matcher.save_to_csv_biigle_to_robo(f'{output_folder}/{image_name}_biigle_to_robo_IoU_{IoU_value}.csv')
-#
-#     ## Generate CSV file with the labels from Biigle input
-#     matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
+    # from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
+    #
+    # image_name = "BM3-C_r5c5"
+    # IoU_value = 0.55
+    # output_folder = '/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_IoU/'
+    #
+    # if __name__ == "__main__":
+    #     # Initialize the matcher
+    #     matcher = IoUMetric_for_BBoxMatch(
+    #         roboflow_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/{image_name}.json',
+    #         biigle_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/{image_name}.json',
+    #         iou_threshold=IoU_value
+    #     )
+    #
+    #     ## Roboflow to Biigle matching
+    #     matcher.save_to_csv_robo_to_biigle(f'{output_folder}/{image_name}_robo_to_biigle_IoU_{IoU_value}.csv')
+    #
+    #     ## Biigle to Roboflow matching
+    #     matcher.save_to_csv_biigle_to_robo(f'{output_folder}/{image_name}_biigle_to_robo_IoU_{IoU_value}.csv')
+    #
+    #     ## Generate CSV file with the labels from Biigle input
+    #     matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
 
 
 # ########################################################60
 # My function to find all the unique lines in a text file (OK!)
 
-# from my_utils.remove_duplicated_lines import remove_duplicate_lines
-#
-# if __name__ == "__main__":
-#     # Configure logging
-#     logging.basicConfig(
-#         level=logging.INFO,
-#         format='%(asctime)s - %(levelname)s - %(message)s'
-#     )
-#
-#     # Example 1: Basic usage
-#     result = remove_duplicate_lines(
-#         input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/csv1.csv",
-#         output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/",
-#         output_filename="id_image_uniques.csv"
-#     )
-#
-#     if result['success']:
-#         print(f"✓ Success! Removed {result['duplicates_removed']} duplicates")
-#         print(f"  Output saved to: {result['output_file']}")
-#     else:
-#         print(f"✗ Failed: {result['error']}")
+    # from my_utils.remove_duplicated_lines import remove_duplicate_lines
+    #
+    # if __name__ == "__main__":
+    #     # Configure logging
+    #     logging.basicConfig(
+    #         level=logging.INFO,
+    #         format='%(asctime)s - %(levelname)s - %(message)s'
+    #     )
+    #
+    #     # Example 1: Basic usage
+    #     result = remove_duplicate_lines(
+    #         input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/csv1.csv",
+    #         output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/",
+    #         output_filename="id_image_uniques.csv"
+    #     )
+    #
+    #     if result['success']:
+    #         print(f"✓ Success! Removed {result['duplicates_removed']} duplicates")
+    #         print(f"  Output saved to: {result['output_file']}")
+    #     else:
+    #         print(f"✗ Failed: {result['error']}")
 
-    ## Example 2: Custom options
-    # result = remove_duplicate_lines(
-    #     input_file_path="/path/to/input.txt",
-    #     output_directory="/path/to/output",
-    #     case_sensitive=False,
-    #     strip_whitespace=True,
-    #     keep_empty_lines=False,
-    #     output_filename="cleaned_data.txt"
-    # )
+        ## Example 2: Custom options
+        # result = remove_duplicate_lines(
+        #     input_file_path="/path/to/input.txt",
+        #     output_directory="/path/to/output",
+        #     case_sensitive=False,
+        #     strip_whitespace=True,
+        #     keep_empty_lines=False,
+        #     output_filename="cleaned_data.txt"
+        # )
 
 # ########################################################60
 # Function that splits a single JSON file with COCO format, which
 # contains annotations for multiple images, into individual JSON files,
 # with one file per image. (OK!)
 
-# from computer_vision.coco_json_file_splitter import COCOSplitter
-#
-#
-# if __name__ == "__main__":
-#     # Setup logging
-#     logging.basicConfig(
-#         level=logging.INFO,
-#         format='%(asctime)s - %(levelname)s - %(message)s'
-#     )
-#
-#     # Initialize the splitter
-#     splitter = COCOSplitter(
-#         output_directory="/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/individual_jsons/",
-#         include_only_used_categories=True,  # Only include used categories
-#         skip_images_without_annotations=True  # Skip images with no annotations
-#     )
-#
-#     # Split the combined JSON file
-#     results = splitter.split_coco_json("/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/annotations.json")
-#
-#     # Check results
-#     print(f"Successfully created {sum(results.values())} JSON files")
+    # from computer_vision.coco_json_file_splitter import COCOSplitter
+    #
+    #
+    # if __name__ == "__main__":
+    #     # Setup logging
+    #     logging.basicConfig(
+    #         level=logging.INFO,
+    #         format='%(asctime)s - %(levelname)s - %(message)s'
+    #     )
+    #
+    #     # Initialize the splitter
+    #     splitter = COCOSplitter(
+    #         output_directory="/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/individual_jsons/",
+    #         include_only_used_categories=True,  # Only include used categories
+    #         skip_images_without_annotations=True  # Skip images with no annotations
+    #     )
+    #
+    #     # Split the combined JSON file
+    #     results = splitter.split_coco_json("/Users/aavelino/Downloads/AmoebAI/Martin_images_to_robo/annotations.json")
+    #
+    #     # Check results
+    #     print(f"Successfully created {sum(results.values())} JSON files")
 
 # ########################################################60
 # Function to count the number of labeled insects from a CSV file downloaded
 # from Biigle. (OK!)
 
-# from tools.counts_labeled_insects_by_classID import count_and_export_values
-#
-#
-# count_and_export_values(
-#     input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/all_volumnes.csv',
-#     output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/',
-#     column_name='label_id'
-# )
+    # from tools.counts_labeled_insects_by_classID import count_and_export_values
+    #
+    #
+    # count_and_export_values(
+    #     input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/all_volumnes.csv',
+    #     output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/',
+    #     column_name='label_id'
+    # )
 
 # ########################################################60
 # Script to generate a tree diagram from a label tree JSON file exported from
@@ -1710,8 +1714,8 @@ import os
 
 if __name__ == "__main__":
     # You can change these paths to test locally
-    INPUT_FILE = '/Users/aavelino/Downloads/BiosoilAI/Label_trees/2025_12_03/labels.csv'
-    OUTPUT_DIR = '/Users/aavelino/Downloads/BiosoilAI/Label_trees/2025_12_03/'
+    INPUT_FILE = '/Users/aavelino/Downloads/BiosoilAI/Label_trees/2025_12_10/originals/labels.csv'
+    OUTPUT_DIR = '/Users/aavelino/Downloads/BiosoilAI/Label_trees/2025_12_10/'
     OUTPUT_FILE = 'label_tree_diagram.txt'
     OUTPUT_FILE_TABS = 'label_tree_diagram_tabs.txt'
 
