@@ -1357,38 +1357,38 @@ def generate_and_process_batch_configs(
 
 # Draw bounding boxes of images using the info from JSON files.
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # # Setup logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s')
+    # # # Setup logging
+    # logging.basicConfig(level=logging.INFO,
+    #                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # --------------------------------------------------------60
-    # Batch processing, either "coco" and "robo" JSON format (OK!)
+    # # --------------------------------------------------------60
+    # # Batch processing, either "coco" and "robo" JSON format (OK!)
 
-    # # Confidence range to plot
-    # min_confidence = 0.1; max_confidence = 0.4
-    # min_confidence = 0.4; max_confidence = 0.7
+    # # # Confidence range to plot
+    # # min_confidence = 0.1; max_confidence = 0.4
+    # # min_confidence = 0.4; max_confidence = 0.7
 
-    min_confidence = 0.01; max_confidence = 1.0
-    # min_confidence = 0.7; max_confidence = 1.0
-    # min_confidence = 0.05; max_confidence = 1.0
+    # min_confidence = 0.01; max_confidence = 1.0
+    # # min_confidence = 0.7; max_confidence = 1.0
+    # # min_confidence = 0.05; max_confidence = 1.0
 
 
-    # # --------------------------30
-    # # Volumen "051125_C"
+    # # # --------------------------30
+    # # # Volumen "051125_C"
 
-    font_size = 60
-    bbox_color = "white"
-    text_color = "black"
-    show_summary=True,
+    # font_size = 60
+    # bbox_color = "white"
+    # text_color = "black"
+    # show_summary=True,
 
-    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
 
-    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
-    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/bbox"
-    suffix_output_imagefiles = f"_bbox"
-    input_json_format = "coco"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/bbox"
+    # suffix_output_imagefiles = f"_bbox"
+    # input_json_format = "coco"
 
         # # --------------------------30
         # # Amoeba
@@ -1467,27 +1467,27 @@ if __name__ == "__main__":
 
         # # --------------------------30
 
-    drawer = BoundingBoxDrawer()
-    results = drawer.process_batch(
+    # drawer = BoundingBoxDrawer()
+    # results = drawer.process_batch(
 
-        confidence_range=(min_confidence, max_confidence),
+    #     confidence_range=(min_confidence, max_confidence),
 
-        input_image_dir = input_image_dir,
-        input_json_dir  = input_json_dir,
-        output_dir = output_dir,
-        suffix_output_imagefiles=suffix_output_imagefiles,
-        input_json_format = input_json_format,  # "coco" or "roboflow"
+    #     input_image_dir = input_image_dir,
+    #     input_json_dir  = input_json_dir,
+    #     output_dir = output_dir,
+    #     suffix_output_imagefiles=suffix_output_imagefiles,
+    #     input_json_format = input_json_format,  # "coco" or "roboflow"
 
-        font_size = font_size,
-        bbox_color = bbox_color,
-        text_color = text_color,
-        text_position="top",
-        show_center=False,
-        center_dot_size=12,
-        show_id=False,
-        show_label=True,
-        show_summary=show_summary,
-    )
+    #     font_size = font_size,
+    #     bbox_color = bbox_color,
+    #     text_color = text_color,
+    #     text_position="top",
+    #     show_center=False,
+    #     center_dot_size=12,
+    #     show_id=False,
+    #     show_label=True,
+    #     show_summary=show_summary,
+    # )
 
         # ========================================================60
         # Single file
@@ -1713,17 +1713,16 @@ if __name__ == "__main__":
     #     print(f"Successfully created {sum(results.values())} JSON files")
 
 # ########################################################60
-# Function to count the number of labeled insects from a CSV file downloaded
+# Count the number of labeled insects from a CSV file downloaded
 # from Biigle. (OK!)
 
-    # from tools.counts_labeled_insects_by_classID import count_and_export_values
-    #
-    #
-    # count_and_export_values(
-    #     input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/all_volumnes.csv',
-    #     output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/sandbox_tmp/',
-    #     column_name='label_id'
-    # )
+from tools.counts_labeled_insects_by_classID import count_and_export_values
+
+count_and_export_values(
+    input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_biigle_report/051125-c_acari_collembola_subgroups_relabeled.csv',
+    output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_biigle_report',
+    column_name='label_id'
+)
 
 # ########################################################60
 # Script to generate a tree diagram from a label tree JSON file exported from

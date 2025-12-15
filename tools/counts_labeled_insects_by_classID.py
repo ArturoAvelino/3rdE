@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import sys
+from pathlib import Path
 
 
 def count_and_export_values(input_file_path, output_directory, column_name):
@@ -40,9 +41,9 @@ def count_and_export_values(input_file_path, output_directory, column_name):
         # Ensure output directory exists
         os.makedirs(output_directory, exist_ok=True)
 
-        # Construct output filename: counts_<original_filename>
-        input_filename = os.path.basename(input_file_path)
-        output_filename = f"counts_{input_filename}"
+        # Construct output filename: "<original_filename>_counts"
+        input_filename = Path(os.path.basename(input_file_path))
+        output_filename = f"{input_filename.stem}_counts.csv"
         output_path = os.path.join(output_directory, output_filename)
 
         # Export to CSV (without the pandas index)
