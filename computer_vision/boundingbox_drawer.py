@@ -1237,7 +1237,7 @@ class RoboflowProcessor:
 
     def extract_bbox_data(self, json_data: Dict, image_size: Tuple[int, int],
                           show_id: bool = True, show_confidence: bool = True) -> \
-    List[Dict]:
+            List[Dict]:
         """
         Extract bounding box data from Roboflow format JSON.
 
@@ -1257,10 +1257,18 @@ class RoboflowProcessor:
             # Extract the first element from the array
             first_element = json_data[0]
             # Navigate to predictions -> predictions
-            predictions = first_element.get('predictions', {}).get('predictions', [])
+            predictions = first_element.get('predictions', {}).get(
+                'predictions', [])
+        elif isinstance(json_data, dict):
+            # Check for nested predictions: {"predictions": {"predictions": [...]}}
+            top_predictions = json_data.get('predictions', {})
+            if isinstance(top_predictions, dict):
+                predictions = top_predictions.get('predictions', [])
+            else:
+                # Fallback to old format: {"predictions": [...]}
+                predictions = top_predictions
         else:
-            # Fallback to old format for backward compatibility
-            predictions = json_data.get('predictions', [])
+            predictions = []
 
         for prediction in predictions:
             try:

@@ -1379,9 +1379,9 @@ if __name__ == "__main__":
 
     # min_confidence = 0.1; max_confidence = 0.4
     # min_confidence = 0.4; max_confidence = 0.7
-    min_confidence = 0.01; max_confidence = 1.0
+    # min_confidence = 0.01; max_confidence = 1.0
     # min_confidence = 0.7; max_confidence = 1.0
-    # min_confidence = 0.05; max_confidence = 1.0
+    min_confidence = 0.1; max_confidence = 1.0
 
 
     # # --------------------------30
@@ -1394,10 +1394,10 @@ if __name__ == "__main__":
 
     input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images"
 
-    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json"
-    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/2_bboxes_from_biigle_segm"
+    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json"
+    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/bboxes/bboxes_c_{min_confidence}-{max_confidence}"
     suffix_output_imagefiles = f"_bbox"
-    input_json_format = "coco"
+    input_json_format = "roboflow"
 
     # # --------------------------30
     # # Test, valid, train datasets
