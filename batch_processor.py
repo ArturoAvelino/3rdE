@@ -937,21 +937,21 @@ def generate_and_process_batch_configs(
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
 
     ## ========================================================60
     ## Batch processor
 
-    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+    # from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
 
 
-    processor = BiigleCSV_to_COCO_JSON(
+    # processor = BiigleCSV_to_COCO_JSON(
 
-        csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/image_annotations_with_label_column.csv",
-        json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/label_trees.json",
-        images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images",  # for cropping
-        filename_pattern = "*.jpg",
-        output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/crops", # output from cropping
+    #     csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/image_annotations_with_label_column.csv",
+    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/label_trees.json",
+    #     images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images",  # for cropping
+    #     filename_pattern = "*.jpg",
+    #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/crops", # output from cropping
 
 
         # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/051125-c_acari_collembola_subgroups_relabeled.csv",
@@ -974,13 +974,16 @@ if __name__ == "__main__":
         # filename_pattern="capt*.jpg",
         # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
 
-    )
+    # # Process all objects. Create the individual crops and individual JSON files
+    # # for each object in the CSV file.
+    # # processor.process_all_objects()
 
-    # Process all objects
-    processor.process_all_objects()
-
-    # Merge JSON files and save them into a "output/merged_json/" folder
-    processor.merge_json_files_by_image_id()
+    # # Merge JSON files and save them into the "output/merged_json/" folder.
+    # # This python command can be run independently of the previous step, i.e.,
+    # # the "process_all_objects()" step.
+    # # I can directly generate the merged JSON file from the Biigle CSV file,
+    # # i.e.,  without having to compute first the individual JSON file for each object.
+    # processor.merge_json_files_by_image_id()
 
 
         # --------------------------------------------------------60
@@ -1363,26 +1366,41 @@ if __name__ == "__main__":
 
 # Draw bounding boxes of images using the info from JSON files.
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-    # # # Setup logging
-    # logging.basicConfig(level=logging.INFO,
-    #                     format='%(asctime)s - %(levelname)s - %(message)s')
+    # # Setup logging
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # # --------------------------------------------------------60
-    # # Batch processing, either "coco" and "robo" JSON format (OK!)
+    # --------------------------------------------------------60
+    # Batch processing, either "coco" and "robo" JSON format (OK!)
 
-    # # # Confidence range to plot
+    # # Confidence range to plot
 
-    # # min_confidence = 0.1; max_confidence = 0.4
-    # # min_confidence = 0.4; max_confidence = 0.7
-    # min_confidence = 0.01; max_confidence = 1.0
-    # # min_confidence = 0.7; max_confidence = 1.0
-    # # min_confidence = 0.05; max_confidence = 1.0
+    # min_confidence = 0.1; max_confidence = 0.4
+    # min_confidence = 0.4; max_confidence = 0.7
+    min_confidence = 0.01; max_confidence = 1.0
+    # min_confidence = 0.7; max_confidence = 1.0
+    # min_confidence = 0.05; max_confidence = 1.0
 
 
-    # # # --------------------------30
-    # # # Test, valid, train datasets
+    # # --------------------------30
+    # # Volumen "281125_C"
+
+    font_size = 60
+    bbox_color = "white"
+    text_color = "black"
+    show_summary=True,
+
+    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images"
+
+    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json"
+    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/2_bboxes_from_biigle_segm"
+    suffix_output_imagefiles = f"_bbox"
+    input_json_format = "coco"
+
+    # # --------------------------30
+    # # Test, valid, train datasets
 
     # font_size = 60
     # bbox_color = "white"
@@ -1396,7 +1414,6 @@ if __name__ == "__main__":
 
     # suffix_output_imagefiles = f"_bbox"
     # input_json_format = "coco"
-
 
     # # --------------------------30
     # # Volumen "051125_C"
@@ -1490,27 +1507,27 @@ if __name__ == "__main__":
 
         # # --------------------------30
 
-    # drawer = BoundingBoxDrawer()
-    # results = drawer.process_batch(
+    drawer = BoundingBoxDrawer()
+    results = drawer.process_batch(
 
-    #     confidence_range=(min_confidence, max_confidence),
+        confidence_range=(min_confidence, max_confidence),
 
-    #     input_image_dir = input_image_dir,
-    #     input_json_dir  = input_json_dir,
-    #     output_dir = output_dir,
-    #     suffix_output_imagefiles=suffix_output_imagefiles,
-    #     input_json_format = input_json_format,  # "coco" or "roboflow"
+        input_image_dir = input_image_dir,
+        input_json_dir  = input_json_dir,
+        output_dir = output_dir,
+        suffix_output_imagefiles=suffix_output_imagefiles,
+        input_json_format = input_json_format,  # "coco" or "roboflow"
 
-    #     font_size = font_size,
-    #     bbox_color = bbox_color,
-    #     text_color = text_color,
-    #     text_position="top",
-    #     show_center=False,
-    #     center_dot_size=12,
-    #     show_id=False,
-    #     show_label=True,
-    #     show_summary=show_summary,
-    # )
+        font_size = font_size,
+        bbox_color = bbox_color,
+        text_color = text_color,
+        text_position="top",
+        show_center=False,
+        center_dot_size=12,
+        show_id=False,
+        show_label=True,
+        show_summary=show_summary,
+    )
 
         # ========================================================60
         # Single file

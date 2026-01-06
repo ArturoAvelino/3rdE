@@ -1191,7 +1191,7 @@ class BiigleCSV_to_COCO_JSON:
                                     in output_crops_path.
 
         NOTE:
-        All the lines with the comment “# to robo” are temporary and used to
+        All the lines with the comment “# to robo” are used to
         create the output JSON files to upload to Robo. They contain the insect
         ID instead of the insect species’s name in the “categories”/“name”
         section of the generated JSON file.
@@ -1244,8 +1244,6 @@ class BiigleCSV_to_COCO_JSON:
                         f"Failed to merge JSON for image_id {image_id}: {e}")
                     continue
                 # <-----
-
-
 
             self.logger.info(
                 f"JSON merging complete: {processed_images}/{total_images} image groups processed successfully")
