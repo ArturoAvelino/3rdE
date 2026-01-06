@@ -1366,38 +1366,38 @@ def generate_and_process_batch_configs(
 
 # Draw bounding boxes of images using the info from JSON files.
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # # Setup logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s')
+    # logging.basicConfig(level=logging.INFO,
+    #                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # --------------------------------------------------------60
-    # Batch processing, either "coco" and "robo" JSON format (OK!)
+    # # --------------------------------------------------------60
+    # # Batch processing, either "coco" and "robo" JSON format (OK!)
 
-    # # Confidence range to plot
+    # # # Confidence range to plot
 
-    # min_confidence = 0.1; max_confidence = 0.4
-    # min_confidence = 0.4; max_confidence = 0.7
-    # min_confidence = 0.01; max_confidence = 1.0
-    # min_confidence = 0.7; max_confidence = 1.0
-    min_confidence = 0.1; max_confidence = 1.0
+    # # min_confidence = 0.1; max_confidence = 0.4
+    # # min_confidence = 0.4; max_confidence = 0.7
+    # # min_confidence = 0.01; max_confidence = 1.0
+    # # min_confidence = 0.7; max_confidence = 1.0
+    # min_confidence = 0.1; max_confidence = 1.0
 
 
-    # # --------------------------30
-    # # Volumen "281125_C"
+    # # # --------------------------30
+    # # # Volumen "281125_C"
 
-    font_size = 60
-    bbox_color = "white"
-    text_color = "black"
-    show_summary=True,
+    # font_size = 60
+    # bbox_color = "white"
+    # text_color = "black"
+    # show_summary=True,
 
-    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images"
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images"
 
-    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json"
-    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/bboxes/bboxes_c_{min_confidence}-{max_confidence}"
-    suffix_output_imagefiles = f"_bbox"
-    input_json_format = "roboflow"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/bboxes/bboxes_c_{min_confidence}-{max_confidence}"
+    # suffix_output_imagefiles = f"_bbox"
+    # input_json_format = "roboflow"
 
     # # --------------------------30
     # # Test, valid, train datasets
@@ -1410,23 +1410,8 @@ if __name__ == "__main__":
     # dataset = "train"  # options: (test, valid, train)
     # input_image_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
     # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/bbox_{dataset}"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images /bbox_{dataset}"
 
-    # suffix_output_imagefiles = f"_bbox"
-    # input_json_format = "coco"
-
-    # # --------------------------30
-    # # Volumen "051125_C"
-
-    # font_size = 60
-    # bbox_color = "white"
-    # text_color = "black"
-    # show_summary=True,
-
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/3_data_augment/rotated"
-
-    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/3_data_augment/rotated"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/3_data_augment/bbox"
     # suffix_output_imagefiles = f"_bbox"
     # input_json_format = "coco"
 
@@ -1507,27 +1492,27 @@ if __name__ == "__main__":
 
         # # --------------------------30
 
-    drawer = BoundingBoxDrawer()
-    results = drawer.process_batch(
+    # drawer = BoundingBoxDrawer()
+    # results = drawer.process_batch(
 
-        confidence_range=(min_confidence, max_confidence),
+    #     confidence_range=(min_confidence, max_confidence),
 
-        input_image_dir = input_image_dir,
-        input_json_dir  = input_json_dir,
-        output_dir = output_dir,
-        suffix_output_imagefiles=suffix_output_imagefiles,
-        input_json_format = input_json_format,  # "coco" or "roboflow"
+    #     input_image_dir = input_image_dir,
+    #     input_json_dir  = input_json_dir,
+    #     output_dir = output_dir,
+    #     suffix_output_imagefiles=suffix_output_imagefiles,
+    #     input_json_format = input_json_format,  # "coco" or "roboflow"
 
-        font_size = font_size,
-        bbox_color = bbox_color,
-        text_color = text_color,
-        text_position="top",
-        show_center=False,
-        center_dot_size=12,
-        show_id=False,
-        show_label=True,
-        show_summary=show_summary,
-    )
+    #     font_size = font_size,
+    #     bbox_color = bbox_color,
+    #     text_color = text_color,
+    #     text_position="top",
+    #     show_center=False,
+    #     center_dot_size=12,
+    #     show_id=False,
+    #     show_label=True,
+    #     show_summary=show_summary,
+    # )
 
         # ========================================================60
         # Single file
@@ -1632,36 +1617,37 @@ if __name__ == "__main__":
 # ========================================================60
 # Batch processing (OK)
 
-    # if __name__ == "__main__":
-    #
-    #     from computer_vision.IoU_batch_processor import BatchIoUProcessor
-    #
-    #     # Initialize with custom patterns
-    #     processor = BatchIoUProcessor(
-    #         biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json",
-    #         biigle_pattern = "*.json",
-    #
-    #         roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/3_classification/y11_f_4k6k_classes/settings_1/JSONs/",
-    #         roboflow_pattern = "*.json",
-    #
-    #         output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/2_IoU_biigle_vs_yolo",
-    #
-    #         iou_threshold=0.5
-    #     )
-    #
-    #     # Find and inspect pairs before processing
-    #     pairs = processor.find_file_pairs()
-    #     print(f"Found {len(pairs)} matching pairs")
-    #
-    #     # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
-    #     results = processor.process_batch(output_format="robo_to_biigle")
-    #     processor.generate_summary_report(results) # Generate summary report
-    #
-    #     results = processor.process_batch(output_format="biigle_to_robo")
-    #     processor.generate_summary_report(results) # Generate summary report
-    #
-    #     results = processor.process_batch(output_format="for_biigle")
-    #     processor.generate_summary_report(results) # Generate summary report
+if __name__ == "__main__":
+
+    from computer_vision.IoU_batch_processor import BatchIoUProcessor
+
+    # Initialize with custom patterns
+    processor = BatchIoUProcessor(
+
+        biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json_robo",
+        biigle_pattern = "*.json",
+
+        roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json",
+        roboflow_pattern = "*.json",
+
+        output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/4_IoU_biigle_vs_yolo",
+
+        iou_threshold=0.5
+    )
+
+    # Find and inspect pairs before processing
+    pairs = processor.find_file_pairs()
+    print(f"Found {len(pairs)} matching pairs")
+
+    # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
+    results = processor.process_batch(output_format="robo_to_biigle")
+    processor.generate_summary_report(results) # Generate summary report
+
+    results = processor.process_batch(output_format="biigle_to_robo")
+    processor.generate_summary_report(results) # Generate summary report
+
+    results = processor.process_batch(output_format="for_biigle")
+    processor.generate_summary_report(results) # Generate summary report
 
     # ========================================================60
     # Single pair of files (OK!)

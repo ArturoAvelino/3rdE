@@ -77,12 +77,27 @@ class IoUMetric_for_BBoxMatch:
         # Load Roboflow data
         with open(self.roboflow_json_path, 'r') as f:
             roboflow_raw = json.load(f)
-        
+
         # Extract predictions from Roboflow format
         self.roboflow_data = []
-        for item in roboflow_raw:
-            if 'predictions' in item and 'predictions' in item['predictions']:
-                for pred in item['predictions']['predictions']:
+
+        # Handle both single dictionary (standard Roboflow) and list of dictionaries
+        roboflow_items = roboflow_raw if isinstance(roboflow_raw, list) else [
+            roboflow_raw]
+
+        for item in roboflow_items:
+            if isinstance(item, dict) and 'predictions' in item:
+                # Some formats have nested predictions, others don't
+                preds_source = item['predictions']
+                if isinstance(preds_source,
+                              dict) and 'predictions' in preds_source:
+                    actual_predictions = preds_source['predictions']
+                elif isinstance(preds_source, list):
+                    actual_predictions = preds_source
+                else:
+                    continue
+
+                for pred in actual_predictions:
                     self.roboflow_data.append({
                         'detection_id': pred['detection_id'],
                         'bbox': self._roboflow_to_minmax(
@@ -91,7 +106,7 @@ class IoUMetric_for_BBoxMatch:
                         'class': pred['class'],
                         'confidence': pred['confidence']
                     })
-        
+
         # Load Biigle data
         with open(self.biigle_json_path, 'r') as f:
             biigle_raw = json.load(f)
