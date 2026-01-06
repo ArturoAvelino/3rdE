@@ -280,15 +280,17 @@ class BiigleCSV_to_COCO_JSON:
         # Set up logging
         self._setup_logging()
 
+        # Load category names if label tree provided
+        self.category_names = self._load_category_names() if json_label_tree_path else {}
+
+        # ---------->
         # Load image mapping from CSV instead of hardcoded values
-        self.image_mapping = self._create_image_mapping_from_csv()
+        # self.image_mapping = self._create_image_mapping_from_csv()
 
         # For the hardcoded images ID's with their image filenames use instead
         # the following code line (uncomment it and comment the line above):
-        # self.image_mapping = self._create_image_mapping_hardcoded()
-
-        # Load category names if label tree provided
-        self.category_names = self._load_category_names() if json_label_tree_path else {}
+        self.image_mapping = self._create_image_mapping_hardcoded()
+        # <----------
 
 
     def _setup_logging(self):
@@ -322,16 +324,33 @@ class BiigleCSV_to_COCO_JSON:
             with open(self.json_label_tree_path, 'r', encoding='utf-8') as f:
                 labels_data = json.load(f)
 
-            # Extract labels and create mapping
-            labels_list = labels_data.get('labels', [])
-            for label in labels_list:
-                category_id = label.get('id')
-                category_name = label.get('name')
-                if category_id is not None and category_name:
-                    category_names[category_id] = category_name
+                # Extract labels and create mapping
+                # Handle both dict with 'labels' key and direct list format
+                if isinstance(labels_data, dict):
+                    labels_list = labels_data.get('labels', [])
+                elif isinstance(labels_data, list):
+                    labels_list = labels_data
+                else:
+                    labels_list = []
 
-            self.logger.info(
-                f"Loaded {len(category_names)} category names from {self.json_label_tree_path}")
+                for item in labels_list:
+                    # Check if this is a label tree object containing a list of labels
+                    if isinstance(item, dict) and 'labels' in item:
+                        inner_labels = item.get('labels', [])
+                        for label in inner_labels:
+                            category_id = label.get('id')
+                            category_name = label.get('name')
+                            if category_id is not None and category_name:
+                                category_names[category_id] = category_name
+                    # Or if it's a direct label object
+                    elif isinstance(item, dict):
+                        category_id = item.get('id')
+                        category_name = item.get('name')
+                        if category_id is not None and category_name:
+                            category_names[category_id] = category_name
+
+                self.logger.info(
+                    f"Loaded {len(category_names)} category names from {self.json_label_tree_path}")
 
         except Exception as e:
             self.logger.error(
@@ -437,130 +456,183 @@ class BiigleCSV_to_COCO_JSON:
             raise
 
 
-    # def _create_image_mapping_hardcoded(self):
-    #     """
-    #     Create mapping from image_id to filename based on the provided mapping.
+    def _create_image_mapping_hardcoded(self):
+        """
+        Create mapping from image_id to filename based on the provided mapping.
 
-    #     Returns:
-    #         dict: Mapping from image_id to filename
-    #     """
-    #     return {
+        Returns:
+            dict: Mapping from image_id to filename
+        """
+        return {
 
-    #         # Volume 2
-    #         3: "capt0004.jpg",
-    #         4: "capt0010.jpg",
-    #         5: "capt0011.jpg",
-    #         6: "capt0012.jpg",
-    #         7: "capt0013.jpg",
-    #         8: "capt0017.jpg",
-    #         9: "capt0018.jpg",
-    #         10: "capt0019.jpg",
-    #         11: "capt0020.jpg",
-    #         12: "capt0021.jpg",
-    #         13: "capt0022.jpg",
-    #         14: "capt0025.jpg",
-    #         15: "capt0026.jpg",
-    #         16: "capt0027.jpg",
-    #         17: "capt0028.jpg",
-    #         18: "capt0029.jpg",
-    #         19: "capt0030.jpg",
-    #         20: "capt0033.jpg",
-    #         21: "capt0034.jpg",
+            # Volume 2
+                # 3: "capt0004.jpg",
+                # 4: "capt0010.jpg",
+                # 5: "capt0011.jpg",
+                # 6: "capt0012.jpg",
+                # 7: "capt0013.jpg",
+                # 8: "capt0017.jpg",
+                # 9: "capt0018.jpg",
+                # 10: "capt0019.jpg",
+                # 11: "capt0020.jpg",
+                # 12: "capt0021.jpg",
+                # 13: "capt0022.jpg",
+                # 14: "capt0025.jpg",
+                # 15: "capt0026.jpg",
+                # 16: "capt0027.jpg",
+                # 17: "capt0028.jpg",
+                # 18: "capt0029.jpg",
+                # 19: "capt0030.jpg",
+                # 20: "capt0033.jpg",
+                # 21: "capt0034.jpg",
 
-    #         # Volume 3
-    #         105: "capt0035.jpg",
-    #         106: "capt0036.jpg",
-    #         107: "capt0037.jpg",
-    #         108: "capt0038.jpg",
-    #         109: "capt0039.jpg",
-    #         110: "capt0040.jpg",
-    #         111: "capt0041.jpg",
-    #         112: "capt0042.jpg",
-    #         113: "capt0043.jpg",
-    #         114: "capt0044.jpg",
-    #         115: "capt0045.jpg",
-    #         116: "capt0046.jpg",
-    #         117: "capt0047.jpg",
-    #         118: "capt0048.jpg",
-    #         119: "capt0049.jpg",
-    #         120: "capt0050.jpg",
-    #         121: "capt0051.jpg",
-    #         122: "capt0052.jpg",
-    #         123: "capt0053.jpg",
-    #         124: "capt0054.jpg",
-    #         125: "capt0055.jpg",
-    #         126: "capt0057.jpg",
-    #         127: "capt0058.jpg",
-    #         128: "capt0059.jpg",
-    #         129: "capt0060.jpg",
-    #         130: "capt0061.jpg",
-    #         131: "capt0062.jpg",
-    #         132: "capt0064.jpg",
-    #         133: "capt0065.jpg",
-    #         134: "capt0066.jpg",
-    #         135: "capt0067.jpg",
-    #         136: "capt0068.jpg",
-    #         137: "capt0069.jpg",
-    #         138: "capt0070.jpg",
-    #         139: "capt0073.jpg",
-    #         140: "capt0074.jpg",
-    #         141: "capt0075.jpg",
-    #         142: "capt0076.jpg",
-    #         143: "capt0077.jpg",
-    #         144: "capt0078.jpg",
-    #         145: "capt0083.jpg",
-    #         146: "capt0084.jpg",
-    #         147: "capt0086.jpg",
-    #         148: "capt0090.jpg",
-    #         149: "capt0091.jpg",
+            # Volume 3
+                # 105: "capt0035.jpg",
+                # 106: "capt0036.jpg",
+                # 107: "capt0037.jpg",
+                # 108: "capt0038.jpg",
+                # 109: "capt0039.jpg",
+                # 110: "capt0040.jpg",
+                # 111: "capt0041.jpg",
+                # 112: "capt0042.jpg",
+                # 113: "capt0043.jpg",
+                # 114: "capt0044.jpg",
+                # 115: "capt0045.jpg",
+                # 116: "capt0046.jpg",
+                # 117: "capt0047.jpg",
+                # 118: "capt0048.jpg",
+                # 119: "capt0049.jpg",
+                # 120: "capt0050.jpg",
+                # 121: "capt0051.jpg",
+                # 122: "capt0052.jpg",
+                # 123: "capt0053.jpg",
+                # 124: "capt0054.jpg",
+                # 125: "capt0055.jpg",
+                # 126: "capt0057.jpg",
+                # 127: "capt0058.jpg",
+                # 128: "capt0059.jpg",
+                # 129: "capt0060.jpg",
+                # 130: "capt0061.jpg",
+                # 131: "capt0062.jpg",
+                # 132: "capt0064.jpg",
+                # 133: "capt0065.jpg",
+                # 134: "capt0066.jpg",
+                # 135: "capt0067.jpg",
+                # 136: "capt0068.jpg",
+                # 137: "capt0069.jpg",
+                # 138: "capt0070.jpg",
+                # 139: "capt0073.jpg",
+                # 140: "capt0074.jpg",
+                # 141: "capt0075.jpg",
+                # 142: "capt0076.jpg",
+                # 143: "capt0077.jpg",
+                # 144: "capt0078.jpg",
+                # 145: "capt0083.jpg",
+                # 146: "capt0084.jpg",
+                # 147: "capt0086.jpg",
+                # 148: "capt0090.jpg",
+                # 149: "capt0091.jpg",
 
-    #         # Volume 4
-    #         196: "BM13_B_margo_r1c2.jpg",
-    #         197: "BM13_B_margo_r1c3.jpg",
-    #         198: "BM13_B_margo_r1c5.jpg",
-    #         199: "BM13_B_margo_r2c2.jpg",
-    #         200: "BM13_B_margo_r2c3.jpg",
-    #         201: "BM13_B_margo_r2c4.jpg",
-    #         202: "BM13_B_margo_r2c5.jpg",
-    #         203: "BM13_B_margo_r2c6.jpg",
-    #         205: "BM13_B_margo_r3c2.jpg",
-    #         206: "BM13_B_margo_r3c3.jpg",
-    #         207: "BM13_B_margo_r3c5.jpg",
-    #         208: "BM13_B_margo_r3c6.jpg",
-    #         209: "BM13_B_margo_r4c0.jpg",
-    #         210: "BM13_B_margo_r4c1.jpg",
-    #         211: "BM13_B_margo_r4c2.jpg",
-    #         212: "BM13_B_margo_r4c3.jpg",
-    #         213: "BM13_B_margo_r4c4.jpg",
-    #         214: "BM13_B_margo_r4c5.jpg",
-    #         215: "BM13_B_margo_r4c7.jpg",
-    #         216: "BM13_B_margo_r5c1.jpg",
-    #         217: "BM13_B_margo_r5c2.jpg",
-    #         218: "BM13_B_margo_r5c3.jpg",
-    #         219: "BM13_B_margo_r5c4.jpg",
-    #         220: "BM13_B_margo_r5c6.jpg",
-    #         221: "BM13_B_margo_r6c1.jpg",
-    #         222: "BM13_B_margo_r6c2.jpg",
-    #         223: "BM13_B_margo_r6c3.jpg",
-    #         224: "BM13_B_margo_r6c5.jpg",
-    #         225: "BM13_B_margo_r7c1.jpg",
-    #         226: "BM13_B_margo_r7c2.jpg",
-    #         227: "BM13_B_margo_r7c4.jpg",
-    #         228: "BM13_B_margo_r7c5.jpg",
-    #         229: "BM13_B_margo_r7c7.jpg",
-    #         230: "BM13_B_margo_r8c2.jpg",
-    #         231: "BM13_B_margo_r8c3.jpg",
-    #         232: "BM13_B_margo_r8c4.jpg",
-    #         233: "BM13_B_margo_r8c5.jpg",
-    #         234: "BM13_B_margo_r8c6.jpg",
-    #         235: "BM13_B_margo_r9c1.jpg",
-    #         236: "BM13_B_margo_r9c2.jpg",
-    #         237: "BM13_B_margo_r9c4.jpg",
-    #         238: "BM13_B_margo_r9c5.jpg",
-    #         239: "BM13_B_margo_r9c6.jpg",
-    #         240: "BM13_B_margo_r10c2.jpg",
-    #         241: "BM13_B_margo_r11c2.jpg",
-    #     }
+            # Volume 4
+                # 196: "BM13_B_margo_r1c2.jpg",
+                # 197: "BM13_B_margo_r1c3.jpg",
+                # 198: "BM13_B_margo_r1c5.jpg",
+                # 199: "BM13_B_margo_r2c2.jpg",
+                # 200: "BM13_B_margo_r2c3.jpg",
+                # 201: "BM13_B_margo_r2c4.jpg",
+                # 202: "BM13_B_margo_r2c5.jpg",
+                # 203: "BM13_B_margo_r2c6.jpg",
+                # 205: "BM13_B_margo_r3c2.jpg",
+                # 206: "BM13_B_margo_r3c3.jpg",
+                # 207: "BM13_B_margo_r3c5.jpg",
+                # 208: "BM13_B_margo_r3c6.jpg",
+                # 209: "BM13_B_margo_r4c0.jpg",
+                # 210: "BM13_B_margo_r4c1.jpg",
+                # 211: "BM13_B_margo_r4c2.jpg",
+                # 212: "BM13_B_margo_r4c3.jpg",
+                # 213: "BM13_B_margo_r4c4.jpg",
+                # 214: "BM13_B_margo_r4c5.jpg",
+                # 215: "BM13_B_margo_r4c7.jpg",
+                # 216: "BM13_B_margo_r5c1.jpg",
+                # 217: "BM13_B_margo_r5c2.jpg",
+                # 218: "BM13_B_margo_r5c3.jpg",
+                # 219: "BM13_B_margo_r5c4.jpg",
+                # 220: "BM13_B_margo_r5c6.jpg",
+                # 221: "BM13_B_margo_r6c1.jpg",
+                # 222: "BM13_B_margo_r6c2.jpg",
+                # 223: "BM13_B_margo_r6c3.jpg",
+                # 224: "BM13_B_margo_r6c5.jpg",
+                # 225: "BM13_B_margo_r7c1.jpg",
+                # 226: "BM13_B_margo_r7c2.jpg",
+                # 227: "BM13_B_margo_r7c4.jpg",
+                # 228: "BM13_B_margo_r7c5.jpg",
+                # 229: "BM13_B_margo_r7c7.jpg",
+                # 230: "BM13_B_margo_r8c2.jpg",
+                # 231: "BM13_B_margo_r8c3.jpg",
+                # 232: "BM13_B_margo_r8c4.jpg",
+                # 233: "BM13_B_margo_r8c5.jpg",
+                # 234: "BM13_B_margo_r8c6.jpg",
+                # 235: "BM13_B_margo_r9c1.jpg",
+                # 236: "BM13_B_margo_r9c2.jpg",
+                # 237: "BM13_B_margo_r9c4.jpg",
+                # 238: "BM13_B_margo_r9c5.jpg",
+                # 239: "BM13_B_margo_r9c6.jpg",
+                # 240: "BM13_B_margo_r10c2.jpg",
+                # 241: "BM13_B_margo_r11c2.jpg",
+
+            # Volume 281125_C
+            1: "C06-F_r10c2.jpg",
+            2: "C06-F_r10c5.jpg",
+            3: "C06-F_r1c6.jpg",
+            4: "C06-F_r2c1.jpg",
+            5: "C06-F_r2c2.jpg",
+            6: "C06-F_r3c1.jpg",
+            7: "C06-F_r3c5.jpg",
+            8: "C06-F_r4c4.jpg",
+            9: "C06-F_r4c5.jpg",
+            10: "C06-F_r4c6.jpg",
+            11: "C06-F_r5c3.jpg",
+            12: "C06-F_r5c4.jpg",
+            13: "C06-F_r6c1.jpg",
+            14: "C06-F_r6c3.jpg",
+            15: "C06-F_r6c4.jpg",
+            16: "C06-F_r6c5.jpg",
+            17: "C06-F_r7c4.jpg",
+            18: "C06-F_r7c5.jpg",
+            19: "C06-F_r8c5.jpg",
+            20: "C06-F_r8c6.jpg",
+            21: "C06-F_r8c7.jpg",
+            22: "C06-F_r9c2.jpg",
+            23: "C06-G_r1c3.jpg",
+            24: "C06-G_r1c4.jpg",
+            25: "C06-G_r1c5.jpg",
+            26: "C06-G_r2c1.jpg",
+            27: "C06-G_r2c5.jpg",
+            28: "C06-G_r3c1.jpg",
+            29: "C06-G_r3c2.jpg",
+            30: "C06-G_r3c3.jpg",
+            31: "C06-G_r4c3.jpg",
+            32: "C06-G_r4c4.jpg",
+            33: "C06-G_r4c5.jpg",
+            34: "C06-G_r4c6.jpg",
+            35: "C06-G_r5c1.jpg",
+            36: "C06-G_r5c2.jpg",
+            37: "C06-G_r5c3.jpg",
+            38: "C06-G_r5c4.jpg",
+            39: "C06-G_r6c2.jpg",
+            40: "C06-G_r6c4.jpg",
+            41: "C06-G_r6c5.jpg",
+            42: "C06-G_r7c2.jpg",
+            43: "C06-G_r7c3.jpg",
+            44: "C06-G_r7c4.jpg",
+            45: "C06-G_r8c1.jpg",
+            46: "C06-G_r8c3.jpg",
+            47: "C06-G_r8c4.jpg",
+            48: "C06-G_r9c3.jpg",
+            49: "C06-G_r9c4.jpg",
+            50: "C06-G_r9c5.jpg",
+
+        }
 
 
     def get_image_dimensions(self, image_path):
@@ -815,8 +887,8 @@ class BiigleCSV_to_COCO_JSON:
             ],
             "annotations": [
                 {
-                    # "id": int(row_data['id']), # when reading Biigle "exported" file
-                    "id": int(row_data['annotation_label_id']), # when reading Biigle "report" file
+                    "id": int(row_data['id']), # when reading Biigle "exported" file
+                    # "id": int(row_data['annotation_label_id']), # when reading Biigle "report" file
                     "image_id": image_id,
                     "category_id": category_id,
                     "bbox": [
@@ -905,8 +977,8 @@ class BiigleCSV_to_COCO_JSON:
 
                 # Create annotation entry
                 annotation = {
-                    # "id": int(obj_data['id']), # when reading Biigle "exported" file
-                    "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
+                    "id": int(obj_data['id']), # when reading Biigle "exported" file
+                    # "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
                     "image_id": image_id,
                     "category_id": int(obj_data['label_id']),
                     "bbox": [
@@ -1024,8 +1096,8 @@ class BiigleCSV_to_COCO_JSON:
 
                 # Create annotation entry
                 annotation = {
-                    # "id": int(obj_data['id']), # when reading Biigle "exported" file
-                    "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
+                    "id": int(obj_data['id']), # when reading Biigle "exported" file
+                    # "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
                     "image_id": image_id,
                     "category_id": int(obj_data['label_id']),
                     "bbox": [
@@ -1200,8 +1272,8 @@ class BiigleCSV_to_COCO_JSON:
         """
         try:
             # Get basic information from row data
-            # object_id = row_data['id'] # when reading Biigle "exported" file
-            object_id = row_data['annotation_label_id']  # when reading Biigle "report" file
+            object_id = row_data['id'] # when reading Biigle "exported" file
+            # object_id = row_data['annotation_label_id']  # when reading Biigle "report" file
             label_id = row_data['label_id']
             image_id = int(row_data['image_id'])
 
@@ -1295,16 +1367,16 @@ class BiigleCSV_to_COCO_JSON:
         """
         try:
             # Validate required fields
-            # required_fields = ['id', 'label_id', 'image_id', 'points'] # when reading Biigle "exported" file
-            required_fields = ['annotation_label_id', 'label_id', 'image_id', 'points'] # when reading Biigle "report" file
+            required_fields = ['id', 'label_id', 'image_id', 'points'] # when reading Biigle "exported" file
+            # required_fields = ['annotation_label_id', 'label_id', 'image_id', 'points'] # when reading Biigle "report" file
 
             for field in required_fields:
                 if field not in row_data:
                     raise ValueError(
                         f"Required field '{field}' missing from row data")
 
-            # object_id = row_data['id'] # when reading Biigle "exported" file
-            object_id = row_data['annotation_label_id'] # when reading Biigle "report" file
+            object_id = row_data['id'] # when reading Biigle "exported" file
+            # object_id = row_data['annotation_label_id'] # when reading Biigle "report" file
             label_id = row_data['label_id']
             image_id = int(row_data['image_id'])
 
@@ -1353,8 +1425,8 @@ class BiigleCSV_to_COCO_JSON:
 
         except Exception as e:
             self.logger.error(
-                # f"Error processing object {row_data.get('id', 'unknown')}: {e}") # when reading Biigle "exported" file
-                f"Error processing object {row_data.get('annotation_label_id', 'unknown')}: {e}") # when reading Biigle "report" file
+                f"Error processing object {row_data.get('id', 'unknown')}: {e}") # when reading Biigle "exported" file
+                # f"Error processing object {row_data.get('annotation_label_id', 'unknown')}: {e}") # when reading Biigle "report" file
             raise
 
     def process_all_objects(self):
@@ -1398,8 +1470,8 @@ class BiigleCSV_to_COCO_JSON:
 
                 except Exception as e:
                     failed_count += 1
-                    # object_id = row_data.get('id', 'unknown') # when reading Biigle "exported" file
-                    object_id = row_data.get('annotation_label_id', 'unknown') # when reading Biigle "report" file
+                    object_id = row_data.get('id', 'unknown') # when reading Biigle "exported" file
+                    # object_id = row_data.get('annotation_label_id', 'unknown') # when reading Biigle "report" file
                     failed_objects.append(
                         {'object_id': object_id, 'error': str(e)})
                     self.logger.error(

@@ -631,85 +631,84 @@ def generate_and_process_batch_configs(
 # ##############################################################################
 # Remove background and segment the objects found in an image (OK!)
 
-    # def main():
+# def main():
 
-    #     # sample_name = "F13_CL"
+    # # # sample_name = "F13_CL"
 
-    #     # Setup logging (will create processing.log in the input directory)
-    #     log_output_dir = Path(
-    #         # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-    #         "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/"
+    # # # Setup logging (will create processing.log in the input directory)
+    # log_output_dir = Path(
+    #     # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+    #     "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_02_03_04/3_data_augment/1_find_out_the_background_color/"
+    # )
+
+    # if not log_output_dir.exists():
+    #     print(f"Error: Log save directory not found: {log_output_dir}")
+    #     return
+
+    # setup_logging(log_output_dir)
+    # logger = logging.getLogger(__name__)
+    # logger.info("Starting batch processing of images ...")
+
+    # try:
+
+    #     # =========================================
+    #     # SINGLE IMAGE PROCESSING (OK!)
+
+    #     # Remove the color background from images using clustering (OK).
+
+    #     import numpy as np
+    #     # -----------
+    #     # # For arthropods
+
+    #     n_clusters = 5
+    #     color_clusters_to_remove = [0, 4]
+
+    #     # -----------
+    #     # # For amoebas
+
+    #     # n_clusters = 5
+    #     # custom_centers = np.asarray(
+    #     #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+    #     #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
+    #     #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
+    #     #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
+    #     #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+    #     # color_clusters_to_remove = [3]
+
+    #     # n_clusters = 6
+    #     # custom_centers = np.asarray(
+    #     #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+    #     #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
+    #     #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
+    #     #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
+    #     #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
+    #     #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+    #     # color_clusters_to_remove = [4]
+
+    #     # -----------
+
+    #     processor = BackgroundRemover(
+    #         image_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/row_data/1_vol_02_03_04/Archives_biigle_Arthuro_2/Images/BM4_E/capt0037.jpg",
+    #         output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_02_03_04/3_data_augment/1_find_out_the_background_color",
+    #         n_clusters = n_clusters  # Default: 5
+    #         # kmeans_init_centers = custom_centers # (optional)
     #     )
 
-    #     if not log_output_dir.exists():
-    #         print(f"Error: Log save directory not found: {log_output_dir}")
-    #         return
+    #     sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
+    #     processor.cluster_rgb_colors()
+    #     processor.plot_rgb_rawdata(sample_step=sampling_ratio)
+    #     processor.plot_rgb_clusters(sample_step=sampling_ratio)
+    #     processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
+    #     processor.plot_replaced_colors_in_image()
 
-    #     setup_logging(log_output_dir)
-    #     logger = logging.getLogger(__name__)
-    #     logger.info("Starting batch processing of images ...")
+    #     # Remove (i.e., transform to white color or some other predefined color) some specific colors.
+    #     processor.remove_background(background_clusters=color_clusters_to_remove)
 
-    #     try:
-
-    #         # =========================================
-    #         # Remove the color background from images using clustering (OK).
-    #         #
-    #         # Comment these lines if you don't want to remove background from the images.
-
-    #         # SINGLE IMAGE PROCESSING (OK!)
-
-    #         import numpy as np
-    #         # -----------
-    #         # # For arthropods
-    #         n_clusters = 5
-    #         color_clusters_to_remove = [0, 4]
-
-    #         # -----------
-    #         # # For amoebas
-    #         # n_clusters = 5
-    #         # custom_centers = np.asarray(
-    #         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-    #         #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
-    #         #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
-    #         #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
-    #         #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-    #         # color_clusters_to_remove = [3]
-
-    #         # n_clusters = 6
-    #         # custom_centers = np.asarray(
-    #         #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-    #         #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
-    #         #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
-    #         #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
-    #         #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
-    #         #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-    #         # color_clusters_to_remove = [4]
-
-    #         # -----------
-
-    #         processor = BackgroundRemover(
-    #             image_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/capt0053.jpg",
-    #             # image_path = "/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/Untitled74_m0002.png",
-    #             output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/output/",
-    #             n_clusters = n_clusters  # Default: 5 for arthropods
-    #             # kmeans_init_centers = custom_centers # (optional)
-    #         )
-
-    #         sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
-    #         processor.cluster_rgb_colors()
-    #         processor.plot_rgb_rawdata(sample_step=sampling_ratio)
-    #         processor.plot_rgb_clusters(sample_step=sampling_ratio)
-    #         processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-    #         processor.plot_replaced_colors_in_image()
-
-    #         # Remove (i.e., transform to white color or some other predefined color) some specific colors.
-    #         processor.remove_background(background_clusters=color_clusters_to_remove)
-
-    #         # Or simply use the default value = "[0, 4]" (for arthropods):
-    #         processor.remove_background()
+    #     # Or simply use the default value = "[0, 4]" (for arthropods):
+    #     processor.remove_background()
 
 
-            # -----------------------------------------
+            # =========================================
             # BATCH PROCESSING (OK!)
 
             # sample_name =  "R04_B"
@@ -916,13 +915,12 @@ def generate_and_process_batch_configs(
             # # )
 
 
+#     except Exception as e:
+#         logger.error(f"An unexpected error occurred: {str(e)}")
+#         raise
 
-    #     except Exception as e:
-    #         logger.error(f"An unexpected error occurred: {str(e)}")
-    #         raise
-
-    # if __name__ == "__main__":
-    #     main()
+# if __name__ == "__main__":
+#     main()
 
 # ########################################################60
 
@@ -939,49 +937,50 @@ def generate_and_process_batch_configs(
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
     ## ========================================================60
     ## Batch processor
 
-    # from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
 
 
-    # processor = BiigleCSV_to_COCO_JSON(
+    processor = BiigleCSV_to_COCO_JSON(
 
-    #     csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/051125-c_acari_collembola_subgroups_relabeled.csv",
-    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/label_trees.json",
-    #     images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/images/Screenshot_from_Biigle/",  # for cropping
-    #     filename_pattern = "*.jpg",
-    #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_JSON_and_crops", # output from cropping
+        csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/image_annotations_with_label_column.csv",
+        json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/label_trees.json",
+        images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images",  # for cropping
+        filename_pattern = "*.jpg",
+        output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/crops", # output from cropping
 
-    #     ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
-    #     # csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3.csv",
-    #     # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
-    #     # images_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/",  # for cropping
-    #     # filename_pattern = "*.jpg",
-    #     # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops", # output from cropping
 
-    #     # # # "biigle_volume_02" (first half of the"BM4_E" sample):
-    #     # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
-    #     # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
-    #     # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
-    #     # filename_pattern="capt*.jpg",
-    #     # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
+        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/051125-c_acari_collembola_subgroups_relabeled.csv",
+        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/label_trees.json",
+        # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/images/Screenshot_from_Biigle/",  # for cropping
+        # filename_pattern = "*.jpg",
+        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_JSON_and_crops", # output from cropping
 
-    #     # # "biigle_volume_04" ("BM13_B_margo" sample):
-    #     # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/image_annotations_arranged_with_labels.csv",
-    #     # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_04/label_trees_arranged.json",
-    #     # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM13_B_margo",
-    #     # filename_pattern = "BM13_B_margo*.jpg",
-    #     # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_04/1_crops",
-    # )
+        ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
+        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3.csv",
+        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
+        # images_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/",  # for cropping
+        # filename_pattern = "*.jpg",
+        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops", # output from cropping
 
-    # # Process all objects
-    # processor.process_all_objects()
+        # # # "biigle_volume_02" (first half of the"BM4_E" sample):
+        # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
+        # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
+        # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
+        # filename_pattern="capt*.jpg",
+        # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
 
-    # # Merge JSON files and save them into a "output/merged_json/" folder
-    # processor.merge_json_files_by_image_id()
+    )
+
+    # Process all objects
+    processor.process_all_objects()
+
+    # Merge JSON files and save them into a "output/merged_json/" folder
+    processor.merge_json_files_by_image_id()
 
 
         # --------------------------------------------------------60
@@ -1018,8 +1017,8 @@ def generate_and_process_batch_configs(
 
 # if __name__ == "__main__":
 
-    # ========================================================60
-    # Batch processing of multiple JSON files and multiple angles (OPTIMIZED!)
+    # # ========================================================60
+    # # Batch processing of multiple JSON files and multiple angles (OPTIMIZED!)
 
     # from pathlib import Path
     # import glob
@@ -1027,9 +1026,13 @@ def generate_and_process_batch_configs(
     # from computer_vision.data_augmentation \
     #     import ImageBoundingBoxTransformer, transform_image_and_boxes
 
-    # json_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/2_JSON_and_crops/merged_json_robo"
-    # image_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_images/Screenshot_from_Biigle"
-    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
+    # json_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/2_JSON_and_crops/merged_json_robo"
+    # image_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/row_data/2_051125_C/images/Screenshot_from_Biigle"
+    # output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/3_data_augment/rotated"
+
+    # #old. json_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/2_JSON_and_crops/merged_json_robo"
+    # #old. image_path_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_images/Screenshot_from_Biigle"
+    # #old. output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
 
     # # #-------------------------------------------
     # # Validate directories exist before processing
@@ -1161,8 +1164,11 @@ def generate_and_process_batch_configs(
     #                         angle=angle,
     #                         flip_horizontal=flip_h,
     #                         flip_vertical=flip_v,
-    #                         fill_color=(79.48, 130.62, 189.84),
-    #                         # Blue fill color (RGB)
+
+    #                         # Blue fill color (RGB) for arthropods
+    #                         # fill_color=(79.48, 130.62, 189.84), # for the "volume_02" blue color. Use cluster 0 (zero).
+    #                         fill_color  =(34.38, 99.79, 195.95), # for the "051125_C" Biigle volume. Use cluster 0 (zero).
+
     #                         output_filename_pattern=output_filename,
     #                     )
 
@@ -1367,26 +1373,43 @@ def generate_and_process_batch_configs(
     # # Batch processing, either "coco" and "robo" JSON format (OK!)
 
     # # # Confidence range to plot
+
     # # min_confidence = 0.1; max_confidence = 0.4
     # # min_confidence = 0.4; max_confidence = 0.7
-
     # min_confidence = 0.01; max_confidence = 1.0
     # # min_confidence = 0.7; max_confidence = 1.0
     # # min_confidence = 0.05; max_confidence = 1.0
 
 
     # # # --------------------------30
-    # # # Volumen "051125_C"
+    # # # Test, valid, train datasets
 
     # font_size = 60
     # bbox_color = "white"
     # text_color = "black"
     # show_summary=True,
 
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
+    # dataset = "train"  # options: (test, valid, train)
+    # input_image_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
+    # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/bbox_{dataset}"
 
-    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/rotated"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/3_data_augment/bbox"
+    # suffix_output_imagefiles = f"_bbox"
+    # input_json_format = "coco"
+
+
+    # # --------------------------30
+    # # Volumen "051125_C"
+
+    # font_size = 60
+    # bbox_color = "white"
+    # text_color = "black"
+    # show_summary=True,
+
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/3_data_augment/rotated"
+
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/3_data_augment/rotated"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_051125_C/3_data_augment/bbox"
     # suffix_output_imagefiles = f"_bbox"
     # input_json_format = "coco"
 
@@ -1652,37 +1675,37 @@ def generate_and_process_batch_configs(
 # ########################################################60
 # My function to find all the unique lines in a text file (OK!)
 
-    # from my_utils.remove_duplicated_lines import remove_duplicate_lines
-    #
-    # if __name__ == "__main__":
-    #     # Configure logging
-    #     logging.basicConfig(
-    #         level=logging.INFO,
-    #         format='%(asctime)s - %(levelname)s - %(message)s'
-    #     )
-    #
-    #     # Example 1: Basic usage
-    #     result = remove_duplicate_lines(
-    #         input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/csv1.csv",
-    #         output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/csv/",
-    #         output_filename="id_image_uniques.csv"
-    #     )
-    #
-    #     if result['success']:
-    #         print(f"✓ Success! Removed {result['duplicates_removed']} duplicates")
-    #         print(f"  Output saved to: {result['output_file']}")
-    #     else:
-    #         print(f"✗ Failed: {result['error']}")
+# from my_utils.remove_duplicated_lines import remove_duplicate_lines
 
-        ## Example 2: Custom options
-        # result = remove_duplicate_lines(
-        #     input_file_path="/path/to/input.txt",
-        #     output_directory="/path/to/output",
-        #     case_sensitive=False,
-        #     strip_whitespace=True,
-        #     keep_empty_lines=False,
-        #     output_filename="cleaned_data.txt"
-        # )
+# if __name__ == "__main__":
+    # # Configure logging
+    # logging.basicConfig(
+    #     level=logging.INFO,
+    #     format='%(asctime)s - %(levelname)s - %(message)s'
+    # )
+
+    # # Example 1: Basic usage
+    # result = remove_duplicate_lines(
+    #     input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/Text/text2.txt",
+    #     output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/Text/",
+    #     output_filename="images_ids_uniques.csv"
+    # )
+
+    # if result['success']:
+    #     print(f"✓ Success! Removed {result['duplicates_removed']} duplicates")
+    #     print(f"  Output saved to: {result['output_file']}")
+    # else:
+    #     print(f"✗ Failed: {result['error']}")
+
+    # ## Example 2: Custom options
+    # # result = remove_duplicate_lines(
+    # #     input_file_path="/path/to/input.txt",
+    # #     output_directory="/path/to/output",
+    # #     case_sensitive=False,
+    # #     strip_whitespace=True,
+    # #     keep_empty_lines=False,
+    # #     output_filename="cleaned_data.txt"
+    # # )
 
 # ########################################################60
 # Function that splits a single JSON file with COCO format, which
@@ -1716,13 +1739,13 @@ def generate_and_process_batch_configs(
 # Count the number of labeled insects from a CSV file downloaded
 # from Biigle. (OK!)
 
-from tools.counts_labeled_insects_by_classID import count_and_export_values
-
-count_and_export_values(
-    input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_biigle_report/051125-c_acari_collembola_subgroups_relabeled.csv',
-    output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_biigle_report',
-    column_name='label_id'
-)
+    # from tools.counts_labeled_insects_by_classID import count_and_export_values
+    #
+    # count_and_export_values(
+    #     input_file_path='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/counting_labeled_insects/2_all_vol_02_03_04_acari_collembola_subspecies_merged.csv',
+    #     output_directory='/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/counting_labeled_insects/',
+    #     column_name='label_id'
+    # )
 
 # ########################################################60
 # Script to generate a tree diagram from a label tree JSON file exported from
