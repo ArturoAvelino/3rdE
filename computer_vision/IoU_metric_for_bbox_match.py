@@ -344,10 +344,11 @@ class IoUMetric_for_BBoxMatch:
                 class_name = 'Unclassified'
                 confidence = 0.0
 
-            # Use Biigle label for the object if it is different to "1" (= 'Unclassified').
-            if biigle_obj['class_id'] != 1:
+            # Use Biigle label for the object if it is different to "4196" (i.e.,
+            # "category_id": 4196 = 'Unclassified').
+            if biigle_obj['class_id'] != 4196:
                 class_name_id = biigle_obj['class_id']
-                class_name = f'in{class_name_id}'
+                class_name = f'met{class_name_id}'
                 confidence = 0.99
 
             results.append({
@@ -356,6 +357,7 @@ class IoUMetric_for_BBoxMatch:
                 'iou_score': best_iou,
                 #old1. 'class_id': biigle_obj['class_id'] if roboflow_id != '' else 1,   # original
                 #old2. 'class': f"'{class_name}'",  # with quotation marks
+                #old3. 'class_id': biigle_obj['class_id'],
                 'class': class_name,
                 'confidence': confidence
             })
