@@ -515,7 +515,7 @@ Statistics:
 
             # Write to CSV
             with open(output_csv_path, 'w', newline='') as csvfile:
-                fieldnames = ['annotation_id', 'label_name', 'confidence', 'IoU_Score']
+                fieldnames = ['annotation_id', 'label_name', 'confidence']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
                 writer.writeheader()
@@ -523,8 +523,8 @@ Statistics:
                     writer.writerow({
                         'annotation_id': result['biigle_id'],
                         'label_name': result['class'],
-                        'confidence': f"{result['confidence']:.4f}",
-                        'IoU_Score': f"{result['iou_score']:.4f}"
+                        #old. 'label_id': result['class_id'],
+                        'confidence': f"{result['confidence']:.4f}"
                     })
 
             print(f"Matching complete! Results saved to: {output_csv_path}")
