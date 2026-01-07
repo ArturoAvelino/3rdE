@@ -298,7 +298,7 @@ class IoUMetric_for_BBoxMatch:
     
     def match_boxes_Biigle_to_robo(self) -> List[Dict]:
         """
-        Match Biigle objects to Roboflow objects based on IoU threshold.
+        Match Biigle-to-Roboflow objects based on IoU threshold.
         For each Biigle object, find the best matching Roboflow object.
 
         Returns:
@@ -321,10 +321,10 @@ class IoUMetric_for_BBoxMatch:
         # Calculate IoU matrix for all pairs
         iou_matrix = self.calculate_iou_vectorized(roboflow_boxes, biigle_boxes)
 
-        # Find best matches
+        # Find the best matches
         results = []
         for j, biigle_obj in enumerate(self.biigle_data):
-            # Get IoU scores for current Biigle object with all Roboflow objects
+            # Get IoU scores for the current Biigle object with all Roboflow objects
             # Note: iou_matrix[i, j] where i is roboflow, j is biigle
             # So for each biigle j, we need column j
             iou_scores = iou_matrix[:, j]
@@ -502,7 +502,7 @@ Statistics:
 
     def save_to_csv_for_biigle(self, output_csv_path: str) -> None:
             """
-            Perform matching (Biigle to Roboflow) and save results to a CSV file.
+            Create the CSV file suitable for Biigle.
 
             Args:
                 output_csv_path: Path to the output CSV file
