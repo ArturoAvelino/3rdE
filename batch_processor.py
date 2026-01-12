@@ -947,11 +947,11 @@ def generate_and_process_batch_configs(
 
     # processor = BiigleCSV_to_COCO_JSON(
 
-    #     csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/image_annotations_with_label_column.csv",
-    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/label_trees.json",
-    #     images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images",  # for cropping
+    #     csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/image_annotations_with_label_column.csv",
+    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/raw_data/segmentation/label_trees.json",
+    #     images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/raw_data/images",  # for cropping
     #     filename_pattern = "*.jpg",
-    #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/crops", # output from cropping
+    #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1",
     #     min_pixels_area = 700) # output from cropping
 
 
@@ -1401,7 +1401,22 @@ def generate_and_process_batch_configs(
     # input_json_format = "roboflow"
 
     # # --------------------------30
-    # # Test, valid, train datasets
+    # # Volumen "281125_C"
+
+    font_size = 60
+    bbox_color = "white"
+    text_color = "black"
+    show_summary=True,
+
+    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/raw_data/images"
+
+    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1/merged_json"
+    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1/2_bboxes_from_biigle_segm/"
+    suffix_output_imagefiles = f"_bbox"
+    input_json_format = "coco"
+
+        # --------------------------30
+        # Test, valid, train datasets
 
     # font_size = 60
     # bbox_color = "white"
