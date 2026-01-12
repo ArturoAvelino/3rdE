@@ -253,7 +253,8 @@ class BiigleCSV_to_COCO_JSON:
     """
 
     def __init__(self, csv_file, images_path, filename_pattern='*.jpg',
-                output_crops_path=None, prefix_filename='', json_label_tree_path=None):
+                output_crops_path=None, prefix_filename='', json_label_tree_path=None,
+                min_pixels_area=500):
         """
         Initialize the BiigleCSV_to_COCO_JSON.
 
@@ -264,6 +265,8 @@ class BiigleCSV_to_COCO_JSON:
             output_crops_path (str): Path for output crops (optional)
             prefix_filename (str): Prefix for output filenames
             json_label_tree_path (str): Path to JSON file with label tree
+            min_pixels_area (int): Minimum pixel area threshold for objects.
+                                 Objects smaller than this are discarded.
         """
         # Convert string paths to Path objects
         self.csv_file = Path(csv_file)
@@ -273,6 +276,7 @@ class BiigleCSV_to_COCO_JSON:
         self.prefix_filename = prefix_filename
         self.json_label_tree_path = Path(
             json_label_tree_path) if json_label_tree_path else None
+        self.min_pixels_area = min_pixels_area
 
         # Create output directory
         self.output_crops_path.mkdir(parents=True, exist_ok=True)
@@ -975,6 +979,13 @@ class BiigleCSV_to_COCO_JSON:
                 # Calculate a bounding box for each object
                 bbox_info = self.calculate_bounding_box(obj_data['points'])
 
+                # Check if object meets the minimum pixel area threshold
+                if bbox_info['box_area'] < self.min_pixels_area:
+                    self.logger.info(
+                        f"Skipping object {obj_data['id']} in image {image_id}: "
+                        f"Area {bbox_info['box_area']:.1f} is below threshold {self.min_pixels_area}")
+                    continue
+
                 # Create annotation entry
                 annotation = {
                     "id": int(obj_data['id']), # when reading Biigle "exported" file
@@ -1093,6 +1104,13 @@ class BiigleCSV_to_COCO_JSON:
             for obj_data in objects_list:
                 # Calculate a bounding box for each object
                 bbox_info = self.calculate_bounding_box(obj_data['points'])
+
+                # Check if object meets the minimum pixel area threshold
+                if bbox_info['box_area'] < self.min_pixels_area:
+                    self.logger.info(
+                        f"Skipping object {obj_data['id']} (ROBO) in image {image_id}: "
+                        f"Area {bbox_info['box_area']:.1f} is below threshold {self.min_pixels_area}")
+                    continue
 
                 # Create annotation entry
                 annotation = {
@@ -1380,6 +1398,13 @@ class BiigleCSV_to_COCO_JSON:
 
             # Calculate bounding box
             bbox_info = self.calculate_bounding_box(row_data['points'])
+
+            # Check if object meets the minimum pixel area threshold
+            if bbox_info['box_area'] < self.min_pixels_area:
+                self.logger.info(
+                    f"Skipping object {object_id}: Area {bbox_info['box_area']:.1f} "
+                    f"is below threshold {self.min_pixels_area}")
+                return {'status': 'skipped', 'reason': 'below_area_threshold'}
 
             # Get image path
             if image_id not in self.image_mapping:

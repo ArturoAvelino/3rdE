@@ -952,6 +952,7 @@ def generate_and_process_batch_configs(
     #     images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images",  # for cropping
     #     filename_pattern = "*.jpg",
     #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/crops", # output from cropping
+    #     min_pixels_area = 700) # output from cropping
 
 
         # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/051125-c_acari_collembola_subgroups_relabeled.csv",
