@@ -937,7 +937,7 @@ def generate_and_process_batch_configs(
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 
     ## ========================================================60
     ## Batch processor
@@ -975,15 +975,15 @@ def generate_and_process_batch_configs(
         # filename_pattern="capt*.jpg",
         # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
 
-    # # Process all objects. Create the individual crops and individual JSON files
-    # # for each object in the CSV file.
-    # # processor.process_all_objects()
+    # Process all objects. Create the individual crops and individual JSON files
+    # for each object in the CSV file.
+    # processor.process_all_objects()
 
-    # # Merge JSON files and save them into the "output/merged_json/" folder.
-    # # This python command can be run independently of the previous step, i.e.,
-    # # the "process_all_objects()" step.
-    # # I can directly generate the merged JSON file from the Biigle CSV file,
-    # # i.e.,  without having to compute first the individual JSON file for each object.
+    # Merge JSON files and save them into the "output/merged_json/" folder.
+    # This python command can be run independently of the previous step, i.e.,
+    # the "process_all_objects()" step.
+    # I can directly generate the merged JSON file from the Biigle CSV file,
+    # i.e.,  without having to compute first the individual JSON file for each object.
     # processor.merge_json_files_by_image_id()
 
 
@@ -1367,38 +1367,23 @@ def generate_and_process_batch_configs(
 
 # Draw bounding boxes of images using the info from JSON files.
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-    # # Setup logging
-    # logging.basicConfig(level=logging.INFO,
-    #                     format='%(asctime)s - %(levelname)s - %(message)s')
+    # Setup logging
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # # --------------------------------------------------------60
-    # # Batch processing, either "coco" and "robo" JSON format (OK!)
+    # --------------------------------------------------------60
+    # Batch processing, either "coco" and "robo" JSON format (OK!)
 
-    # # # Confidence range to plot
+    # # Confidence range to plot
 
-    # # min_confidence = 0.1; max_confidence = 0.4
-    # # min_confidence = 0.4; max_confidence = 0.7
-    # # min_confidence = 0.01; max_confidence = 1.0
-    # # min_confidence = 0.7; max_confidence = 1.0
-    # min_confidence = 0.1; max_confidence = 1.0
+    # min_confidence = 0.1; max_confidence = 0.4
+    # min_confidence = 0.4; max_confidence = 0.7
+    # min_confidence = 0.01; max_confidence = 1.0
+    # min_confidence = 0.7; max_confidence = 1.0
+    min_confidence = 0.1; max_confidence = 1.0
 
-
-    # # # --------------------------30
-    # # # Volumen "281125_C"
-
-    # font_size = 60
-    # bbox_color = "white"
-    # text_color = "black"
-    # show_summary=True,
-
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/raw_data/images"
-
-    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/bboxes/bboxes_c_{min_confidence}-{max_confidence}"
-    # suffix_output_imagefiles = f"_bbox"
-    # input_json_format = "roboflow"
 
     # # --------------------------30
     # # Volumen "281125_C"
@@ -1418,18 +1403,18 @@ def generate_and_process_batch_configs(
         # --------------------------30
         # Test, valid, train datasets
 
-    # font_size = 60
-    # bbox_color = "white"
-    # text_color = "black"
-    # show_summary=True,
+        # font_size = 60
+        # bbox_color = "white"
+        # text_color = "black"
+        # show_summary=True,
 
-    # dataset = "train"  # options: (test, valid, train)
-    # input_image_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
-    # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images /bbox_{dataset}"
+        # dataset = "train"  # options: (test, valid, train)
+        # input_image_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
+        # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
+        # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images /bbox_{dataset}"
 
-    # suffix_output_imagefiles = f"_bbox"
-    # input_json_format = "coco"
+        # suffix_output_imagefiles = f"_bbox"
+        # input_json_format = "coco"
 
         # # --------------------------30
         # # Amoeba
@@ -1508,27 +1493,27 @@ def generate_and_process_batch_configs(
 
         # # --------------------------30
 
-    # drawer = BoundingBoxDrawer()
-    # results = drawer.process_batch(
+    drawer = BoundingBoxDrawer()
+    results = drawer.process_batch(
 
-    #     confidence_range=(min_confidence, max_confidence),
+        confidence_range=(min_confidence, max_confidence),
 
-    #     input_image_dir = input_image_dir,
-    #     input_json_dir  = input_json_dir,
-    #     output_dir = output_dir,
-    #     suffix_output_imagefiles=suffix_output_imagefiles,
-    #     input_json_format = input_json_format,  # "coco" or "roboflow"
+        input_image_dir = input_image_dir,
+        input_json_dir  = input_json_dir,
+        output_dir = output_dir,
+        suffix_output_imagefiles=suffix_output_imagefiles,
+        input_json_format = input_json_format,  # "coco" or "roboflow"
 
-    #     font_size = font_size,
-    #     bbox_color = bbox_color,
-    #     text_color = text_color,
-    #     text_position="top",
-    #     show_center=False,
-    #     center_dot_size=12,
-    #     show_id=False,
-    #     show_label=True,
-    #     show_summary=show_summary,
-    # )
+        font_size = font_size,
+        bbox_color = bbox_color,
+        text_color = text_color,
+        text_position="top",
+        show_center=False,
+        center_dot_size=12,
+        show_id=False,
+        show_label=True,
+        show_summary=show_summary,
+    )
 
         # ========================================================60
         # Single file
@@ -1633,68 +1618,67 @@ def generate_and_process_batch_configs(
 # ========================================================60
 # Batch processing (OK)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    from computer_vision.IoU_batch_processor import BatchIoUProcessor
+    # from computer_vision.IoU_batch_processor import BatchIoUProcessor
 
     # Initialize with custom patterns
-    processor = BatchIoUProcessor(
+    # processor = BatchIoUProcessor(
 
-        biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json_robo",
-        biigle_pattern = "*.json",
+    #     biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json_robo",
+    #     biigle_pattern = "*.json",
 
-        roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json",
-        roboflow_pattern = "*.json",
+    #     roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json",
+    #     roboflow_pattern = "*.json",
 
-        output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/4_IoU_biigle_vs_yolo",
+    #     output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/4_IoU_biigle_vs_yolo",
 
-        iou_threshold=0.5
-    )
+    #     iou_threshold=0.5
+    # )
 
     # Find and inspect pairs before processing
-    pairs = processor.find_file_pairs()
-    print(f"Found {len(pairs)} matching pairs")
+    # pairs = processor.find_file_pairs()
+    # print(f"Found {len(pairs)} matching pairs")
 
     # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
-    results = processor.process_batch(output_format="robo_to_biigle")
-    processor.generate_summary_report(results) # Generate summary report
+    # results = processor.process_batch(output_format="robo_to_biigle")
+    # processor.generate_summary_report(results) # Generate summary report
 
-    results = processor.process_batch(output_format="biigle_to_robo")
-    processor.generate_summary_report(results) # Generate summary report
+    #  results = processor.process_batch(output_format="biigle_to_robo")
+    #  processor.generate_summary_report(results) # Generate summary report
 
-    results = processor.process_batch(output_format="for_biigle")
-    processor.generate_summary_report(results) # Generate summary report
+    #  results = processor.process_batch(output_format="for_biigle")
+    #  processor.generate_summary_report(results) # Generate summary report
 
-    # ========================================================60
-    # Single pair of files (OK!)
+        # ========================================================60
+        # Single pair of files (OK!)
+        # from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
+        #
+        # image_name = "BM3-C_r5c5"
+        # IoU_value = 0.55
+        # output_folder = '/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_IoU/'
+        #
+        # if __name__ == "__main__":
+        #     # Initialize the matcher
+        #     matcher = IoUMetric_for_BBoxMatch(
+        #         roboflow_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/{image_name}.json',
+        #         biigle_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/{image_name}.json',
+        #         iou_threshold=IoU_value
+        #     )
+        #
+        #     ## Roboflow to Biigle matching
+        #     matcher.save_to_csv_robo_to_biigle(f'{output_folder}/{image_name}_robo_to_biigle_IoU_{IoU_value}.csv')
+        #
+        #     ## Biigle to Roboflow matching
+        #     matcher.save_to_csv_biigle_to_robo(f'{output_folder}/{image_name}_biigle_to_robo_IoU_{IoU_value}.csv')
+        #
+        #     ## Generate CSV file with the labels from Biigle input
+        #     matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
 
-    # from computer_vision.IoU_metric_for_bbox_match import IoUMetric_for_BBoxMatch
-    #
-    # image_name = "BM3-C_r5c5"
-    # IoU_value = 0.55
-    # output_folder = '/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/2_IoU/'
-    #
-    # if __name__ == "__main__":
-    #     # Initialize the matcher
-    #     matcher = IoUMetric_for_BBoxMatch(
-    #         roboflow_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/3_classification/yolo11_fast/JSONs/{image_name}.json',
-    #         biigle_json_path=f'/Users/aavelino/Downloads/BiosoilAI/5_images_for_segm_class/4_IoU_for_biigle_file/1_crops/merged_json/{image_name}.json',
-    #         iou_threshold=IoU_value
-    #     )
-    #
-    #     ## Roboflow to Biigle matching
-    #     matcher.save_to_csv_robo_to_biigle(f'{output_folder}/{image_name}_robo_to_biigle_IoU_{IoU_value}.csv')
-    #
-    #     ## Biigle to Roboflow matching
-    #     matcher.save_to_csv_biigle_to_robo(f'{output_folder}/{image_name}_biigle_to_robo_IoU_{IoU_value}.csv')
-    #
-    #     ## Generate CSV file with the labels from Biigle input
-    #     matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
+# # ########################################################60
+# # My function to find all the unique lines in a text file (OK!)
 
-# ########################################################60
-# My function to find all the unique lines in a text file (OK!)
-
-# from my_utils.remove_duplicated_lines import remove_duplicate_lines
+# # from my_utils.remove_duplicated_lines import remove_duplicate_lines
 
 # if __name__ == "__main__":
     # # Configure logging
@@ -1702,20 +1686,17 @@ if __name__ == "__main__":
     #     level=logging.INFO,
     #     format='%(asctime)s - %(levelname)s - %(message)s'
     # )
-
     # # Example 1: Basic usage
     # result = remove_duplicate_lines(
     #     input_file_path="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/Text/text2.txt",
     #     output_directory="/Users/aavelino/MisArchivosLocales/Scratch_MacAir/Text/",
     #     output_filename="images_ids_uniques.csv"
     # )
-
     # if result['success']:
     #     print(f"✓ Success! Removed {result['duplicates_removed']} duplicates")
     #     print(f"  Output saved to: {result['output_file']}")
     # else:
     #     print(f"✗ Failed: {result['error']}")
-
     # ## Example 2: Custom options
     # # result = remove_duplicate_lines(
     # #     input_file_path="/path/to/input.txt",
@@ -1726,10 +1707,10 @@ if __name__ == "__main__":
     # #     output_filename="cleaned_data.txt"
     # # )
 
-# ########################################################60
-# Function that splits a single JSON file with COCO format, which
-# contains annotations for multiple images, into individual JSON files,
-# with one file per image. (OK!)
+# # ########################################################60
+# # Function that splits a single JSON file with COCO format, which
+# # contains annotations for multiple images, into individual JSON files,
+# # with one file per image. (OK!)
 
     # from computer_vision.coco_json_file_splitter import COCOSplitter
     #
@@ -1754,9 +1735,9 @@ if __name__ == "__main__":
     #     # Check results
     #     print(f"Successfully created {sum(results.values())} JSON files")
 
-# ########################################################60
-# Count the number of labeled insects from a CSV file downloaded
-# from Biigle. (OK!)
+# # ########################################################60
+# # Count the number of labeled insects from a CSV file downloaded
+# # from Biigle. (OK!)
 
     # from tools.counts_labeled_insects_by_classID import count_and_export_values
     #
@@ -1766,9 +1747,9 @@ if __name__ == "__main__":
     #     column_name='label_id'
     # )
 
-# ########################################################60
-# Script to generate a tree diagram from a label tree JSON file exported from
-# Biigle. (OK!)
+# # ########################################################60
+# # Script to generate a tree diagram from a label tree JSON file exported from
+# # Biigle. (OK!)
 
     # from tools.label_tree_diagram import generate_tree_diagram
     # import os
@@ -1799,8 +1780,8 @@ if __name__ == "__main__":
 
     #     generate_tree_diagram(INPUT_FILE, OUTPUT_DIR, OUTPUT_FILE, OUTPUT_FILE_TABS)
 
-# ########################################################60
-# Function to use supervision library for evaluating models performance
+# # ########################################################60
+# # Function to use supervision library for evaluating models performance
 
     # import cv2
     # # from inference import get_model
@@ -1813,7 +1794,6 @@ if __name__ == "__main__":
     #         format='%(asctime)s - %(levelname)s - %(message)s'
     #     )
 
-
-# ########################################################60
+# # ########################################################60
 
 
