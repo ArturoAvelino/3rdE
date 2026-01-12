@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime
 import os
 
+from mediapipe.python._framework_bindings import timestamp
+
 
 @dataclass
 class BoundingBox:
@@ -513,9 +515,12 @@ Statistics:
             # Perform matching
             results = self.match_boxes_Biigle_to_robo()
 
+            # Get current timestamp for Biigle format
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
             # Write to CSV
             with open(output_csv_path, 'w', newline='') as csvfile:
-                fieldnames = ['annotation_id', 'label_name', 'confidence']
+                fieldnames = ['annotation_id', 'label_name', 'user_id','confidence', 'created_at', 'updated_at']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
                 writer.writeheader()
@@ -524,7 +529,10 @@ Statistics:
                         'annotation_id': result['biigle_id'],
                         'label_name': result['class'],
                         #old. 'label_id': result['class_id'],
-                        'confidence': f"{result['confidence']:.4f}"
+                        'user_id': 9, # Arturo Avelino
+                        'confidence': f"{result['confidence']:.4f}",
+                        'created_at': current_time,
+                        'updated_at': current_time
                     })
 
             print(f"Matching complete! Results saved to: {output_csv_path}")
