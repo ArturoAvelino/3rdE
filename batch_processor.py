@@ -914,7 +914,6 @@ def generate_and_process_batch_configs(
             # #     min_samples=5
             # # )
 
-
 #     except Exception as e:
 #         logger.error(f"An unexpected error occurred: {str(e)}")
 #         raise
@@ -1367,38 +1366,37 @@ def generate_and_process_batch_configs(
 
 # Draw bounding boxes of images using the info from JSON files.
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # Setup logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s')
+    # # Setup logging
+    # logging.basicConfig(level=logging.INFO,
+    #                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # --------------------------------------------------------60
-    # Batch processing, either "coco" and "robo" JSON format (OK!)
+    # # --------------------------------------------------------60
+    # # Batch processing, either "coco" and "robo" JSON format (OK!)
 
-    # # Confidence range to plot
+    # # # Confidence range to plot
 
-    # min_confidence = 0.1; max_confidence = 0.4
-    # min_confidence = 0.4; max_confidence = 0.7
-    # min_confidence = 0.01; max_confidence = 1.0
-    # min_confidence = 0.7; max_confidence = 1.0
-    min_confidence = 0.1; max_confidence = 1.0
+    # # min_confidence = 0.1; max_confidence = 0.4
+    # # min_confidence = 0.4; max_confidence = 0.7
+    # # min_confidence = 0.01; max_confidence = 1.0
+    # # min_confidence = 0.7; max_confidence = 1.0
+    # min_confidence = 0.1; max_confidence = 1.0
 
+    # # # --------------------------30
+    # # # Volumen "281125_C"
 
-    # # --------------------------30
-    # # Volumen "281125_C"
+    # font_size = 60
+    # bbox_color = "white"
+    # text_color = "black"
+    # show_summary=True,
 
-    font_size = 60
-    bbox_color = "white"
-    text_color = "black"
-    show_summary=True,
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/raw_data/images"
 
-    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/raw_data/images"
-
-    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1/merged_json"
-    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1/2_bboxes_from_biigle_segm/"
-    suffix_output_imagefiles = f"_bbox"
-    input_json_format = "coco"
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1/merged_json"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1/2_bboxes_from_biigle_segm/"
+    # suffix_output_imagefiles = f"_bbox"
+    # input_json_format = "coco"
 
         # --------------------------30
         # Test, valid, train datasets
@@ -1493,27 +1491,27 @@ if __name__ == "__main__":
 
         # # --------------------------30
 
-    drawer = BoundingBoxDrawer()
-    results = drawer.process_batch(
+    # drawer = BoundingBoxDrawer()
+    # results = drawer.process_batch(
 
-        confidence_range=(min_confidence, max_confidence),
+    #     confidence_range=(min_confidence, max_confidence),
 
-        input_image_dir = input_image_dir,
-        input_json_dir  = input_json_dir,
-        output_dir = output_dir,
-        suffix_output_imagefiles=suffix_output_imagefiles,
-        input_json_format = input_json_format,  # "coco" or "roboflow"
+    #     input_image_dir = input_image_dir,
+    #     input_json_dir  = input_json_dir,
+    #     output_dir = output_dir,
+    #     suffix_output_imagefiles=suffix_output_imagefiles,
+    #     input_json_format = input_json_format,  # "coco" or "roboflow"
 
-        font_size = font_size,
-        bbox_color = bbox_color,
-        text_color = text_color,
-        text_position="top",
-        show_center=False,
-        center_dot_size=12,
-        show_id=False,
-        show_label=True,
-        show_summary=show_summary,
-    )
+    #     font_size = font_size,
+    #     bbox_color = bbox_color,
+    #     text_color = text_color,
+    #     text_position="top",
+    #     show_center=False,
+    #     center_dot_size=12,
+    #     show_id=False,
+    #     show_label=True,
+    #     show_summary=show_summary,
+    # )
 
         # ========================================================60
         # Single file
@@ -1779,6 +1777,28 @@ if __name__ == "__main__":
     #             f.write("4492,Mesostigmata (Gamase),4200,31e475,6,\n")
 
     #     generate_tree_diagram(INPUT_FILE, OUTPUT_DIR, OUTPUT_FILE, OUTPUT_FILE_TABS)
+
+# # ########################################################60
+# Merge label predictions from multiple Yolo models into a single CSV file. (OK!)
+
+if __name__ == "__main__":
+
+    from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
+
+
+    # Initialize with the two prediction files
+    merger = CSVLabelPredictionsMerger(
+        generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_generalist.csv",
+        metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_metazoa.csv",
+        default_label_id = 4196
+    )
+
+    # Run the merge with your specific thresholds
+    merger.merge(
+        output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/refined_predictions.csv",
+        gen_threshold = 0.20,  # Replace if generalist is less than this confident threshold
+        met_threshold = 0.40  # And metazoa is at least confident this threshold
+    )
 
 # # ########################################################60
 # # Function to use supervision library for evaluating models performance
