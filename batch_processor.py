@@ -1616,37 +1616,37 @@ def generate_and_process_batch_configs(
 # ========================================================60
 # Batch processing (OK)
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-    # from computer_vision.IoU_batch_processor import BatchIoUProcessor
+    from computer_vision.IoU_batch_processor import BatchIoUProcessor
 
     # Initialize with custom patterns
-    # processor = BatchIoUProcessor(
+    processor = BatchIoUProcessor(
 
-    #     biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json_robo",
-    #     biigle_pattern = "*.json",
+        biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json_robo",
+        biigle_pattern = "*.json",
 
-    #     roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/3_yolo_predictions/json",
-    #     roboflow_pattern = "*.json",
+        roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/3_yolo_predictions/json",
+        roboflow_pattern = "*.json",
 
-    #     output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/2_vol_281125_C/4_IoU_biigle_vs_yolo",
+        output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/4_IoU_biigle_vs_yolo/test1/",
 
-    #     iou_threshold=0.5
-    # )
+        iou_threshold=0.5
+    )
 
     # Find and inspect pairs before processing
-    # pairs = processor.find_file_pairs()
-    # print(f"Found {len(pairs)} matching pairs")
+    pairs = processor.find_file_pairs()
+    print(f"Found {len(pairs)} matching pairs")
 
     # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
-    # results = processor.process_batch(output_format="robo_to_biigle")
-    # processor.generate_summary_report(results) # Generate summary report
+    results = processor.process_batch(output_format="robo_to_biigle")
+    processor.generate_summary_report(results) # Generate summary report
 
-    #  results = processor.process_batch(output_format="biigle_to_robo")
-    #  processor.generate_summary_report(results) # Generate summary report
+    results = processor.process_batch(output_format="biigle_to_robo")
+    processor.generate_summary_report(results) # Generate summary report
 
-    #  results = processor.process_batch(output_format="for_biigle")
-    #  processor.generate_summary_report(results) # Generate summary report
+    results = processor.process_batch(output_format="for_biigle")
+    processor.generate_summary_report(results) # Generate summary report
 
         # ========================================================60
         # Single pair of files (OK!)
@@ -1781,24 +1781,24 @@ def generate_and_process_batch_configs(
 # # ########################################################60
 # Merge label predictions from multiple Yolo models into a single CSV file. (OK!)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
+    # from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
 
 
-    # Initialize with the two prediction files
-    merger = CSVLabelPredictionsMerger(
-        generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_generalist.csv",
-        metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_metazoa.csv",
-        default_label_id = 4196
-    )
+    # # Initialize with the two prediction files
+    # merger = CSVLabelPredictionsMerger(
+    #     generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_generalist.csv",
+    #     metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_metazoa.csv",
+    #     default_label_id = 4196
+    # )
 
-    # Run the merge with your specific thresholds
-    merger.merge(
-        output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/refined_predictions.csv",
-        gen_threshold = 0.20,  # Replace if generalist is less than this confident threshold
-        met_threshold = 0.40  # And metazoa is at least confident this threshold
-    )
+    # # Run the merge with your specific thresholds
+    # merger.merge(
+    #     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/refined_predictions.csv",
+    #     gen_threshold = 0.20,  # Replace if generalist is less than this confident threshold
+    #     met_threshold = 0.40  # And metazoa is at least confident this threshold
+    # )
 
 # # ########################################################60
 # # Function to use supervision library for evaluating models performance
