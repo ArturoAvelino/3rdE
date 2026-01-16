@@ -525,12 +525,15 @@ Statistics:
 
                 writer.writeheader()
                 for result in results:
+                    if result['class'] == 'Unclassified':
+                        user_id_value = 5 # 5 = SAM (Robin Danz)
+                    else: user_id_value = 9 # 9 = YOLO (Arturo Avelino)
                     writer.writerow({
                         'annotation_id': result['biigle_id'],
                         'label_name': result['class'],
                         #old. 'label_id': result['class_id'],
-                        'user_id': 9, # Arturo Avelino
-                        'confidence': f"{result['confidence']:.4f}",
+                        'user_id': user_id_value,
+                        'confidence': f"{result['confidence']:.3f}",
                         'created_at': current_time,
                         'updated_at': current_time
                     })
