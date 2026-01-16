@@ -449,8 +449,8 @@ Statistics:
                     'Biigle_ID': result['biigle_id'],
                     'Class': result['class'],
                     #old. 'Class_ID': result['class_id'],
-                    'Confidence': f"{result['confidence']:.4f}",
-                    'IoU_Score': f"{result['iou_score']:.4f}"
+                    'Confidence': f"{result['confidence']:.3f}",
+                    'IoU_Score': f"{result['iou_score']:.3f}"
                 })
 
         print(f"Matching complete! Results saved to: {output_csv_path}")
@@ -489,8 +489,8 @@ Statistics:
                         'Roboflow_ID': result['roboflow_id'],
                         #old. 'Class_ID': result['class_id'],
                         'Class': result['class'],
-                        'Confidence': f"{result['confidence']:.4f}",
-                        'IoU_Score': f"{result['iou_score']:.4f}"
+                        'Confidence': f"{result['confidence']:.3f}",
+                        'IoU_Score': f"{result['iou_score']:.3f}"
                     })
 
             print(f"Matching complete! Results saved to: {output_csv_path}")
