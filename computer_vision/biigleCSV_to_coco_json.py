@@ -296,7 +296,6 @@ class BiigleCSV_to_COCO_JSON:
         self.image_mapping = self._create_image_mapping_hardcoded()
         # <----------
 
-
     def _setup_logging(self):
         """Set up logging configuration."""
         log_file = self.output_crops_path / "processing_log.log"
@@ -374,39 +373,37 @@ class BiigleCSV_to_COCO_JSON:
         """
         return self.category_names.get(category_id, "unknown")
 
-
     # def _create_image_mapping(self):
-    #     """
-    #     Create a mapping of image_id to filename based on the pattern.
-    #
-    #     Returns:
-    #         dict: Dictionary mapping image_id to filename
-    #     """
-    #     try:
-    #         # Get all files matching the pattern
-    #         matching_files = list(self.images_path.glob(self.filename_pattern))
-    #
-    #         if not matching_files:
-    #             self.logger.warning(
-    #                 f"No files found matching pattern '{self.filename_pattern}' in {self.images_path}")
-    #             return {}
-    #
-    #         # Sort files to ensure consistent mapping
-    #         matching_files.sort()
-    #
-    #         # Create mapping: image_id (1-based) -> filename
-    #         image_mapping = {}
-    #         for idx, file_path in enumerate(matching_files, start=1):
-    #             image_mapping[idx] = file_path.name
-    #
-    #         self.logger.info(
-    #             f"Created image mapping for {len(image_mapping)} images")
-    #         return image_mapping
-    #
-    #     except Exception as e:
-    #         self.logger.error(f"Error creating image mapping: {e}")
-    #         return {}
+        # """
+        # Create a mapping of image_id to filename based on the pattern.
 
+        # Returns:
+        #     dict: Dictionary mapping image_id to filename
+        # """
+        # try:
+        #     # Get all files matching the pattern
+        #     matching_files = list(self.images_path.glob(self.filename_pattern))
+
+        #     if not matching_files:
+        #         self.logger.warning(
+        #             f"No files found matching pattern '{self.filename_pattern}' in {self.images_path}")
+        #         return {}
+
+        #     # Sort files to ensure consistent mapping
+        #     matching_files.sort()
+
+        #     # Create mapping: image_id (1-based) -> filename
+        #     image_mapping = {}
+        #     for idx, file_path in enumerate(matching_files, start=1):
+        #         image_mapping[idx] = file_path.name
+
+        #     self.logger.info(
+        #         f"Created image mapping for {len(image_mapping)} images")
+        #     return image_mapping
+
+        # except Exception as e:
+        #     self.logger.error(f"Error creating image mapping: {e}")
+        #     return {}
 
     def _create_image_mapping_from_csv(self):
         """
@@ -458,7 +455,6 @@ class BiigleCSV_to_COCO_JSON:
         except Exception as e:
             self.logger.error(f"Error creating image mapping from CSV: {str(e)}")
             raise
-
 
     def _create_image_mapping_hardcoded(self):
         """
@@ -585,59 +581,80 @@ class BiigleCSV_to_COCO_JSON:
                 # 241: "BM13_B_margo_r11c2.jpg",
 
             # Volume 281125_C
-            1: "C06-F_r10c2.jpg",
-            2: "C06-F_r10c5.jpg",
-            3: "C06-F_r1c6.jpg",
-            4: "C06-F_r2c1.jpg",
-            5: "C06-F_r2c2.jpg",
-            6: "C06-F_r3c1.jpg",
-            7: "C06-F_r3c5.jpg",
-            8: "C06-F_r4c4.jpg",
-            9: "C06-F_r4c5.jpg",
-            10: "C06-F_r4c6.jpg",
-            11: "C06-F_r5c3.jpg",
-            12: "C06-F_r5c4.jpg",
-            13: "C06-F_r6c1.jpg",
-            14: "C06-F_r6c3.jpg",
-            15: "C06-F_r6c4.jpg",
-            16: "C06-F_r6c5.jpg",
-            17: "C06-F_r7c4.jpg",
-            18: "C06-F_r7c5.jpg",
-            19: "C06-F_r8c5.jpg",
-            20: "C06-F_r8c6.jpg",
-            21: "C06-F_r8c7.jpg",
-            22: "C06-F_r9c2.jpg",
-            23: "C06-G_r1c3.jpg",
-            24: "C06-G_r1c4.jpg",
-            25: "C06-G_r1c5.jpg",
-            26: "C06-G_r2c1.jpg",
-            27: "C06-G_r2c5.jpg",
-            28: "C06-G_r3c1.jpg",
-            29: "C06-G_r3c2.jpg",
-            30: "C06-G_r3c3.jpg",
-            31: "C06-G_r4c3.jpg",
-            32: "C06-G_r4c4.jpg",
-            33: "C06-G_r4c5.jpg",
-            34: "C06-G_r4c6.jpg",
-            35: "C06-G_r5c1.jpg",
-            36: "C06-G_r5c2.jpg",
-            37: "C06-G_r5c3.jpg",
-            38: "C06-G_r5c4.jpg",
-            39: "C06-G_r6c2.jpg",
-            40: "C06-G_r6c4.jpg",
-            41: "C06-G_r6c5.jpg",
-            42: "C06-G_r7c2.jpg",
-            43: "C06-G_r7c3.jpg",
-            44: "C06-G_r7c4.jpg",
-            45: "C06-G_r8c1.jpg",
-            46: "C06-G_r8c3.jpg",
-            47: "C06-G_r8c4.jpg",
-            48: "C06-G_r9c3.jpg",
-            49: "C06-G_r9c4.jpg",
-            50: "C06-G_r9c5.jpg",
+                # 1: "C06-F_r10c2.jpg",
+                # 2: "C06-F_r10c5.jpg",
+                # 3: "C06-F_r1c6.jpg",
+                # 4: "C06-F_r2c1.jpg",
+                # 5: "C06-F_r2c2.jpg",
+                # 6: "C06-F_r3c1.jpg",
+                # 7: "C06-F_r3c5.jpg",
+                # 8: "C06-F_r4c4.jpg",
+                # 9: "C06-F_r4c5.jpg",
+                # 10: "C06-F_r4c6.jpg",
+                # 11: "C06-F_r5c3.jpg",
+                # 12: "C06-F_r5c4.jpg",
+                # 13: "C06-F_r6c1.jpg",
+                # 14: "C06-F_r6c3.jpg",
+                # 15: "C06-F_r6c4.jpg",
+                # 16: "C06-F_r6c5.jpg",
+                # 17: "C06-F_r7c4.jpg",
+                # 18: "C06-F_r7c5.jpg",
+                # 19: "C06-F_r8c5.jpg",
+                # 20: "C06-F_r8c6.jpg",
+                # 21: "C06-F_r8c7.jpg",
+                # 22: "C06-F_r9c2.jpg",
+                # 23: "C06-G_r1c3.jpg",
+                # 24: "C06-G_r1c4.jpg",
+                # 25: "C06-G_r1c5.jpg",
+                # 26: "C06-G_r2c1.jpg",
+                # 27: "C06-G_r2c5.jpg",
+                # 28: "C06-G_r3c1.jpg",
+                # 29: "C06-G_r3c2.jpg",
+                # 30: "C06-G_r3c3.jpg",
+                # 31: "C06-G_r4c3.jpg",
+                # 32: "C06-G_r4c4.jpg",
+                # 33: "C06-G_r4c5.jpg",
+                # 34: "C06-G_r4c6.jpg",
+                # 35: "C06-G_r5c1.jpg",
+                # 36: "C06-G_r5c2.jpg",
+                # 37: "C06-G_r5c3.jpg",
+                # 38: "C06-G_r5c4.jpg",
+                # 39: "C06-G_r6c2.jpg",
+                # 40: "C06-G_r6c4.jpg",
+                # 41: "C06-G_r6c5.jpg",
+                # 42: "C06-G_r7c2.jpg",
+                # 43: "C06-G_r7c3.jpg",
+                # 44: "C06-G_r7c4.jpg",
+                # 45: "C06-G_r8c1.jpg",
+                # 46: "C06-G_r8c3.jpg",
+                # 47: "C06-G_r8c4.jpg",
+                # 48: "C06-G_r9c3.jpg",
+                # 49: "C06-G_r9c4.jpg",
+                # 50: "C06-G_r9c5.jpg",
+
+            # Volume 02122025_L_6
+            3474: "L11-A_r3c2.jpg",
+            3475: "L11-A_r3c3.jpg",
+            3476: "L11-A_r4c6.jpg",
+            3477: "L11-A_r5c3.jpg",
+            3478: "L11-A_r5c5.jpg",
+            3479: "L11-A_r6c1.jpg",
+            3480: "L11-A_r6c2.jpg",
+            3481: "L11-A_r6c3.jpg",
+            3482: "L11-A_r7c2.jpg",
+            3483: "L11-A_r7c3.jpg",
+            3484: "L11-A_r8c4.jpg",
+            3485: "L11-A_r10c2.jpg",
+            3486: "L11-E_r4c2.jpg",
+            3487: "L11-E_r6c0.jpg",
+            3488: "L12-B3-C3_r2c3.jpg",
+            3489: "L12-B3-C3_r3c1.jpg",
+            3490: "L12-B3-C3_r3c4.jpg",
+            3491: "L12-B3-C3_r3c6.jpg",
+            3492: "L12-B3-C3_r4c3.jpg",
+            3493: "L12-B3-C3_r4c4.jpg"
 
         }
-
 
     def get_image_dimensions(self, image_path):
         """
@@ -738,7 +755,6 @@ class BiigleCSV_to_COCO_JSON:
 
         self.logger.info(f"Loaded {len(csv_data)} rows from CSV file")
         return csv_data
-
 
     def parse_pixel_coordinates(self, points_list):
         """
@@ -1068,7 +1084,6 @@ class BiigleCSV_to_COCO_JSON:
                 f"Error creating merged JSON for image_id {image_id}: {e}")
             raise
 
-
     def create_merged_json_metadata_robo(self, image_id, objects_list, output_path=None):
         """
         Temporary function to create the JSON files to be uploaded to Robo. They
@@ -1197,7 +1212,6 @@ class BiigleCSV_to_COCO_JSON:
             self.logger.error(
                 f"Error creating merged JSON for image_id {image_id}: {e}")
             raise
-
 
     def merge_json_files_by_image_id(self, output_merged_path=None):
         """
