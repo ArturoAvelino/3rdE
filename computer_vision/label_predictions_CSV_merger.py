@@ -69,35 +69,47 @@ class CSVLabelPredictionsMerger:
             for row in reader:
                 self.stats["total_rows"] += 1
                 ann_id = self._normalize_id(row.get('annotation_id'))
-                
+
+                # Always keep confidence formatted to 3 decimals in the output
+                row['confidence'] = f"{float(row['confidence']):.3f}"
+
                 # If the object exists in the metazoa predictions, evaluate for replacement
                 if ann_id and ann_id in met_lookup:
                     met_row = met_lookup[ann_id]
-                    
+
                     gen_label = self._normalize_id(row.get('label_id'))
                     gen_conf = float(row['confidence'])
-                    
+
                     met_label = self._normalize_id(met_row.get('label_id'))
                     met_conf = float(met_row['confidence'])
                     met_user = met_row['user_id']
 
-                    should_replace = False
+                    # NEW RULE (highest priority):
+                    # If both models are below their thresholds => force Unclassified.
+                    if gen_conf < gen_threshold and met_conf < met_threshold:
+                        row['label_id'] = self.default_label_id  # 4196
+                        row['user_id'] = "5"
+                        row['confidence'] = "0.000"  # always 3 decimals
+                        self.stats["labels_set_unclassified"] += 1
 
-                    # Condition 1: Non-default label with low confidence
-                    if gen_label != self.default_label_id:
-                        if gen_conf < gen_threshold and met_conf > met_threshold:
-                            should_replace = True
-                    
-                    # Condition 2: Default label (4196) being refined by metazoa
-                    elif gen_label == self.default_label_id:
-                        if met_label != self.default_label_id and met_conf > met_threshold:
-                            should_replace = True
+                    else:
+                        should_replace = False
 
-                    if should_replace:
-                        row['label_id'] = met_label
-                        row['user_id'] = met_user  # Update user_id
-                        row['confidence'] = f"{met_conf:.3f}" # Optional: update confidence too
-                        self.stats["labels_replaced"] += 1
+                        # Condition 1: Non-default label with low confidence
+                        if gen_label != self.default_label_id:
+                            if gen_conf < gen_threshold and met_conf > met_threshold:
+                                should_replace = True
+
+                        # Condition 2: Default label (4196) being refined by metazoa
+                        elif gen_label == self.default_label_id:
+                            if met_label != self.default_label_id and met_conf > met_threshold:
+                                should_replace = True
+
+                        if should_replace:
+                            row['label_id'] = met_label
+                            row['user_id'] = met_user  # Update user_id
+                            row['confidence'] = f"{met_conf:.3f}"  # always 3 decimals
+                            self.stats["labels_replaced"] += 1
 
                 writer.writerow(row)
 
