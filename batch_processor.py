@@ -1592,37 +1592,46 @@ if __name__ == "__main__":
 # ========================================================60
 # Batch processing (OK)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    from computer_vision.IoU_batch_processor import BatchIoUProcessor
+    # from computer_vision.IoU_batch_processor import BatchIoUProcessor
 
-    # Initialize with custom patterns
-    processor = BatchIoUProcessor(
+    # # Initialize with custom patterns
 
-        biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops/merged_json_robo",
-        biigle_pattern = "*.json",
+    # iou_threshold = 0.7
 
-        roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/3_yolo_predictions/json",
-        roboflow_pattern = "*.json",
+    # processor = BatchIoUProcessor(
 
-        output_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/4_IoU_biigle_vs_yolo/test1/",
+    #     biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/segmentation_all_labels_are_just_unclassified/Conversion_biigle_segm_to_coco_bbox_by_imagefile/merged_json",
 
-        iou_threshold=0.5
-    )
+    #     # # ---- Generalist model ------
+    #     # roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/json_species_names",
+    #     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_{iou_threshold}",
 
-    # Find and inspect pairs before processing
-    pairs = processor.find_file_pairs()
-    print(f"Found {len(pairs)} matching pairs")
+    #     # # ---- Metazoa model ------
+    #     roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/1_yolo_predictions/json_species_names",
+    #     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_{iou_threshold}",
 
-    # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
-    results = processor.process_batch(output_format="robo_to_biigle")
-    processor.generate_summary_report(results) # Generate summary report
+    #     # -------------------------
 
-    results = processor.process_batch(output_format="biigle_to_robo")
-    processor.generate_summary_report(results) # Generate summary report
+    #     iou_threshold = iou_threshold,
+    #     biigle_pattern = "*.json",
+    #     roboflow_pattern = "*.json",
+    # )
 
-    results = processor.process_batch(output_format="for_biigle")
-    processor.generate_summary_report(results) # Generate summary report
+    # # Find and inspect pairs before processing
+    # pairs = processor.find_file_pairs()
+    # print(f"Found {len(pairs)} matching pairs")
+
+    # # Process with specific output format. Options: ["robo_to_biigle", "biigle_to_robo", "for_biigle"]
+    # results = processor.process_batch(output_format="robo_to_biigle")
+    # processor.generate_summary_report(results) # Generate summary report
+
+    # results = processor.process_batch(output_format="biigle_to_robo")
+    # processor.generate_summary_report(results) # Generate summary report
+
+    # results = processor.process_batch(output_format="for_biigle")
+    # processor.generate_summary_report(results) # Generate summary report
 
         # ========================================================60
         # Single pair of files (OK!)
