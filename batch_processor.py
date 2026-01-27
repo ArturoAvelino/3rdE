@@ -1758,19 +1758,18 @@ if __name__ == "__main__":
 
     # from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
 
-
     # # Initialize with the two prediction files
     # merger = CSVLabelPredictionsMerger(
-    #     generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_generalist.csv",
-    #     metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/image_annotation_labels_metazoa.csv",
+    #     generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
+    #     metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
     #     default_label_id = 4196
     # )
 
     # # Run the merge with your specific thresholds
     # merger.merge(
-    #     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/6_test_combine_with_metazoa/refined_predictions.csv",
-    #     gen_threshold = 0.20,  # Replace if generalist is less than this confident threshold
-    #     met_threshold = 0.40  # And metazoa is at least confident this threshold
+    #     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_labels_merged.csv",
+    #     gen_threshold = 0.40,  # Replace if generalist is less than this confident threshold
+    #     met_threshold = 0.1  # And use metazoa prediction if it is at least this confident this threshold
     # )
 
 # # ########################################################60
