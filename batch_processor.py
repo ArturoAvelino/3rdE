@@ -771,9 +771,10 @@ def generate_and_process_batch_configs(
         #         include_segmentation=False
         #     )
 
-            #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
-            # else:
-            #     logger.info(f"Config directory not found: {config_directory}")
+        #     logger.info(
+        #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
+        # else:
+        #     logger.info(f"Config directory not found: {config_directory}")
 
         # -----------------------------------------
         # # Option 3 (OK): Complete workflow - Generate configs and process them
@@ -916,7 +917,6 @@ def generate_and_process_batch_configs(
 #     except Exception as e:
 #         logger.error(f"An unexpected error occurred: {str(e)}")
 #         raise
-
 # if __name__ == "__main__":
 #     main()
 
@@ -1718,7 +1718,7 @@ if __name__ == "__main__":
     # )
 
 # # ########################################################60
-# # Script to generate a tree diagram from a label tree JSON file exported from
+# # Generate a tree diagram from a label tree JSON file exported from
 # # Biigle. (OK!)
 
     # from tools.label_tree_diagram import generate_tree_diagram
