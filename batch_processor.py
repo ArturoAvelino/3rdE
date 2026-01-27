@@ -1353,45 +1353,45 @@ def generate_and_process_batch_configs(
 
 # Draw bounding boxes of images using the info from JSON files.
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-    # # Setup logging
-    # logging.basicConfig(level=logging.INFO,
-    #                     format='%(asctime)s - %(levelname)s - %(message)s')
+    # Setup logging
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # # # ========================================================60
-    # # # Batch processing, either "coco" and "roboflow" JSON format (OK!)
-    # # # ========================================================60
+    # # ========================================================60
+    # # Batch processing, either "coco" and "roboflow" JSON format (OK!)
+    # # ========================================================60
 
-    # font_size = 60
-    # bbox_color = "white"
-    # text_color = "black"
-    # show_summary=True,
+    font_size = 60
+    bbox_color = "white"
+    text_color = "black"
+    show_summary=True,
 
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images"
+    input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images"
 
-    # # # # ----- Merged generalist-metazoa model -----
+    # # # ----- Merged generalist-metazoa model -----
 
-    # # min_confidence = 0.0; max_confidence = 1.0
-    # # show_label = True
-    # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops/merged_json"
-    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/bboxes"
+    # min_confidence = 0.0; max_confidence = 1.0
+    # show_label = True
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops/merged_json"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/bboxes"
 
-    # # input_json_format = "coco"
-    # # suffix_output_imagefiles = f"_merged_IoU_0.3"
+    # input_json_format = "coco"
+    # suffix_output_imagefiles = f"_merged_IoU_0.3"
 
-    # # # ----- Generalist model -----
+    # # ----- Generalist model -----
 
-    # # # min_confidence = 0.4; max_confidence = 1.0
-    # # min_confidence = 0.05; max_confidence = 0.399
-    # # show_label = True
-    # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/json_species_names"
-    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
+    # min_confidence = 0.4; max_confidence = 1.0
+    min_confidence = 0.3; max_confidence = 0.399
+    show_label = True
+    input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/json_species_names"
+    output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
 
-    # # input_json_format = "roboflow"
-    # # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
+    input_json_format = "roboflow"
+    suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
 
-    # # # ----- Metazoa model -----
+    # # ----- Metazoa model -----
 
     # # min_confidence = 0.2; max_confidence = 1.0
     # min_confidence = 0.05; max_confidence = 0.2
@@ -1402,20 +1402,20 @@ def generate_and_process_batch_configs(
     # input_json_format = "roboflow"
     # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
 
-    # # # ----- Biigle segmentation -----
+    # # ----- Biigle segmentation -----
 
-    # # show_label = False  # "False" when all the objects are simply "unclassified".
-    # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/1_crops/merged_json"
-    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/bboxes_from_biigle_segm"
+    # show_label = False  # "False" when all the objects are simply "unclassified".
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/1_crops/merged_json"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/bboxes_from_biigle_segm"
 
-    # # input_json_format = "coco"
-    # # suffix_output_imagefiles = f"_bbox"
+    # input_json_format = "coco"
+    # suffix_output_imagefiles = f"_bbox"
 
-    # # # Required parameter definitions even if they are not used when plotting the
-    # # # segmentation from Biigle:
-    # # min_confidence = 0.1; max_confidence = 1.0
+    # # Required parameter definitions even if they are not used when plotting the
+    # # segmentation from Biigle:
+    # min_confidence = 0.1; max_confidence = 1.0
 
-    # # # ----------------------
+    # # ----------------------
 
 
 
@@ -1453,28 +1453,28 @@ def generate_and_process_batch_configs(
 
         # # --------------------------30
 
-    # drawer = BoundingBoxDrawer()
-    # results = drawer.process_batch(
+    drawer = BoundingBoxDrawer()
+    results = drawer.process_batch(
 
-    #     confidence_range=(min_confidence, max_confidence),
+        confidence_range=(min_confidence, max_confidence),
 
-    #     input_image_dir = input_image_dir,
-    #     input_json_dir  = input_json_dir,
-    #     output_dir = output_dir,
-    #     suffix_output_imagefiles=suffix_output_imagefiles,
-    #     input_json_format = input_json_format,  # "coco" or "roboflow"
+        input_image_dir = input_image_dir,
+        input_json_dir  = input_json_dir,
+        output_dir = output_dir,
+        suffix_output_imagefiles=suffix_output_imagefiles,
+        input_json_format = input_json_format,  # "coco" or "roboflow"
 
-    #     font_size = font_size,
-    #     bbox_color = bbox_color,
-    #     text_color = text_color,
-    #     text_position="top",
-    #     show_center=False,
-    #     center_dot_size=12,
-    #     show_id=False,
-    #     show_label=show_label,
-    #     show_confidence = True,
-    #     show_summary=show_summary,
-    # )
+        font_size = font_size,
+        bbox_color = bbox_color,
+        text_color = text_color,
+        text_position="top",
+        show_center=False,
+        center_dot_size=12,
+        show_id=False,
+        show_label=show_label,
+        show_confidence = True,
+        show_summary=show_summary,
+    )
 
         # ========================================================60
         # Single file
