@@ -638,7 +638,7 @@ def generate_and_process_batch_configs(
     # # # Setup logging (will create processing.log in the input directory)
     # log_output_dir = Path(
     #     # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-    #     "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_02_03_04/3_data_augment/1_find_out_the_background_color/"
+    #     "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/"
     # )
 
     # if not log_output_dir.exists():
