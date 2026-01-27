@@ -753,25 +753,25 @@ def generate_and_process_batch_configs(
             # else:
             #     logger.error(
             #         "No configuration files were generated. Please check your parameters.")
+        #         "No configuration files were generated. Please check your parameters.")
 
-            # -----------------------------------------
-            # # Option 2 (OK): Process existing configuration files only
+        # -----------------------------------------
+        # # Option 2 (OK): Process existing configuration files only
 
-            # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
+        # logger.info("=== OPTION 2: Process Existing Configuration Files ===")
 
-            # # If you already have configuration files and just want to process them
-            # config_directory = "/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
+        # # If you already have configuration files and just want to process them
+        # config_directory = "/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
 
-            # if Path(config_directory).exists():
-            #     results_existing = process_batch_of_config_files(
-            #         config_directory=config_directory,
-            #         filename_pattern="*_config.json",
-            #         use_nonwhitepixel_as_bboxcenter=True,
-            #         create_cropped_images=False,
-            #         include_segmentation=False
-            #     )
+        # if Path(config_directory).exists():
+        #     results_existing = process_batch_of_config_files(
+        #         config_directory=config_directory,
+        #         filename_pattern="*_config.json",
+        #         use_nonwhitepixel_as_bboxcenter=True,
+        #         create_cropped_images=False,
+        #         include_segmentation=False
+        #     )
 
-            #     logger.info(
             #         f"Existing configs processing results: {len(results_existing['successful'])} successful, {len(results_existing['failed'])} failed")
             # else:
             #     logger.info(f"Config directory not found: {config_directory}")
@@ -938,51 +938,39 @@ def generate_and_process_batch_configs(
 
 # if __name__ == "__main__":
 
-    ## ========================================================60
-    ## Batch processor
+    # # # ========================================================60
+    # # # Batch processor
 
     # from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
 
-
     # processor = BiigleCSV_to_COCO_JSON(
 
-    #     csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/image_annotations_with_label_column.csv",
-    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/raw_data/segmentation/label_trees.json",
-    #     images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/raw_data/images",  # for cropping
+    #     # ----- Biigle file -------
+    #     # csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/image_annotations_with_labels.csv",
+    #     # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/originals/label_trees.json",
+    #     # images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images",  # for cropping
+    #     # filename_pattern = "*.jpg",
+    #     # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/1_crops",
+    #     # min_pixels_area = 700)
+
+    #     # ----- Merged generalist-metazoa predictions -----
+    #     csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotations_with_labels.csv",
+    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/segmentation_all_labels_are_just_unclassified/originals/label_trees.json",
+    #     images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images",  # for cropping
     #     filename_pattern = "*.jpg",
-    #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/1_vol_281125_C/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/test1",
-    #     min_pixels_area = 700) # output from cropping
+    #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops",
+    #     min_pixels_area = 700)
 
 
-        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/051125-c_acari_collembola_subgroups_relabeled.csv",
-        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/biigle_report/label_trees.json",
-        # images_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/images/Screenshot_from_Biigle/",  # for cropping
-        # filename_pattern = "*.jpg",
-        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/051125_C/1_JSON_and_crops", # output from cropping
-
-        ## 337 image sample segmented with SAM2 by Robin and uploaded to Biigle:
-        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3.csv",
-        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Diverse/labels_trees/2025_25_09_v4_reformated_to.json",
-        # images_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/1_original_337_imagesfiles_all_tmp/",  # for cropping
-        # filename_pattern = "*.jpg",
-        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_images_segm_class/4_IoU_for_biigle_file/2025_11_03_annotations_Emilie_IDs_part3/1_conversion_biigle_segm_to_coco_bbox_by_imagefile/1_crops", # output from cropping
-
-        # # # "biigle_volume_02" (first half of the"BM4_E" sample):
-        # csv_file="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/image_annotations_unsure_removed.csv",
-        # json_label_tree_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Volumes_biigle_annotation_done/biigle_volume_02/label_trees_arranged.json",
-        # images_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/Archives_biigle_Arthuro_2/Images/BM4_E/",
-        # filename_pattern="capt*.jpg",
-        # output_crops_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/biigle_volume_02/1_crops",
-
-    # Process all objects. Create the individual crops and individual JSON files
-    # for each object in the CSV file.
+    # # # Process all objects. Create the individual crops and individual JSON files
+    # # # for each object in the CSV file.
     # processor.process_all_objects()
 
-    # Merge JSON files and save them into the "output/merged_json/" folder.
-    # This python command can be run independently of the previous step, i.e.,
-    # the "process_all_objects()" step.
-    # I can directly generate the merged JSON file from the Biigle CSV file,
-    # i.e.,  without having to compute first the individual JSON file for each object.
+    # # # Merge JSON files and save them into the "output/merged_json/" folder.
+    # # # This python command can be run independently of the previous step, i.e.,
+    # # # the "process_all_objects()" step.
+    # # # I can directly generate the merged JSON file from the Biigle CSV file,
+    # # # i.e.,  without having to compute first the individual JSON file for each object.
     # processor.merge_json_files_by_image_id()
 
 
