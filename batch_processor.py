@@ -1773,6 +1773,19 @@ def generate_and_process_batch_configs(
 
 
 # # ########################################################60
+# # Function to filter annotations by labels (OK!)
+
+from computer_vision.trim_Biigle_annotations_file import filter_annotations_by_labels
+
+filter_annotations_by_labels(
+    "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/for_Biigle/02122025_L_6/image_annotations.csv",
+    "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_labels_merged_original.csv",
+    "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_filtered.csv",
+    annotations_id_col="id",
+    labels_id_col="annotation_id"
+)
+
+# # ########################################################60
 # # Function to use supervision library for evaluating models performance
 
     # import cv2
