@@ -10,16 +10,16 @@ class CSVLabelPredictionsMerger:
     """
 
     def __init__(
-        self, 
-        generalist_path: str, 
-        metazoa_path: str, 
+        self,
+        generalist_path: str,
+        metazoa_path: str,
         default_label_id: str = "4196"
     ):
         self.generalist_path = Path(generalist_path)
         self.metazoa_path = Path(metazoa_path)
         self.default_label_id = self._normalize_id(default_label_id)
         self.stats = {"total_rows": 0, "labels_replaced": 0}
-        
+
     def _normalize_id(self, value: str) -> str:
         """Normalizes ID-like fields so lookups match across CSVs."""
         if value is None:
@@ -35,7 +35,6 @@ class CSVLabelPredictionsMerger:
         with open(self.metazoa_path, mode='r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                # Store the whole row so we can access label_id, user_id, and confidence
                 ann_id = self._normalize_id(row.get('annotation_id'))
                 if not ann_id:
                     continue
@@ -43,25 +42,25 @@ class CSVLabelPredictionsMerger:
         return metazoa_lookup
 
     def merge(
-        self, 
-        output_path: str, 
-        gen_threshold: float, 
+        self,
+        output_path: str,
+        gen_threshold: float,
         met_threshold: float
     ):
         """
         Creates a new CSV based on the generalist file with metazoa refinements.
-        
+
         Args:
             output_path: Destination for the combined CSV.
             gen_threshold: Confidence threshold for the generalist model.
             met_threshold: Confidence threshold for the metazoa model.
         """
         met_lookup = self._load_metazoa_lookup()
-        self.stats = {"total_rows": 0, "labels_replaced": 0}
-        
+        self.stats = {"total_rows": 0, "labels_replaced": 0, "labels_set_unclassified": 0}
+
         with open(self.generalist_path, mode='r', encoding='utf-8') as f_in, \
              open(output_path, mode='w', newline='', encoding='utf-8') as f_out:
-            
+
             reader = csv.DictReader(f_in)
             writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
             writer.writeheader()
@@ -113,10 +112,12 @@ class CSVLabelPredictionsMerger:
 
                 writer.writerow(row)
 
-        print(f"Merge Complete!")
-        print(f"- Processed: {self.stats['total_rows']} rows")
-        print(f"- Replaced:  {self.stats['labels_replaced']} labels from metazoa model")
-        print(f"- Output:    {output_path}")
+        print("Merge Complete!")
+        print(f"- Processed:            {self.stats['total_rows']} rows")
+        print(f"- Replaced by metazoa:  {self.stats['labels_replaced']} rows")
+        print(f"- Forced unclassified:  {self.stats['labels_set_unclassified']} rows")
+        print(f"- Output:               {output_path}")
+
 
 # # --- Example Usage ---
 # if __name__ == "__main__":
