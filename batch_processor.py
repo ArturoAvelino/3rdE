@@ -1753,23 +1753,24 @@ if __name__ == "__main__":
 # # ########################################################60
 # Merge label predictions from multiple Yolo models into a single CSV file. (OK!)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
+    # from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
 
-    # Initialize with the two prediction files
-    merger = CSVLabelPredictionsMerger(
-        generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
-        metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
-        default_label_id = 4196
-    )
+    # # Initialize with the two prediction files
+    # merger = CSVLabelPredictionsMerger(
+    #     generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
+    #     metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
+    #     default_label_id = 4196
+    # )
 
-    # Run the merge with your specific thresholds
-    merger.merge(
-        output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/test_1/image_annotation_labels_merged.csv",
-        gen_threshold = 0.40,  # Replace if generalist is less than this confident threshold
-        met_threshold = 0.1  # And use metazoa prediction if it is at least this confident this threshold
-    )
+    # # Run the merge with your specific thresholds
+    # merger.merge(
+    #     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/test_1/image_annotation_labels_merged.csv",
+    #     gen_threshold = 0.35,  # Replace if generalist is less than this confident threshold
+    #     met_threshold = 0.1  # And use metazoa prediction if it is at least this confident this threshold
+    # )
+
 
 # # ########################################################60
 # # Function to use supervision library for evaluating models performance
