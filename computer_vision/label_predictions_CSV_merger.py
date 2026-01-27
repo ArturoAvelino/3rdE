@@ -17,9 +17,18 @@ class CSVLabelPredictionsMerger:
     ):
         self.generalist_path = Path(generalist_path)
         self.metazoa_path = Path(metazoa_path)
-        self.default_label_id = default_label_id
+        self.default_label_id = self._normalize_id(default_label_id)
         self.stats = {"total_rows": 0, "labels_replaced": 0}
         
+    def _normalize_id(self, value: str) -> str:
+        """Normalizes ID-like fields so lookups match across CSVs."""
+        if value is None:
+            return ""
+        text = str(value).strip()
+        if text.endswith(".0") and text.count(".") == 1 and text.replace(".", "").isdigit():
+            return text[:-2]
+        return text
+
     def _load_metazoa_lookup(self) -> Dict[str, Dict]:
         """Loads metazoa CSV into a dictionary for O(1) lookup speed."""
         metazoa_lookup = {}
@@ -27,7 +36,10 @@ class CSVLabelPredictionsMerger:
             reader = csv.DictReader(f)
             for row in reader:
                 # Store the whole row so we can access label_id, user_id, and confidence
-                metazoa_lookup[row['annotation_id']] = row
+                ann_id = self._normalize_id(row.get('annotation_id'))
+                if not ann_id:
+                    continue
+                metazoa_lookup[ann_id] = row
         return metazoa_lookup
 
     def merge(
@@ -56,16 +68,16 @@ class CSVLabelPredictionsMerger:
 
             for row in reader:
                 self.stats["total_rows"] += 1
-                ann_id = row['annotation_id']
+                ann_id = self._normalize_id(row.get('annotation_id'))
                 
                 # If the object exists in the metazoa predictions, evaluate for replacement
-                if ann_id in met_lookup:
+                if ann_id and ann_id in met_lookup:
                     met_row = met_lookup[ann_id]
                     
-                    gen_label = row['label_id']
+                    gen_label = self._normalize_id(row.get('label_id'))
                     gen_conf = float(row['confidence'])
                     
-                    met_label = met_row['label_id']
+                    met_label = self._normalize_id(met_row.get('label_id'))
                     met_conf = float(met_row['confidence'])
                     met_user = met_row['user_id']
 
@@ -83,8 +95,8 @@ class CSVLabelPredictionsMerger:
 
                     if should_replace:
                         row['label_id'] = met_label
-                        row['user_id'] = met_user  # Update user_id as requested
-                        row['confidence'] = f"{met_conf:.4f}" # Optional: update confidence too
+                        row['user_id'] = met_user  # Update user_id
+                        row['confidence'] = f"{met_conf:.3f}" # Optional: update confidence too
                         self.stats["labels_replaced"] += 1
 
                 writer.writerow(row)
