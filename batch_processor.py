@@ -708,51 +708,50 @@ def generate_and_process_batch_configs(
     #     processor.remove_background()
 
 
-            # =========================================
-            # BATCH PROCESSING (OK!)
+        # =========================================
+        # BATCH PROCESSING (OK!)
 
-            # sample_name =  "R04_B"
-            #
-            # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-            # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
-            # logger.info(f"Input directory: {input_dir}")
-            # logger.info(f"Output directory: {output_dir}")
-            #
-            # process_background_remover(input_dir=input_dir,
-            #                            output_dir=output_dir,
-            #                            image_pattern=f"{sample_name}*.jpg")
-            #
-            # logger.info("Successfully completed batch processing")
+        # sample_name =  "R04_B"
+        #
+        # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+        # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
+        # logger.info(f"Input directory: {input_dir}")
+        # logger.info(f"Output directory: {output_dir}")
+        #
+        # process_background_remover(input_dir=input_dir,
+        #                            output_dir=output_dir,
+        #                            image_pattern=f"{sample_name}*.jpg")
+        #
+        # logger.info("Successfully completed batch processing")
 
-            # =========================================
-            # # Segmentation and cropping
-            # #
-            # -----------------------------------------
-            # # Option 1 (OK): Generate Configuration Files Only.
+        # =========================================
+        # # Segmentation and cropping
+        # #
+        # -----------------------------------------
+        # # Option 1 (OK): Generate Configuration Files Only.
 
-            # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
-            #
-            # config_files = generate_configuration_files_only(
-            #     sample_name="BM3-F",
-            #     raw_image_pattern="BM3-F*.jpg",
-            #     raw_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
-            #     no_background_image_pattern="*_no_bkgd.png",
-            #     no_background_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
-            #     max_distance=4.0,
-            #     min_pixels=1000,
-            #     padding=35,
-            #     cropping=True,
-            #     config_output_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
-            # )
-            #
-            # if config_files:
-            #     logger.info(
-            #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
-            #     logger.info(
-            #         "You can now process these configurations using the other options below.")
-            # else:
-            #     logger.error(
-            #         "No configuration files were generated. Please check your parameters.")
+        # logger.info("=== OPTION 1: Generate Configuration Files Only ===")
+        #
+        # config_files = generate_configuration_files_only(
+        #     sample_name="BM3-F",
+        #     raw_image_pattern="BM3-F*.jpg",
+        #     raw_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
+        #     no_background_image_pattern="*_no_bkgd.png",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/",
+        #     max_distance=4.0,
+        #     min_pixels=1000,
+        #     padding=35,
+        #     cropping=True,
+        #     config_output_path="/Users/aavelino/Downloads/2025_09_10_Emilie/BM3-F/2_configs_for_segm/"
+        # )
+        #
+        # if config_files:
+        #     logger.info(
+        #         f"Configuration generation completed successfully. Created {len(config_files)} files.")
+        #     logger.info(
+        #         "You can now process these configurations using the other options below.")
+        # else:
+        #     logger.error(
         #         "No configuration files were generated. Please check your parameters.")
 
         # -----------------------------------------
@@ -776,58 +775,58 @@ def generate_and_process_batch_configs(
             # else:
             #     logger.info(f"Config directory not found: {config_directory}")
 
-            # -----------------------------------------
-            # # Option 3 (OK): Complete workflow - Generate configs and process them
-            # # generating the segmentation plot and the individual cropped images.
+        # -----------------------------------------
+        # # Option 3 (OK): Complete workflow - Generate configs and process them
+        # # generating the segmentation plot and the individual cropped images.
 
-            # sample_name =  "Untitled74_m0002"
-            #
-            # logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
-            #
-            # results = generate_and_process_batch_configs(
-            #     sample_name = sample_name,
-            #
-            #     # raw_image_pattern = f"{sample_name}*.jpg",
-            #     # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-            #     # no_background_image_pattern = "*_no_bkgd.png",
-            #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-            #
-            #     raw_image_pattern=f"{sample_name}*.png",
-            #     raw_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/",
-            #     no_background_image_pattern="*_no_bkgd.png",
-            #     no_background_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/",
-            #
-            #     max_distance=10.0,
-            #     min_pixels=1000,
-            #     padding=35,
-            #     cropping=True,
-            #     # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
-            #     use_nonwhitepixel_as_bboxcenter = False,
-            #     create_cropped_images = True,
-            #     include_segmentation = False
-            # )
-            #
-            # logger.info(
-            #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
+        # sample_name =  "Untitled74_m0002"
+        #
+        # logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
+        #
+        # results = generate_and_process_batch_configs(
+        #     sample_name = sample_name,
+        #
+        #     # raw_image_pattern = f"{sample_name}*.jpg",
+        #     # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        #     # no_background_image_pattern = "*_no_bkgd.png",
+        #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        #
+        #     raw_image_pattern=f"{sample_name}*.png",
+        #     raw_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/",
+        #     no_background_image_pattern="*_no_bkgd.png",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/",
+        #
+        #     max_distance=10.0,
+        #     min_pixels=1000,
+        #     padding=35,
+        #     cropping=True,
+        #     # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
+        #     use_nonwhitepixel_as_bboxcenter = False,
+        #     create_cropped_images = True,
+        #     include_segmentation = False
+        # )
+        #
+        # logger.info(
+        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
-            # -----------------------------------------
-            # Option 4 (OK): Process individual configuration file (for testing/debugging)
-            # logger.info("=== OPTION 4: Single Configuration File Processing ===")
-            #
-            # single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
-            # if Path(single_config_path).exists():
-            #     processor_single = BatchConfigProcessor(
-            #         json_path=str(Path(single_config_path).parent),
-            #         filename_pattern=Path(single_config_path).name
-            #     )
-            #
-            #     # Process just this one file
-            #     single_result = processor_single.process_single_config(
-            #         Path(single_config_path))
-            #     if single_result:
-            #         logger.info("Single file processing successful")
-            #     else:
-            #         logger.error("Single file processing failed")
+        # -----------------------------------------
+        # Option 4 (OK): Process individual configuration file (for testing/debugging)
+        # logger.info("=== OPTION 4: Single Configuration File Processing ===")
+        #
+        # single_config_path = "/Users/aavelino/Downloads/images/BM4_E_sandbox/tests/segmentation/capt0011_config.json"
+        # if Path(single_config_path).exists():
+        #     processor_single = BatchConfigProcessor(
+        #         json_path=str(Path(single_config_path).parent),
+        #         filename_pattern=Path(single_config_path).name
+        #     )
+        #
+        #     # Process just this one file
+        #     single_result = processor_single.process_single_config(
+        #         Path(single_config_path))
+        #     if single_result:
+        #         logger.info("Single file processing successful")
+        #     else:
+        #         logger.error("Single file processing failed")
 
             # =========================================
             # # Segmentation by color (No Ok, old)
