@@ -688,8 +688,8 @@ def generate_and_process_batch_configs(
     #     # -----------
 
     #     processor = BackgroundRemover(
-    #         image_path = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/row_data/1_vol_02_03_04/Archives_biigle_Arthuro_2/Images/BM4_E/capt0037.jpg",
-    #         output_dir = "/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/preprocessing/vol_02_03_04/3_data_augment/1_find_out_the_background_color",
+    #         image_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/BM4_E_stitched_low.jpg",
+    #         output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/",
     #         n_clusters = n_clusters  # Default: 5
     #         # kmeans_init_centers = custom_centers # (optional)
     #     )
