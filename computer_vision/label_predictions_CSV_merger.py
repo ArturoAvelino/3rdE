@@ -7,6 +7,50 @@ class CSVLabelPredictionsMerger:
     Combines predictions from a 'generalist' model and a 'metazoa' model.
     The generalist file acts as the primary template, but specific objects are
     updated with metazoa labels based on user-defined confidence thresholds.
+
+	- This class merges two label-prediction CSV files—generalist
+	  (primary) and metazoa—into a single image_annotation_labels.csv,
+	  keyed by annotation_id.
+
+	- The generalist file is the baseline. Rows are updated only when
+	  confidence is low or the generalist prediction is
+	  missing/unclassified.
+
+	Decision rules (per annotation_id):
+
+		- If the generalist prediction has confidence >= gen_threshold,
+		  keep the generalist (label_id, user_id, confidence) unchanged.
+
+		- If the generalist prediction has confidence < gen_threshold:
+
+			- If metazoa has a prediction with confidence >=
+			  met_threshold, replace the generalist fields with
+			  metazoa’s (label_id, user_id, confidence).
+
+			- If metazoa has a prediction but confidence < met_threshold,
+			  output an unclassified prediction: label_id = 4196, user_id
+			  = 5, confidence = 0.000.
+
+			- If metazoa has no prediction, output unclassified with the
+			  same default values.
+
+		- If the generalist prediction is unclassified (label_id = 4196)
+		  and metazoa has a prediction with confidence >= met_threshold,
+		  replace the unclassified entry with metazoa’s prediction.
+
+		- If the generalist has no prediction for an object but metazoa
+		  does (with confidence >= met_threshold), use metazoa’s
+		  prediction; otherwise keep it unclassified.
+
+	Defaults:
+
+	- Unclassified prediction is always recorded as label_id = 4196,
+	  user_id = 5, confidence = 0.000.
+	- Missing prediction is recorded as label_id = 4196, user_id = 5,
+	  confidence = 0.000.
+	- Unspecified confidence threshold defaults to 0.000.
+	- Unspecified default label ID defaults to 4196.
+
     """
 
     def __init__(
