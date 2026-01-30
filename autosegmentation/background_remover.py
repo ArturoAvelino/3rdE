@@ -267,14 +267,24 @@ class BackgroundRemover:
             if self.default_kmeans_init_centers is not None:
                 kmeans_init_centers = self.default_kmeans_init_centers
             elif n_clusters == 5:
-                # Use hardcoded centers for backward compatibility
+                # Default colors values to remove the background when the cluster
+                # centers nor the number of clusters are provided or it is 5.
                 kmeans_init_centers = np.asarray([
-                    [79.49, 130.62, 189.84],
-                    [131.84, 107.86, 76.36],
-                    [178.59, 173.83, 159.51],
-                    [47.20, 28.64, 18.90],
-                    [114.45, 146.57, 187.97]
+                    [48.602, 72.471, 161.70], # dark blue = most of the background color
+                    [136.23, 147.01, 187.39], # between gray and blue = limit between background color and yello insects
+                    [206.84, 207.95, 221.72], # white insects
+                    [91.067, 65.410, 47.551], # brown = most of the brown insects
+                    [74.288, 106.88, 193.30]  # blue = part of the background color
                 ])
+
+                # # Old values: July 2025
+                #old. kmeans_init_centers = np.asarray([
+                #old.     [79.49, 130.62, 189.84],
+                #old.     [131.84, 107.86, 76.36],
+                #old.     [178.59, 173.83, 159.51],
+                #old.     [47.20, 28.64, 18.90],
+                #old.     [114.45, 146.57, 187.97]
+                #old. ])
 
         # Validate init_centers if provided
         if kmeans_init_centers is not None:
@@ -505,7 +515,6 @@ class BackgroundRemover:
         # plt.show() # Uncomment to display an interactive 3D plot
         plt.close()
         return self
-
 
 
     def plot_rgb_clusters(self,
