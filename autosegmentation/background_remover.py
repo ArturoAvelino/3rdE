@@ -438,17 +438,19 @@ class BackgroundRemover:
         plt.tight_layout()
 
         if save:
-            # Save the comparison plot
-            plot_path = self.output_dir / f"{self.image_path.stem}{output_suffix}_comparison.png"
-            plt.savefig(plot_path, dpi=150, bbox_inches='tight')
+            # # Save the comparison plot
+            # plot_path = self.output_dir / f"{self.image_path.stem}{output_suffix}_comparison.png"
+            # plt.savefig(plot_path, dpi=150, bbox_inches='tight')
 
             # Save just the segmented image
             segmented_path = self.output_dir / f"{self.image_path.stem}{output_suffix}.png"
             segmented_image.save(segmented_path, format='PNG')
 
             if self.logger:
-                self.logger.info(
-                    f"Saved segmented image comparison to {plot_path}")
+
+                # self.logger.info(
+                #     f"Saved segmented image comparison to {plot_path}")
+
                 self.logger.info(f"Saved segmented image to {segmented_path}")
 
         # plt.show()
@@ -500,7 +502,7 @@ class BackgroundRemover:
             if self.logger:
                 self.logger.info(f"Saved cluster plot to {plot_path}")
 
-        plt.show() # Uncomment to display an interactive 3D plot
+        # plt.show() # Uncomment to display an interactive 3D plot
         plt.close()
         return self
 
