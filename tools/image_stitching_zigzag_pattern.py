@@ -88,12 +88,23 @@ def stitch_images(filename_list_path, rows=13, cols=8, h_overlap=300, v_overlap=
 
 # Example usage
 if __name__ == "__main__":
-    filename_list_path = "/Users/aavelino/Downloads/images_biigle/Archives biigle Arthuro-2/Images/BM13_B_margo/image_to_stitch.txt"  # Your text file with image filenames
-    output_path = "final_stitched_image.jpg"
+
+    # # # Your text file with image filenames:
+    # filename_list_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A01-B2/images_to_stitich.txt"
+
+    # # Include also the desired output filename and its extension!:
+    # output_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects//A01-B2//A01-B2_stitched.jpg"
+
+
+    # # Your text file with image filenames:
+    filename_list_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A02-E/images_to_stitich.txt"
+
+    # Include also the desired output filename and its extension!:
+    output_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A02-E/A02-E_stitched.jpg"
     
     stitched_image = stitch_images(
         filename_list_path,
-        rows=13,
+        rows=12,
         cols=8,
         h_overlap=372,
         v_overlap=422,
