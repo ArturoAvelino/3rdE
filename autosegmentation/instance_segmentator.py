@@ -126,7 +126,10 @@ class InstanceSegmentation:
     Output Files:
     ------------
     1. Visualization:
-       - PNG file showing detected objects with different colors
+       - JPG file showing detected objects with different colors
+         (e.g., `{image_stem}_pixel_groups.jpg`)
+       - Optional no-margins JPG file when enabled
+         (e.g., `{image_stem}_pixel_groups_no_margins.jpg`)
 
     2. Statistics:
        - Text file with object statistics
@@ -443,8 +446,29 @@ class InstanceSegmentation:
                 print(f"Processed {i + chunk_size}/{len(coords)} points...")
 
         # Filter and relabel groups
-        valid_labels = {label for label, pixels in group_pixels.items()
-                       if len(pixels) >= self.min_pixels}
+        min_length_enabled = self.min_length is not None and self.min_length > 0
+        length_strategy = str(self.length_strategy).lower()
+        valid_length_strategies = {'bbox', 'pca', 'skeleton'}
+        if length_strategy not in valid_length_strategies:
+            raise ValueError(
+                f"Invalid length_strategy '{self.length_strategy}'. "
+                f"Supported values: {', '.join(sorted(valid_length_strategies))}."
+            )
+
+        def group_length(pixels):
+            if length_strategy == 'bbox':
+                return self._bbox_diagonal_length(pixels)
+            if length_strategy == 'pca':
+                return self._pca_major_axis_length(pixels)
+            return self._skeleton_length(pixels)
+
+        valid_labels = set()
+        for label, pixels in group_pixels.items():
+            if len(pixels) >= self.min_pixels:
+                valid_labels.add(label)
+                continue
+            if min_length_enabled and group_length(pixels) >= self.min_length:
+                valid_labels.add(label)
 
         final_labels = np.full(len(coords), -1)
         new_label = 0
@@ -459,7 +483,10 @@ class InstanceSegmentation:
 
         end_time = time.time()
         print(f"Segmentation completed in {end_time - start_time:.2f} seconds")
-        print(f"Found {new_label} valid groups (with ≥{self.min_pixels} pixels) "
+        criteria_description = f"≥{self.min_pixels} pixels"
+        if min_length_enabled:
+            criteria_description += f" or {length_strategy} length ≥{self.min_length} pixels"
+        print(f"Found {new_label} valid groups (with {criteria_description}) "
               f"out of {labels_all_groups} total groups")
 
     def _bbox_diagonal_length(self, pixels):
@@ -613,8 +640,14 @@ class InstanceSegmentation:
             plt.xlabel('X coordinate')
             plt.ylabel('Y coordinate')
             plt.gca().invert_yaxis()
+            min_length_enabled = self.min_length is not None and self.min_length > 0
+            criteria_description = f"minimum {self.min_pixels} pixels"
+            if min_length_enabled:
+                criteria_description += (
+                    f" or {str(self.length_strategy).lower()} length >= {self.min_length} pixels"
+                )
             plt.title(
-                f'Filtered Pixel Groups (minimum {self.min_pixels} pixels, '
+                f'Filtered Pixel Groups ({criteria_description}, '
                 f'distance <= {self.max_distance} pixels)')
             plt.tight_layout()
 
@@ -666,13 +699,21 @@ class InstanceSegmentation:
                 print(f"- Sample name: {self.sample_name}")
                 print(f"- Image filename: {self.nobackground_image_path.name}")
                 print(f"- Minimal size area of the objects: {self.min_pixels} pixels")
+                if self.min_length is not None and self.min_length > 0:
+                    print(f"- Minimal {str(self.length_strategy).lower()} length of thin objects: {self.min_length} pixels")
                 print(f"- Maximum distance between pixels: {self.max_distance} pixels")
                 print("\n------------------------\n")
 
                 valid_labels = self.segmented_image[self.segmented_image[:, -1] >= 0][:, -1]
                 unique_labels = np.unique(valid_labels)
 
-                print(f"Found {len(unique_labels)} valid groups (i.e., that are >= {self.min_pixels} pixels) "
+                min_length_enabled = self.min_length is not None and self.min_length > 0
+                criteria_description = f">= {self.min_pixels} pixels"
+                if min_length_enabled:
+                    criteria_description += (
+                        f" or {str(self.length_strategy).lower()} length >= {self.min_length} pixels"
+                    )
+                print(f"Found {len(unique_labels)} valid groups (i.e., that are {criteria_description}) "
                       f"out of {self.total_groups} total groups.")
                 print("Note: the segmentation has been done on the image without background.")
                 print("\nStatistics for valid groups:")
