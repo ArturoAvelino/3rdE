@@ -631,98 +631,101 @@ def generate_and_process_batch_configs(
 # ##############################################################################
 # Remove background and segment the objects found in an image (OK!)
 
-# def main():
+def main():
 
-    # # # sample_name = "F13_CL"
+    # sample_name = "F13_CL"
 
-    # # # Setup logging (will create processing.log in the input directory)
-    # log_output_dir = Path(
-    #     # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-    #     "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/"
-    # )
+    # # Setup logging (will create processing.log in the input directory)
+    log_output_dir = Path(
+        # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+        "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A01-A/1_background_removal"
+    )
 
-    # if not log_output_dir.exists():
-    #     print(f"Error: Log save directory not found: {log_output_dir}")
-    #     return
+    if not log_output_dir.exists():
+        log_output_dir.mkdir(parents=True, exist_ok=True)
 
-    # setup_logging(log_output_dir)
-    # logger = logging.getLogger(__name__)
-    # logger.info("Starting batch processing of images ...")
+    setup_logging(log_output_dir)
+    logger = logging.getLogger(__name__)
+    logger.info("Starting batch processing of images ...")
 
-    # try:
-
-    #     # =========================================
-    #     # SINGLE IMAGE PROCESSING (OK!)
-
-    #     # Remove the color background from images using clustering (OK).
-
-    #     import numpy as np
-    #     # -----------
-    #     # # For arthropods
-
-    #     n_clusters = 5
-    #     color_clusters_to_remove = [0, 4]
-
-    #     # -----------
-    #     # # For amoebas
-
-    #     # n_clusters = 5
-    #     # custom_centers = np.asarray(
-    #     #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-    #     #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
-    #     #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
-    #     #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
-    #     #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-    #     # color_clusters_to_remove = [3]
-
-    #     # n_clusters = 6
-    #     # custom_centers = np.asarray(
-    #     #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
-    #     #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
-    #     #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
-    #     #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
-    #     #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
-    #     #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
-    #     # color_clusters_to_remove = [4]
-
-    #     # -----------
-
-    #     processor = BackgroundRemover(
-    #         image_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/BM4_E_stitched_low.jpg",
-    #         output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/",
-    #         n_clusters = n_clusters  # Default: 5
-    #         # kmeans_init_centers = custom_centers # (optional)
-    #     )
-
-    #     sampling_ratio = 1000 # For regular images use 1000, for cropped-small images use 10
-    #     processor.cluster_rgb_colors()
-    #     processor.plot_rgb_rawdata(sample_step=sampling_ratio)
-    #     processor.plot_rgb_clusters(sample_step=sampling_ratio)
-    #     processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
-    #     processor.plot_replaced_colors_in_image()
-
-    #     # Remove (i.e., transform to white color or some other predefined color) some specific colors.
-    #     processor.remove_background(background_clusters=color_clusters_to_remove)
-
-    #     # Or simply use the default value = "[0, 4]" (for arthropods):
-    #     processor.remove_background()
-
+    try:
 
         # =========================================
-        # BATCH PROCESSING (OK!)
+        # # Remove the color background from images using clustering (OK).
+        # # BATCH PROCESSING (OK!)
 
-        # sample_name =  "R04_B"
-        #
-        # input_dir = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-        # output_dir = Path(f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}/")
+        # sample_name =  "BM4_E"
+
+        # input_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/raw_data/1_vol_02_03_04/images/{sample_name}"
+        # output_dir = Path(f"/Users/aavelino/Downloads/BiosoilAI/7_big_insects/{sample_name}/")
         # logger.info(f"Input directory: {input_dir}")
         # logger.info(f"Output directory: {output_dir}")
-        #
+
         # process_background_remover(input_dir=input_dir,
         #                            output_dir=output_dir,
-        #                            image_pattern=f"{sample_name}*.jpg")
-        #
+        #                            # image_pattern=f"{sample_name}*.jpg"
+        #                            image_pattern=f"capt*.jpg"
+        #                            )
+
         # logger.info("Successfully completed batch processing")
+
+        # # =========================================
+        # # Remove the color background from images using clustering (OK).
+        # # SINGLE IMAGE PROCESSING (OK!)
+
+        # import numpy as np
+        # # -----------
+        # # # For arthropods
+
+        # n_clusters = 5
+        # color_clusters_to_remove = [0, 4] # Default: [0, 4]
+
+        # # -----------
+        # # # For amoebas
+
+        # # n_clusters = 5
+        # # custom_centers = np.asarray(
+        # #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+        # #      [196.0491677412308, 196.8564069144558, 196.3449798997889],
+        # #      [88.50986629549402, 92.57300105848267, 97.07617553557779],
+        # #      [254.19593980921056, 254.32944373622792, 254.32832820257102],
+        # #      [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+        # # color_clusters_to_remove = [3]
+
+        # # n_clusters = 6
+        # # custom_centers = np.asarray(
+        # #     [[223.956243077072, 224.19688719488295, 223.72036967281022],
+        # #     [130.10775578641318, 132.94751572010676, 133.99591970661163],
+        # #     [196.0491677412308, 196.8564069144558, 196.3449798997889],
+        # #     [88.50986629549402, 92.57300105848267, 97.07617553557779],
+        # #     [254.19593980921056, 254.32944373622792, 254.32832820257102],
+        # #     [166.00531786843334, 167.54070552126836, 166.61084057791894]])
+        # # color_clusters_to_remove = [4]
+
+        # # -----------
+
+        # processor = BackgroundRemover(
+        #     image_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A02-E/A02-E_stitched_width_4000.jpg",
+        #     output_dir = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A02-E/1_background_removal",
+        #     n_clusters = n_clusters  # Default: 5
+        #     # kmeans_init_centers = custom_centers # (optional)
+        # )
+
+        # # For regular images use 1000, for cropped-small images use 10, for
+        # # stiched image at full resolution use 10000
+        # sampling_ratio = 1000
+        # processor.cluster_rgb_colors()
+        # processor.plot_rgb_rawdata(sample_step=sampling_ratio)
+        # processor.plot_rgb_clusters(sample_step=sampling_ratio)
+        # processor.plot_rgb_clusters_colorful(sample_step=sampling_ratio)
+        # processor.plot_replaced_colors_in_image()
+
+        # # Remove (i.e., transform to white color or some other predefined color) some specific colors.
+        # processor.remove_background(background_clusters=color_clusters_to_remove)
+
+        # # # # Or simply use the default value = "[0, 4]" (for arthropods):
+        # # # processor.remove_background()
+
 
         # =========================================
         # # Segmentation and cropping
@@ -777,38 +780,39 @@ def generate_and_process_batch_configs(
         #     logger.info(f"Config directory not found: {config_directory}")
 
         # -----------------------------------------
-        # # Option 3 (OK): Complete workflow - Generate configs and process them
-        # # generating the segmentation plot and the individual cropped images.
+        # Option 3 (OK): Complete workflow - Generate configs and process them
+        # generating the segmentation plot and the individual cropped images.
 
-        # sample_name =  "Untitled74_m0002"
-        #
-        # logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
-        #
-        # results = generate_and_process_batch_configs(
-        #     sample_name = sample_name,
-        #
-        #     # raw_image_pattern = f"{sample_name}*.jpg",
-        #     # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-        #     # no_background_image_pattern = "*_no_bkgd.png",
-        #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-        #
-        #     raw_image_pattern=f"{sample_name}*.png",
-        #     raw_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/",
-        #     no_background_image_pattern="*_no_bkgd.png",
-        #     no_background_image_batch_path="/Users/aavelino/Downloads/Amoebas/1_segmentation/originals/2_segmentation/",
-        #
-        #     max_distance=10.0,
-        #     min_pixels=1000,
-        #     padding=35,
-        #     cropping=True,
-        #     # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
-        #     use_nonwhitepixel_as_bboxcenter = False,
-        #     create_cropped_images = True,
-        #     include_segmentation = False
-        # )
-        #
-        # logger.info(
-        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
+        # sample_name =  "BM4_E_stitched_low"
+        sample_name =  "big_insects_segm_test_1"
+
+        logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
+
+        results = generate_and_process_batch_configs(
+            sample_name = sample_name,
+
+            # raw_image_pattern = f"{sample_name}*.jpg",
+            # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+            # no_background_image_pattern = "*_no_bkgd.png",
+            # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+
+            raw_image_pattern = "*.jpg",
+            raw_image_batch_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/stitched",
+            no_background_image_pattern="*_no_bkgd.png",
+            no_background_image_batch_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/no_bkgd",
+
+            max_distance = 4, # 10 for the regular indvidual pictures
+            min_pixels = 5000,  # 1000 for the regular indvidual pictures
+            padding = 10,   # 35 for the regular indvidual pictures
+            cropping=True,
+            # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
+            use_nonwhitepixel_as_bboxcenter = False,
+            create_cropped_images = True,
+            include_segmentation = True # Generate the segmentation file
+        )
+
+        logger.info(
+            f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
         # -----------------------------------------
         # Option 4 (OK): Process individual configuration file (for testing/debugging)
@@ -914,11 +918,11 @@ def generate_and_process_batch_configs(
             # #     min_samples=5
             # # )
 
-#     except Exception as e:
-#         logger.error(f"An unexpected error occurred: {str(e)}")
-#         raise
-# if __name__ == "__main__":
-#     main()
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        raise
+if __name__ == "__main__":
+    main()
 
 # ########################################################60
 
@@ -1775,15 +1779,15 @@ def generate_and_process_batch_configs(
 # # ########################################################60
 # # Function to filter annotations by labels (OK!)
 
-from computer_vision.trim_Biigle_annotations_file import filter_annotations_by_labels
+# from computer_vision.trim_Biigle_annotations_file import filter_annotations_by_labels
 
-filter_annotations_by_labels(
-    "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/for_Biigle/02122025_L_6/image_annotations.csv",
-    "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_labels_merged_original.csv",
-    "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_filtered.csv",
-    annotations_id_col="id",
-    labels_id_col="annotation_id"
-)
+# filter_annotations_by_labels(
+#     "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/for_Biigle/02122025_L_6/image_annotations.csv",
+#     "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_labels_merged_original.csv",
+#     "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_filtered.csv",
+#     annotations_id_col="id",
+#     labels_id_col="annotation_id"
+# )
 
 # # ########################################################60
 # # Function to use supervision library for evaluating models performance
@@ -1800,5 +1804,4 @@ filter_annotations_by_labels(
     #     )
 
 # # ########################################################60
-
 
