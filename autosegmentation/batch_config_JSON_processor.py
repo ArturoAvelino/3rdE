@@ -37,6 +37,8 @@ class BatchConfigProcessor:
     - `processing_parameters`: Processing settings
       - `max_distance`: Maximum distance parameter for segmentation
       - `min_pixels`: Minimum pixel count for object detection
+      - `min_length`: Minimum length threshold for thin object detection
+      - `length_strategy`: Length strategy ("bbox", "pca", "skeleton")
       - `cropping`: Boolean flag to enable/disable cropping operations
     - `output`: Output directory specifications
 
@@ -326,6 +328,8 @@ class BatchConfigProcessor:
                 if 'processing_parameters' in config:
                     info['max_distance'] = config['processing_parameters'].get('max_distance', 'N/A')
                     info['min_pixels'] = config['processing_parameters'].get('min_pixels', 'N/A')
+                    info['min_length'] = config['processing_parameters'].get('min_length', 'N/A')
+                    info['length_strategy'] = config['processing_parameters'].get('length_strategy', 'N/A')
                     info['cropping'] = config['processing_parameters'].get('cropping', 'N/A')
                 
                 files_info.append(info)

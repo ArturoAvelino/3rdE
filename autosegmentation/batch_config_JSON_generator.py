@@ -45,7 +45,7 @@ class BatchConfigGenerator:
     ----------------------------
     Each generated JSON file contains:
     - image_info: Paths to raw and no-background images, sample name
-    - processing_parameters: Algorithm settings (max_distance, min_pixels, padding, cropping)
+    - processing_parameters: Algorithm settings (max_distance, min_pixels, min_length, length_strategy, padding, cropping)
     - output: Directory path for processing results
 
     Supported Naming Conventions:
@@ -65,6 +65,8 @@ class BatchConfigGenerator:
         no_background_image_batch_path="/path/to/processed/images/",
         max_distance=4.0,
         min_pixels=1000,
+        min_length=200,
+        length_strategy="bbox",
         padding=35,
         cropping=True,
         output_path="/path/to/output/configs/"
@@ -107,6 +109,8 @@ class BatchConfigGenerator:
     no_background_image_batch_path (str): Directory path containing no-background images
     max_distance (float): Maximum distance parameter for image processing algorithms
     min_pixels (int): Minimum pixel count threshold for object detection
+    min_length (float): Minimum length threshold for thin object detection
+    length_strategy (str): Length strategy ("bbox", "pca", "skeleton")
     padding (int): Padding value for cropping operations
     cropping (bool): Enable/disable cropping functionality
     output_path (str): Directory where configuration files will be saved
@@ -145,6 +149,8 @@ class BatchConfigGenerator:
       "processing_parameters": {
         "max_distance": 4.0,
         "min_pixels": 1000,
+        "min_length": 200,
+        "length_strategy": "bbox",
         "padding": 35,
         "cropping": "true"
       },
@@ -177,7 +183,8 @@ class BatchConfigGenerator:
     
     def __init__(self, sample_name: str, raw_image_pattern: str, raw_image_batch_path: str,
                  no_background_image_pattern: str, no_background_image_batch_path: str,
-                 max_distance: float, min_pixels: int, padding: int, cropping: bool, output_path: str):
+                 max_distance: float, min_pixels: int, padding: int, cropping: bool, output_path: str,
+                 min_length: float = 200, length_strategy: str = "bbox"):
         """Initialize the batch config generator with processing parameters."""
         self.sample_name = sample_name
         self.raw_image_pattern = raw_image_pattern
@@ -186,6 +193,8 @@ class BatchConfigGenerator:
         self.no_background_image_batch_path = Path(no_background_image_batch_path)
         self.max_distance = max_distance
         self.min_pixels = min_pixels
+        self.min_length = min_length
+        self.length_strategy = length_strategy
         self.padding = padding
         self.cropping = cropping
         self.output_path = Path(output_path)
@@ -290,6 +299,8 @@ class BatchConfigGenerator:
             "processing_parameters": {
                 "max_distance": self.max_distance,
                 "min_pixels": self.min_pixels,
+                "min_length": self.min_length,
+                "length_strategy": self.length_strategy,
                 "padding": self.padding,
                 "cropping": "true" if self.cropping else "false"
             },
