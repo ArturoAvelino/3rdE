@@ -462,6 +462,103 @@ class InstanceSegmentation:
         print(f"Found {new_label} valid groups (with ≥{self.min_pixels} pixels) "
               f"out of {labels_all_groups} total groups")
 
+    def _bbox_diagonal_length(self, pixels):
+        x_coords = pixels[:, 0]
+        y_coords = pixels[:, 1]
+        dx = x_coords.max() - x_coords.min()
+        dy = y_coords.max() - y_coords.min()
+        return np.hypot(dx, dy)
+
+    def _pca_major_axis_length(self, pixels):
+        if len(pixels) < 2:
+            return 0.0
+        centered = pixels - pixels.mean(axis=0)
+        cov = np.cov(centered, rowvar=False, bias=True)
+        eigvals, eigvecs = np.linalg.eigh(cov)
+        major_axis = eigvecs[:, np.argmax(eigvals)]
+        projections = centered @ major_axis
+        return projections.max() - projections.min()
+
+    def _skeleton_length(self, pixels):
+        x_coords = pixels[:, 0].astype(int)
+        y_coords = pixels[:, 1].astype(int)
+        min_x = x_coords.min()
+        max_x = x_coords.max()
+        min_y = y_coords.min()
+        max_y = y_coords.max()
+        width = max_x - min_x + 1
+        height = max_y - min_y + 1
+
+        mask = np.zeros((height, width), dtype=np.uint8)
+        mask[y_coords - min_y, x_coords - min_x] = 1
+
+        if height < 3 or width < 3:
+            skeleton = mask
+        else:
+            skeleton = self._zhang_suen_thinning(mask)
+
+        return self._skeleton_path_length(skeleton)
+
+    def _skeleton_path_length(self, skeleton):
+        if skeleton.sum() == 0:
+            return 0.0
+        right = skeleton[:, 1:] & skeleton[:, :-1]
+        down = skeleton[1:, :] & skeleton[:-1, :]
+        down_right = skeleton[1:, 1:] & skeleton[:-1, :-1]
+        down_left = skeleton[1:, :-1] & skeleton[:-1, 1:]
+        length = right.sum() + down.sum()
+        length += np.sqrt(2) * (down_right.sum() + down_left.sum())
+        return float(length)
+
+    def _zhang_suen_thinning(self, image):
+        skeleton = image.copy().astype(np.uint8)
+        rows, cols = skeleton.shape
+        changed = True
+
+        while changed:
+            changed = False
+            for step in (0, 1):
+                to_remove = []
+                for y in range(1, rows - 1):
+                    for x in range(1, cols - 1):
+                        if skeleton[y, x] != 1:
+                            continue
+                        p2 = skeleton[y - 1, x]
+                        p3 = skeleton[y - 1, x + 1]
+                        p4 = skeleton[y, x + 1]
+                        p5 = skeleton[y + 1, x + 1]
+                        p6 = skeleton[y + 1, x]
+                        p7 = skeleton[y + 1, x - 1]
+                        p8 = skeleton[y, x - 1]
+                        p9 = skeleton[y - 1, x - 1]
+                        neighbors = [p2, p3, p4, p5, p6, p7, p8, p9]
+                        neighbor_sum = sum(neighbors)
+                        if neighbor_sum < 2 or neighbor_sum > 6:
+                            continue
+                        transitions = 0
+                        for i in range(8):
+                            if neighbors[i] == 0 and neighbors[(i + 1) % 8] == 1:
+                                transitions += 1
+                        if transitions != 1:
+                            continue
+                        if step == 0:
+                            if p2 * p4 * p6 != 0:
+                                continue
+                            if p4 * p6 * p8 != 0:
+                                continue
+                        else:
+                            if p2 * p4 * p8 != 0:
+                                continue
+                            if p2 * p6 * p8 != 0:
+                                continue
+                        to_remove.append((y, x))
+                if to_remove:
+                    changed = True
+                    for y, x in to_remove:
+                        skeleton[y, x] = 0
+
+        return skeleton
+
 
     def generate_plot(self, padding=35, no_margins=None, generate_both=False):
         """
