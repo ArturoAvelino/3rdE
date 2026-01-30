@@ -24,9 +24,10 @@ class InstanceSegmentation:
     1. Flexible initialization through JSON configuration or direct parameters
     2. Efficient pixel grouping using KD-tree spatial indexing
     3. Configurable object size and distance thresholds
-    4. Automated output generation including visualizations and statistics
-    5. Support for both original and background-removed images
-    6. Batch processing capability
+    4. Optional thin-object selection via length strategies (bbox, PCA, skeleton)
+    5. Automated output generation including visualizations and statistics
+    6. Support for both original and background-removed images
+    7. Batch processing capability
 
     Main Functionalities:
     -------------------
@@ -42,6 +43,7 @@ class InstanceSegmentation:
 
     3. Object Filtering:
        - Filters objects based on minimum pixel count
+       - Optionally keeps thin objects by length threshold (min_pixels OR min_length)
        - Removes noise and insignificant pixel groups
        - Labels valid objects with unique identifiers
 
@@ -82,7 +84,9 @@ class InstanceSegmentation:
             nobackground_image_path="/path/to/image_without_background.jpg",
             output_dir="/path/to/output",
             min_pixels=1000,
-            max_distance=4.0
+            min_length=200,
+            length_strategy="bbox",
+            max_distance=4.0,
             sample_name="sample_name"
         )
         processor.process()
@@ -93,6 +97,9 @@ class InstanceSegmentation:
     - nobackground_image_path: Path to the input image with no background
     - output_dir: Directory for saving outputs
     - min_pixels: Minimum pixel count for valid objects (default: 1000)
+    - min_length: Minimum length (pixels) for valid thin objects (default: 200)
+    - length_strategy: Length strategy ("bbox", "pca", "skeleton"; default: "bbox")
+      Note: "bbox" is the fastest strategy and is used by default.
     - max_distance: Maximum pixel-to-pixel distance for grouping (default: 4.0)
     - sample_name: Sample name.
 
@@ -107,7 +114,9 @@ class InstanceSegmentation:
         },
         "processing_parameters": {
             "max_distance": 4.0,
-            "min_pixels": 1000
+            "min_pixels": 1000,
+            "min_length": 200,
+            "length_strategy": "bbox"
         },
         "output": {
             "directory": "output_dir_path"
@@ -121,11 +130,20 @@ class InstanceSegmentation:
 
     2. Statistics:
        - Text file with object statistics
+         (e.g., `{image_stem}_pixel_groups.txt`)
 
     3. Metadata:
        - Processing parameters
        - Object counts and sizes
        - Image information
+
+    Output Summary:
+    --------------
+    - Segmentation plot(s): saved to the output directory with group labels
+    - Per-image statistics text file with parameters and group sizes
+    - Cropped images and JSON metadata when cropping is enabled via downstream
+      processing (see CropImageAndWriteBBox in batch processing)
+    - In-memory arrays: `segmented_image` (with group labels) and `filtered_image`
 
     Dependencies:
     ------------
@@ -145,6 +163,8 @@ class InstanceSegmentation:
     - Memory usage scales with image size and number of non-background pixels
     - Processing time depends on image size and max_distance parameter
     - Large max_distance values can significantly increase processing time
+    - Length strategy "bbox" is fastest; "pca" and "skeleton" are more expensive
+    - Use "pca" for oriented thin objects, "skeleton" for curvy thin objects
     """
 
     def __init__(self, config_path=None, **kwargs):
@@ -157,6 +177,8 @@ class InstanceSegmentation:
                 - nobackground_image_path (str or Path): Path to the input image with no background
                 - output_dir (str or Path): Directory to save output files
                 - min_pixels (int): Minimum size area of objects
+                - min_length (float): Minimum length in pixels for thin objects
+                - length_strategy (str): Length strategy ("bbox", "pca", "skeleton")
                 - max_distance (float): Maximum distance between pixels to be considered part of the same object
                 - no_margins (bool): Generate plot without margins/borders (default: False)
                 - generate_both_plots (bool): Generate both regular and no-margins plots (default: False)
@@ -174,6 +196,10 @@ class InstanceSegmentation:
             self.output_dir = Path(kwargs['output_dir'])
         if 'min_pixels' in kwargs:
             self.min_pixels = kwargs['min_pixels']
+        if 'min_length' in kwargs:
+            self.min_length = kwargs['min_length']
+        if 'length_strategy' in kwargs:
+            self.length_strategy = kwargs['length_strategy']
         if 'max_distance' in kwargs:
             self.max_distance = kwargs['max_distance']
         if 'padding' in kwargs:
@@ -208,6 +234,10 @@ class InstanceSegmentation:
             self.no_margins = False
         if not hasattr(self, 'generate_both_plots'):
             self.generate_both_plots = False
+        if not hasattr(self, 'min_length'):
+            self.min_length = 200
+        if not hasattr(self, 'length_strategy'):
+            self.length_strategy = 'bbox'
 
 
     def load_config(self, json_path):
@@ -281,6 +311,12 @@ class InstanceSegmentation:
             proc_params = config['processing_parameters']
             self.max_distance = float(proc_params.get('max_distance', 4.0))
             self.min_pixels = int(proc_params.get('min_pixels', 1000))
+            min_length_value = proc_params.get('min_length', 200)
+            if min_length_value is None:
+                self.min_length = None
+            else:
+                self.min_length = float(min_length_value)
+            self.length_strategy = proc_params.get('length_strategy', 'bbox')
 
             # This info is not used in this class but will be passed to the
             # 'CropImageAndWriteBBox' class as an input parameter for cropping:
