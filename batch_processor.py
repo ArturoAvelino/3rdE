@@ -809,6 +809,16 @@ def main():
 
             max_distance = 4, # 10 for the regular indvidual pictures
             min_pixels = 5000,  # 1000 for the regular indvidual pictures
+
+            # Strategy to measure the objects size to be then used as parameter to
+            # compare with the "min_length" variable. Options:
+            #    - "bbox" = lenght of the diagonal lenght of the bounding box enclosing the object.
+            #    - "pca", = first axis of the principal component analysis.
+            #    - "skeleton" = a 8 points skeleton.
+            # The "bbox" is the fastest strategy in terms of computing time.
+            length_strategy = "bbox",
+            min_length = 200, # minimum object lenght size.
+
             padding = 10,   # 35 for the regular indvidual pictures
             cropping=True,
             # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
