@@ -552,6 +552,8 @@ def generate_and_process_batch_configs(
         no_background_image_batch_path: str,
         max_distance: float = 4.0,
         min_pixels: int = 1000,
+        min_length: float = 200,
+        length_strategy: str = "bbox",
         padding: int = 35,
         cropping: bool = True,
         config_output_path: str = None,
@@ -573,6 +575,8 @@ def generate_and_process_batch_configs(
         no_background_image_batch_path (str): Path to no-background images directory
         max_distance (float): Maximum distance for segmentation
         min_pixels (int): Minimum pixels for valid objects
+        min_length (float): Minimum length for thin objects
+        length_strategy (str): Length strategy ("bbox", "pca", "skeleton")
         padding (int): Padding for cropping
         cropping (bool): Enable/disable cropping
         config_output_path (str): Where to save config files (if None, uses no_background path)
@@ -598,6 +602,8 @@ def generate_and_process_batch_configs(
             no_background_image_batch_path=no_background_image_batch_path,
             max_distance=max_distance,
             min_pixels=min_pixels,
+            min_length=min_length,
+            length_strategy=length_strategy,
             padding=padding,
             cropping=cropping,
             output_path=config_output_path
@@ -1804,4 +1810,3 @@ if __name__ == "__main__":
     #     )
 
 # # ########################################################60
-

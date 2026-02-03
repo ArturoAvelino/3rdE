@@ -116,7 +116,6 @@ class InstanceSegmentation:
             "max_distance": 4.0,
             "min_pixels": 1000,
             "min_length": 200,
-            "length_strategy": "bbox"
         },
         "output": {
             "directory": "output_dir_path"
