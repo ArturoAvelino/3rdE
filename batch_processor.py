@@ -820,8 +820,9 @@ def main():
             min_length = 200, # minimum object lenght size.
 
             padding = 10,   # 35 for the regular indvidual pictures
-            cropping=True,
-            # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
+            cropping=True,  # "True" = Generate the cropped images of each object.
+
+            config_output_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/segmentation/A01-A",
             use_nonwhitepixel_as_bboxcenter = False,
             create_cropped_images = True,
             include_segmentation = True # Generate and add the segmentation datapoints in COCO file.
