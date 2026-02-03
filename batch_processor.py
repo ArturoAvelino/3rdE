@@ -814,7 +814,7 @@ def main():
             # config_output_path="/Users/aavelino/Downloads/images/BM4_E_sandbox/For_Robin/tests_segmentations/clustering_crops/"
             use_nonwhitepixel_as_bboxcenter = False,
             create_cropped_images = True,
-            include_segmentation = True # Generate the segmentation file
+            include_segmentation = True # Generate and add the segmentation datapoints in COCO file.
         )
 
         logger.info(
