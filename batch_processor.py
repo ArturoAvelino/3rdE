@@ -808,7 +808,7 @@ def main():
             no_background_image_batch_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/no_bkgd",
 
             max_distance = 4, # 10 for the regular indvidual pictures
-            min_pixels = 5000,  # 1000 for the regular indvidual pictures
+            min_pixels =  7000, # 5000  # 1000 for the regular indvidual pictures
 
             # Strategy to measure the objects size to be then used as parameter to
             # compare with the "min_length" variable. Options:
