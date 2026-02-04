@@ -637,24 +637,24 @@ def generate_and_process_batch_configs(
 # ##############################################################################
 # Remove background and segment the objects found in an image (OK!)
 
-def main():
+# def main():
 
-    # sample_name = "F13_CL"
+    # # sample_name = "F13_CL"
 
-    # # Setup logging (will create processing.log in the input directory)
-    log_output_dir = Path(
-        # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-        "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A01-A/1_background_removal"
-    )
+    # # # Setup logging (will create processing.log in the input directory)
+    # log_output_dir = Path(
+    #     # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
+    #     "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A01-A/1_background_removal"
+    # )
 
-    if not log_output_dir.exists():
-        log_output_dir.mkdir(parents=True, exist_ok=True)
+    # if not log_output_dir.exists():
+    #     log_output_dir.mkdir(parents=True, exist_ok=True)
 
-    setup_logging(log_output_dir)
-    logger = logging.getLogger(__name__)
-    logger.info("Starting batch processing of images ...")
+    # setup_logging(log_output_dir)
+    # logger = logging.getLogger(__name__)
+    # logger.info("Starting batch processing of images ...")
 
-    try:
+    # try:
 
         # =========================================
         # # Remove the color background from images using clustering (OK).
@@ -785,51 +785,51 @@ def main():
         # else:
         #     logger.info(f"Config directory not found: {config_directory}")
 
-        # -----------------------------------------
-        # Option 3 (OK): Complete workflow - Generate configs and process them
-        # generating the segmentation plot and the individual cropped images.
+        # # -----------------------------------------
+        # # Option 3 (OK): Complete workflow - Generate configs and process them
+        # # generating the segmentation plot and the individual cropped images.
 
-        # sample_name =  "BM4_E_stitched_low"
-        sample_name =  "big_insects_segm_test_1"
+        # # sample_name =  "BM4_E_stitched_low"
+        # sample_name =  "big_insects_segm_test_1"
 
-        logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
+        # logger.info("=== OPTION 3: Generate and Process Configuration Files ===")
 
-        results = generate_and_process_batch_configs(
-            sample_name = sample_name,
+        # results = generate_and_process_batch_configs(
+        #     sample_name = sample_name,
 
-            # raw_image_pattern = f"{sample_name}*.jpg",
-            # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
-            # no_background_image_pattern = "*_no_bkgd.png",
-            # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        #     # raw_image_pattern = f"{sample_name}*.jpg",
+        #     # raw_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
+        #     # no_background_image_pattern = "*_no_bkgd.png",
+        #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
 
-            raw_image_pattern = "*.jpg",
-            raw_image_batch_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/stitched",
-            no_background_image_pattern="*_no_bkgd.png",
-            no_background_image_batch_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/no_bkgd",
+        #     raw_image_pattern = "*.jpg",
+        #     raw_image_batch_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/stitched",
+        #     no_background_image_pattern="*_no_bkgd.png",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/no_bkgd",
 
-            max_distance = 4, # 10 for the regular indvidual pictures
-            min_pixels =  7000, # 5000  # 1000 for the regular indvidual pictures
+        #     max_distance = 4, # 10 for the regular indvidual pictures
+        #     min_pixels =  7000, # 5000  # 1000 for the regular indvidual pictures
 
-            # Strategy to measure the objects size to be then used as parameter to
-            # compare with the "min_length" variable. Options:
-            #    - "bbox" = lenght of the diagonal lenght of the bounding box enclosing the object.
-            #    - "pca", = first axis of the principal component analysis.
-            #    - "skeleton" = a 8 points skeleton.
-            # The "bbox" is the fastest strategy in terms of computing time.
-            length_strategy = "bbox",
-            min_length = 200, # minimum object lenght size.
+        #     # # Strategy to measure the objects size to be then used as parameter to
+        #     # # compare with the "min_length" variable. Options:
+        #     # #    - "bbox" = lenght of the diagonal lenght of the bounding box enclosing the object.
+        #     # #    - "pca", = first axis of the principal component analysis.
+        #     # #    - "skeleton" = a 8 points skeleton.
+        #     # # The "bbox" is the fastest strategy in terms of computing time.
+        #     length_strategy = "bbox",
+        #     min_length = 200, # minimum object lenght size.
 
-            padding = 10,   # 35 for the regular indvidual pictures
-            cropping=True,  # "True" = Generate the cropped images of each object.
+        #     padding = 10,   # 35 for the regular indvidual pictures
+        #     cropping=True,  # "True" = Generate the cropped images of each object.
 
-            config_output_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/segmentation/A01-A",
-            use_nonwhitepixel_as_bboxcenter = False,
-            create_cropped_images = True,
-            include_segmentation = True # Generate and add the segmentation datapoints in COCO file.
-        )
+        #     config_output_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/segmentation/A01-A",
+        #     use_nonwhitepixel_as_bboxcenter = False,
+        #     create_cropped_images = True,
+        #     include_segmentation = True # Generate and add the segmentation datapoints in COCO file.
+        # )
 
-        logger.info(
-            f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
+        # logger.info(
+        #     f"Complete workflow results: {len(results['successful'])} successful, {len(results['failed'])} failed")
 
         # -----------------------------------------
         # Option 4 (OK): Process individual configuration file (for testing/debugging)
@@ -935,11 +935,11 @@ def main():
             # #     min_samples=5
             # # )
 
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {str(e)}")
-        raise
-if __name__ == "__main__":
-    main()
+#     except Exception as e:
+#         logger.error(f"An unexpected error occurred: {str(e)}")
+#         raise
+# if __name__ == "__main__":
+#     main()
 
 # ########################################################60
 
@@ -956,43 +956,43 @@ if __name__ == "__main__":
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-    # # # ========================================================60
-    # # # Batch processor
+    # # ========================================================60
+    # # Batch processor
 
-    # from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
 
-    # processor = BiigleCSV_to_COCO_JSON(
+    sample_name = "7_vol_281125_HM_12"
 
-    #     # ----- Biigle file -------
-    #     # csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/image_annotations_with_labels.csv",
-    #     # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/originals/label_trees.json",
-    #     # images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images",  # for cropping
-    #     # filename_pattern = "*.jpg",
-    #     # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/1_segmentation_all_labels_are_just_unclassified/1_crops",
-    #     # min_pixels_area = 700)
+    processor = BiigleCSV_to_COCO_JSON(
 
-    #     # ----- Merged generalist-metazoa predictions -----
-    #     csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotations_with_labels.csv",
-    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/segmentation_all_labels_are_just_unclassified/originals/label_trees.json",
-    #     images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images",  # for cropping
-    #     filename_pattern = "*.jpg",
-    #     output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops",
-    #     min_pixels_area = 700)
+        # ----- Biigle file -------
+        csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+        json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
+        images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
+        filename_pattern = "*.jpg",
+        output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
+        min_pixels_area = 700)
 
+        # ----- Merged generalist-metazoa predictions -----
+        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotations_with_labels.csv",
+        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/segmentation_all_labels_are_just_unclassified/originals/label_trees.json",
+        # images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images",  # for cropping
+        # filename_pattern = "*.jpg",
+        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops",
+        # min_pixels_area = 700)
 
-    # # # Process all objects. Create the individual crops and individual JSON files
-    # # # for each object in the CSV file.
-    # processor.process_all_objects()
+    # # Merge JSON files and save them into the "output/merged_json/" folder.
+    # # This python command can be run independently of the previous step, i.e.,
+    # # the "process_all_objects()" step.
+    # # I can directly generate the merged JSON file from the Biigle CSV file,
+    # # i.e.,  without having to compute first the individual JSON file for each object.
+    processor.merge_json_files_by_image_id()
 
-    # # # Merge JSON files and save them into the "output/merged_json/" folder.
-    # # # This python command can be run independently of the previous step, i.e.,
-    # # # the "process_all_objects()" step.
-    # # # I can directly generate the merged JSON file from the Biigle CSV file,
-    # # # i.e.,  without having to compute first the individual JSON file for each object.
-    # processor.merge_json_files_by_image_id()
-
+    # # (Optional) Process all objects. Create the individual crops and individual JSON files
+    # # for each object in the CSV file.
+    # # processor.process_all_objects()  # optional
 
         # --------------------------------------------------------60
 
@@ -1376,7 +1376,7 @@ if __name__ == "__main__":
 
 # if __name__ == "__main__":
 
-    # # Setup logging
+    # # # Setup logging
     # logging.basicConfig(level=logging.INFO,
     #                     format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -1389,39 +1389,43 @@ if __name__ == "__main__":
     # text_color = "black"
     # show_summary=True,
 
-    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images"
+    # sample_name = "7_vol_281125_HM_12"
 
-    # # # # ----- Merged generalist-metazoa model -----
+    # input_image_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images"
 
-    # # min_confidence = 0.0; max_confidence = 1.0
+    # # # # # ----- Merged generalist-metazoa model -----
+
+    # # # min_confidence = 0.0; max_confidence = 1.0
+    # # # show_label = True
+    # # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops/merged_json"
+    # # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/bboxes"
+
+    # # # input_json_format = "coco"
+    # # # suffix_output_imagefiles = f"_merged_IoU_0.3"
+
+    # # # # ----- Generalist model -----
+
+    # # min_confidence = 0.35; max_confidence = 1.0
+    # # # # min_confidence = 0.3; max_confidence = 0.399
     # # show_label = True
-    # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops/merged_json"
-    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/bboxes"
-
-    # # input_json_format = "coco"
-    # # suffix_output_imagefiles = f"_merged_IoU_0.3"
-
-    # # # ----- Generalist model -----
-
-    # # min_confidence = 0.4; max_confidence = 1.0
-    # min_confidence = 0.3; max_confidence = 0.399
-    # show_label = True
-    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/json_species_names"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
-
-    # input_json_format = "roboflow"
-    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
-
-    # # # ----- Metazoa model -----
-
-    # # # min_confidence = 0.2; max_confidence = 1.0
-    # # min_confidence = 0.05; max_confidence = 0.2
-    # # show_label = False
-    # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/1_yolo_predictions/json_species_names"
-    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
+    # # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/1_yolo_predictions/json_species_names"
+    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
 
     # # input_json_format = "roboflow"
     # # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
+
+    # # # # ----- Metazoa model -----
+
+    # # min_confidence = 0.1; max_confidence = 1.0
+    # min_confidence = 0.05; max_confidence = 1.0
+    # # min_confidence = 0.1; max_confidence = 0.3499
+
+    # show_label = False
+    # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/json_species_names"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
+
+    # input_json_format = "roboflow"
+    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
 
     # # # ----- Biigle segmentation -----
 
@@ -1438,23 +1442,6 @@ if __name__ == "__main__":
 
     # # # ----------------------
 
-
-
-    #     # --------------------------30
-    #     # Test, valid, train datasets
-
-    #     # font_size = 60
-    #     # bbox_color = "white"
-    #     # text_color = "black"
-    #     # show_summary=True,
-
-    #     # dataset = "train"  # options: (test, valid, train)
-    #     # input_image_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
-    #     # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images/{dataset}"
-    #     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/robo/classes_general/data/subsets/original_images /bbox_{dataset}"
-
-    #     # suffix_output_imagefiles = f"_bbox"
-    #     # input_json_format = "coco"
 
     #     # # --------------------------30
     #     # # Amoeba
