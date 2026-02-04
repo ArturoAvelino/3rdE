@@ -85,15 +85,35 @@ class BiigleCSV_to_COCO_JSON:
     INPUT DATA FORMAT AND REQUIREMENTS
     ================================================================================
 
-    **CSV File Structure:**
-    The input CSV file must contain the following columns:
+    **CSV File Structure (image_annotations.csv):**
+    The main input CSV file must contain the following columns:
     - `id`: Unique object identifier (integer)
-    - `label_id`: Class/category identifier (integer)
-    - `image_id`: Image identifier matching the predefined mapping
+    - `image_id`: Image identifier matching the images.csv file
     - `points`: String representation of pixel coordinates list
 
-    **Example CSV Row:**
-    id,label_id,image_id,shape_id,created_at,updated_at,points 149,126,3,3,2025-05-07 16:24:40,2025-05-07 16:24:40,"[4796,2984,4797,2983,4801,2983,4802,2984,...]"
+    **CSV File Structure (image_annotation_labels.csv):**
+    The label mapping CSV file must contain the following columns:
+    - `annotation_id`: Matches image_annotations.id
+    - `label_id`: Class/category identifier (integer)
+
+    **CSV File Structure (images.csv):**
+    The image mapping CSV file must contain the following columns:
+    - `id`: Matches image_annotations.image_id
+    - `filename`: Image filename on disk
+
+    The class/category identifier (`label_id`) is read from
+    `image_annotation_labels.csv` and matched using:
+    image_annotations.id == image_annotation_labels.annotation_id
+
+    **Example CSV Rows:**
+    image_annotations.csv:
+    id,image_id,shape_id,created_at,updated_at,points 149,3,3,2025-05-07 16:24:40,2025-05-07 16:24:40,"[4796,2984,4797,2983,4801,2983,4802,2984,...]"
+
+    image_annotation_labels.csv:
+    annotation_id,label_id,user_id,confidence,created_at,updated_at 149,126,9,1,2025-05-07 16:24:40,2025-05-07 16:24:40
+
+    images.csv:
+    id,filename,volume_id 3,capt0004.jpg,2
 
 
     **Points Format:**
@@ -106,6 +126,23 @@ class BiigleCSV_to_COCO_JSON:
     - Source images must exist in the specified images directory
     - Image filenames must match the predefined ID-to-filename mapping
     - Supported formats: JPEG, PNG, and other PIL-compatible formats
+
+    ================================================================================
+    INPUTS AND OUTPUTS SUMMARY
+    ================================================================================
+    **Inputs:**
+    - `csv_file`: Path to image_annotations.csv
+    - `annotation_labels_file`: Path to image_annotation_labels.csv
+      (defaults next to csv_file)
+    - `images_csv_file`: Path to images.csv (defaults next to csv_file)
+    - `images_path`: Folder containing the actual image files
+    - `json_label_tree_path`: Optional labels tree used for category names
+
+    **Outputs:**
+    - Cropped images and per-object JSON files under `output_crops_path/<label_id>/`
+    - Merged per-image JSON files under `output_crops_path/merged_json/`
+    - Processing logs in `output_crops_path/processing_log.log`
+      and `output_crops_path/merged_json/processing_log.log`
 
     ================================================================================
     DETAILED METHOD DESCRIPTIONS
@@ -134,6 +171,10 @@ class BiigleCSV_to_COCO_JSON:
     ================================================================================
     COMPREHENSIVE USAGE EXAMPLES
     ================================================================================
+
+    By default, `image_annotation_labels.csv` and `images.csv` are expected to be
+    in the same directory as `csv_file`. Use `annotation_labels_file` and
+    `images_csv_file` to override these paths if needed.
 
     **Basic Usage - Process All Objects:**
     ```python
@@ -232,8 +273,10 @@ class BiigleCSV_to_COCO_JSON:
     print(f"Valid objects: {len(valid_objects)}")
     print(f"Invalid objects: {len(invalid_objects)}")
     ```
-    ================================================================================ OUTPUT FILES AND DIRECTORY STRUCTURE ================================================================================
-    **Directory Structure:**
+    ================================================================================
+    OUTPUT FILES AND DIRECTORY STRUCTURE
+    ================================================================================
+    **Directory Structure (object crops):**
     ```
     output_crops_path/
     ├── 87/                           # Class subdirectory (label_id)
@@ -250,11 +293,21 @@ class BiigleCSV_to_COCO_JSON:
      └── ...
     ```
 
+    **Directory Structure (merged JSON):**
+    ```
+    output_crops_path/
+    ├── merged_json/
+    │   ├── capt0004_image_3_merged.json
+    │   └── processing_log.log
+    └── merged_json_robo/
+        └── capt0004_image_3_merged.json
+    ```
+
     """
 
     def __init__(self, csv_file, images_path, filename_pattern='*.jpg',
                 output_crops_path=None, prefix_filename='', json_label_tree_path=None,
-                min_pixels_area=500):
+                min_pixels_area=500, annotation_labels_file=None, images_csv_file=None):
         """
         Initialize the BiigleCSV_to_COCO_JSON.
 
@@ -267,6 +320,8 @@ class BiigleCSV_to_COCO_JSON:
             json_label_tree_path (str): Path to JSON file with label tree
             min_pixels_area (int): Minimum pixel area threshold for objects.
                                  Objects smaller than this are discarded.
+            annotation_labels_file (str): Path to image_annotation_labels.csv (optional)
+            images_csv_file (str): Path to images.csv (optional)
         """
         # Convert string paths to Path objects
         self.csv_file = Path(csv_file)
@@ -277,6 +332,10 @@ class BiigleCSV_to_COCO_JSON:
         self.json_label_tree_path = Path(
             json_label_tree_path) if json_label_tree_path else None
         self.min_pixels_area = min_pixels_area
+        self.annotation_labels_file = Path(
+            annotation_labels_file) if annotation_labels_file else self.csv_file.parent / "image_annotation_labels.csv"
+        self.images_csv_file = Path(
+            images_csv_file) if images_csv_file else self.csv_file.parent / "images.csv"
 
         # Create output directory
         self.output_crops_path.mkdir(parents=True, exist_ok=True)
@@ -287,14 +346,11 @@ class BiigleCSV_to_COCO_JSON:
         # Load category names if label tree provided
         self.category_names = self._load_category_names() if json_label_tree_path else {}
 
-        # ---------->
-        # Load image mapping from CSV instead of hardcoded values
-        # self.image_mapping = self._create_image_mapping_from_csv()
+        # Load image mapping from images.csv
+        self.image_mapping = self._create_image_mapping_from_images_csv()
 
-        # For the hardcoded images ID's with their image filenames use instead
-        # the following code line (uncomment it and comment the line above):
-        self.image_mapping = self._create_image_mapping_hardcoded()
-        # <----------
+        # Load annotation_id -> label_id mapping
+        self.annotation_label_mapping = self._load_annotation_label_mapping()
 
     def _setup_logging(self):
         """Set up logging configuration."""
@@ -308,6 +364,25 @@ class BiigleCSV_to_COCO_JSON:
             ]
         )
         self.logger = logging.getLogger(__name__)
+
+    def _ensure_log_file_handler(self, log_file_path):
+        """
+        Ensure a file handler exists for the given log file path.
+
+        Args:
+            log_file_path (Path): Path to the log file
+        """
+        log_file_path = Path(log_file_path)
+        for handler in self.logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                if Path(handler.baseFilename) == log_file_path:
+                    return
+
+        file_handler = logging.FileHandler(log_file_path)
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(
+            logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(file_handler)
 
     def _load_category_names(self):
         """
@@ -454,6 +529,137 @@ class BiigleCSV_to_COCO_JSON:
 
         except Exception as e:
             self.logger.error(f"Error creating image mapping from CSV: {str(e)}")
+            raise
+
+    def _create_image_mapping_from_images_csv(self):
+        """
+        Create mapping from image_id to filename by reading images.csv.
+
+        Returns:
+            dict: Mapping from image_id (int) to filename (str)
+
+        Raises:
+            FileNotFoundError: If the images CSV file doesn't exist
+            KeyError: If required columns are missing from the CSV
+            ValueError: If the CSV file is empty or malformed
+        """
+        if not self.images_csv_file.exists():
+            raise FileNotFoundError(
+                f"Images CSV file not found: {self.images_csv_file}")
+
+        mapping_dict = {}
+        duplicates = 0
+        try:
+            with open(self.images_csv_file, 'r', newline='', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                required_columns = ['id', 'filename']
+                missing_columns = [
+                    col for col in required_columns if col not in reader.fieldnames
+                ]
+                if missing_columns:
+                    raise KeyError(
+                        f"Missing required columns in images CSV: {missing_columns}")
+
+                for row_num, row in enumerate(reader, start=2):
+                    try:
+                        image_id = int(row['id'])
+                        filename = row['filename']
+                        if not filename:
+                            self.logger.warning(
+                                f"Images CSV row {row_num}: empty filename for image_id {image_id}")
+                            continue
+
+                        if image_id in mapping_dict and mapping_dict[image_id] != filename:
+                            duplicates += 1
+                            self.logger.warning(
+                                f"Images CSV row {row_num}: duplicate image_id {image_id} "
+                                f"with different filename '{filename}', keeping '{mapping_dict[image_id]}'")
+                            continue
+
+                        mapping_dict.setdefault(image_id, filename)
+                    except (ValueError, KeyError) as e:
+                        self.logger.warning(
+                            f"Images CSV row {row_num}: skipping invalid row: {e}")
+                        continue
+
+            if not mapping_dict:
+                raise ValueError("Images CSV file has no valid rows")
+
+            self.logger.info(
+                f"Created image mapping from images CSV with {len(mapping_dict)} unique images")
+            if duplicates:
+                self.logger.warning(
+                    f"Images CSV contained {duplicates} duplicate image_id entries with conflicting filenames")
+
+            return mapping_dict
+
+        except Exception as e:
+            self.logger.error(
+                f"Error creating image mapping from images CSV: {str(e)}")
+            raise
+
+    def _load_annotation_label_mapping(self):
+        """
+        Load mapping from annotation_id to label_id from image_annotation_labels.csv.
+
+        Returns:
+            dict: Mapping from annotation_id (int) to label_id (int)
+
+        Raises:
+            FileNotFoundError: If the annotation labels CSV file doesn't exist
+            KeyError: If required columns are missing from the CSV
+            ValueError: If the CSV file is empty or malformed
+        """
+        if not self.annotation_labels_file.exists():
+            raise FileNotFoundError(
+                f"Annotation labels CSV file not found: {self.annotation_labels_file}")
+
+        mapping_dict = {}
+        duplicates = 0
+        try:
+            with open(self.annotation_labels_file, 'r', newline='', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                required_columns = ['annotation_id', 'label_id']
+                missing_columns = [
+                    col for col in required_columns if col not in reader.fieldnames
+                ]
+                if missing_columns:
+                    raise KeyError(
+                        f"Missing required columns in annotation labels CSV: {missing_columns}")
+
+                for row_num, row in enumerate(reader, start=2):
+                    try:
+                        annotation_id = int(row['annotation_id'])
+                        label_id = int(row['label_id'])
+
+                        if annotation_id in mapping_dict and mapping_dict[annotation_id] != label_id:
+                            duplicates += 1
+                            self.logger.warning(
+                                f"Annotation labels CSV row {row_num}: duplicate annotation_id {annotation_id} "
+                                f"with different label_id {label_id}, keeping {mapping_dict[annotation_id]}")
+                            continue
+
+                        mapping_dict.setdefault(annotation_id, label_id)
+                    except (ValueError, KeyError) as e:
+                        self.logger.warning(
+                            f"Annotation labels CSV row {row_num}: skipping invalid row: {e}")
+                        continue
+
+            if not mapping_dict:
+                raise ValueError(
+                    "Annotation labels CSV file has no valid rows")
+
+            self.logger.info(
+                f"Loaded {len(mapping_dict)} annotation label mappings")
+            if duplicates:
+                self.logger.warning(
+                    f"Annotation labels CSV contained {duplicates} duplicate annotation_id entries with conflicting label_ids")
+
+            return mapping_dict
+
+        except Exception as e:
+            self.logger.error(
+                f"Error loading annotation labels CSV: {str(e)}")
             raise
 
     def _create_image_mapping_hardcoded(self):
@@ -691,12 +897,29 @@ class BiigleCSV_to_COCO_JSON:
             raise FileNotFoundError(f"CSV file not found: {self.csv_file}")
 
         csv_data = []
+        missing_label_count = 0
         try:
             with open(self.csv_file, 'r', newline='', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
                 for row_num, row in enumerate(reader,
                                               start=2):  # start=2 because row 1 is header
                     try:
+                        try:
+                            annotation_id = int(row['id'])
+                        except (ValueError, KeyError) as e:
+                            self.logger.warning(
+                                f"Row {row_num}: Invalid or missing 'id' value: {e}")
+                            continue
+
+                        label_id = self.annotation_label_mapping.get(annotation_id)
+                        if label_id is None:
+                            missing_label_count += 1
+                            self.logger.warning(
+                                f"Row {row_num}: No label_id found for annotation_id {annotation_id}")
+                            continue
+
+                        row['label_id'] = label_id
+
                         # Parse the points string to a Python list
                         if 'points' in row and row['points']:
                             # Remove surrounding quotes and brackets, then split
@@ -754,6 +977,9 @@ class BiigleCSV_to_COCO_JSON:
             raise
 
         self.logger.info(f"Loaded {len(csv_data)} rows from CSV file")
+        if missing_label_count:
+            self.logger.warning(
+                f"Skipped {missing_label_count} rows due to missing label_id mapping")
         return csv_data
 
     def parse_pixel_coordinates(self, points_list):
@@ -1068,7 +1294,7 @@ class BiigleCSV_to_COCO_JSON:
             # Save to file if output_path is provided
             if output_path:
                 output_path.mkdir(parents=True, exist_ok=True)
-                json_filename = f"{sample_name}_image_{image_id}_merged.json"
+                json_filename = f"{Path(filename).stem}.json"
                 json_file_path = output_path / json_filename
 
                 with open(json_file_path, 'w', encoding='utf-8') as f:
@@ -1197,7 +1423,7 @@ class BiigleCSV_to_COCO_JSON:
             # Save to file if output_path is provided
             if output_path:
                 output_path.mkdir(parents=True, exist_ok=True)
-                json_filename = f"{sample_name}_image_{image_id}_merged.json"
+                json_filename = f"{Path(filename).stem}.json"
                 json_file_path = output_path / json_filename
 
                 with open(json_file_path, 'w', encoding='utf-8') as f:
@@ -1236,6 +1462,11 @@ class BiigleCSV_to_COCO_JSON:
             else:
                 output_merged_path = Path(output_merged_path)
                 output_merged_path_robo = Path(output_merged_path) # for robo
+
+            # Save merge logs alongside the merged outputs
+            output_merged_path.mkdir(parents=True, exist_ok=True)
+            self._ensure_log_file_handler(
+                output_merged_path / "processing_log.log")
 
             # Load CSV data and group by image_id
             csv_data = self.load_csv_data()
