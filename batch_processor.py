@@ -1708,6 +1708,27 @@ if __name__ == "__main__":
         #     ## Generate CSV file with the labels from Biigle input
         #     matcher.save_to_csv_for_biigle(f'{output_folder}/{image_name}_labels_for_biigle_{IoU_value}.csv')
 
+# ########################################################60
+# Merge individual CSV files generated from the "Intersection over Union" computing,
+# and then change the labels (specie name's predictions) from names to Biigle IDs
+
+if __name__ == "__main__":
+
+    from pathlib import Path
+
+    combined_path, output_path, missing_report = run_biigle_csv_pipeline(
+        input_dir=Path("/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/4_vol_281125_HM_1/2_IoU_biigle_vs_yolo/IoU_0.4"),
+        labels_json=Path("/Users/aavelino/Downloads/BiosoilAI/Label_trees/2026_01_22/label_trees.json"),
+        match_text="_for_biigle.csv",
+        combined_dir=Path("/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/4_vol_281125_HM_1/2_IoU_biigle_vs_yolo"),
+        combined_name="image_annotation_labels_names.csv",
+        output_dir=Path("/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/4_vol_281125_HM_1/2_IoU_biigle_vs_yolo"),
+        output_name="image_annotation_labels.csv",
+        strict=False,
+        missing_report=True,
+    )
+    print(combined_path, output_path, missing_report)
+
 # # ########################################################60
 # # My function to find all the unique lines in a text file (OK!)
 
