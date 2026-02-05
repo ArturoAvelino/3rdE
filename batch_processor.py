@@ -104,6 +104,61 @@ def setup_logging(input_dir):
     logger.info(f"Log file location: {log_file}")
 
 
+def run_biigle_csv_pipeline(
+    input_dir,
+    labels_json,
+    match_text="_for_biigle.csv",
+    combined_dir=None,
+    combined_name="image_annotation_labels_names.csv",
+    output_dir=None,
+    output_name="image_annotation_labels.csv",
+    strict=False,
+    missing_report=False,
+    missing_report_path=None,
+):
+    """
+    Combine Biigle CSV files and convert label_name to label_id using label_trees.json.
+
+    This is a programmatic wrapper around computer_vision/biigle_csv_pipeline.py
+    for use inside batch_processor.py.
+    """
+    from computer_vision.combine_biigle_csv_files import combine_csv_files, find_csv_files
+    from computer_vision.label_names_to_ids_csv import build_label_mapping, convert_csv
+
+    input_dir = Path(input_dir)
+    labels_json = Path(labels_json)
+
+    combined_dir = Path(combined_dir) if combined_dir else input_dir
+    combined_path = combined_dir / combined_name
+
+    csv_files = find_csv_files(input_dir, match_text)
+    csv_files = [p for p in csv_files if p.resolve() != combined_path.resolve()]
+    combine_csv_files(csv_files, combined_path)
+
+    output_dir = Path(output_dir) if output_dir else combined_dir
+    output_path = output_dir / output_name
+
+    if missing_report_path is not None:
+        missing_report = Path(missing_report_path)
+    elif missing_report:
+        missing_report = output_path.with_name(
+            f"{output_path.stem}_missing_labels.csv"
+        )
+    else:
+        missing_report = None
+
+    mapping = build_label_mapping(labels_json)
+    convert_csv(
+        combined_path,
+        output_path,
+        mapping,
+        strict,
+        missing_report=missing_report,
+    )
+
+    return combined_path, output_path, missing_report
+
+
 def process_json_plot_contours(input_dir, image_pattern="capt*.jpg"):
     """
     Process a batch of images and their corresponding JSON segmentation files, creating
