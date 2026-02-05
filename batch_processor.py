@@ -1635,7 +1635,7 @@ def generate_and_process_batch_configs(
     #     result.save(output_image_path)
 
 # ########################################################60
-# "Intersection over Union" (IOU) metric to match bounding boxes between Roboflow
+# "Intersection over Union" (IoU) metric to match bounding boxes between Roboflow
 # and Biigle (COCO) formats. (OK!)
 
 # ========================================================60
@@ -1647,19 +1647,21 @@ def generate_and_process_batch_configs(
 
     # # Initialize with custom patterns
 
-    # iou_threshold = 0.7
+    # sample_name = "7_vol_281125_HM_12"
 
+    # iou_threshold = 0.4  # I have found that 0.3 works fine.
     # processor = BatchIoUProcessor(
 
-    #     biigle_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/segmentation_all_labels_are_just_unclassified/Conversion_biigle_segm_to_coco_bbox_by_imagefile/merged_json",
+    #     # Path to the JSON files containing the bboxes from the segmentation
+    #     biigle_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile/merged_json",
 
     #     # # ---- Generalist model ------
-    #     # roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/1_yolo_predictions/json_species_names",
-    #     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_{iou_threshold}",
+    #     # roboflow_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/1_yolo_predictions/json_species_names",
+    #     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/2_IoU_biigle_vs_yolo/IoU_{iou_threshold}",
 
     #     # # ---- Metazoa model ------
-    #     roboflow_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/1_yolo_predictions/json_species_names",
-    #     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_{iou_threshold}",
+    #     roboflow_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/json_species_names",
+    #     output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/2_IoU_biigle_vs_yolo/IoU_{iou_threshold}",
 
     #     # -------------------------
 
