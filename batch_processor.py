@@ -1711,24 +1711,51 @@ def generate_and_process_batch_configs(
 
 # ########################################################60
 # Merge individual CSV files generated from the "Intersection over Union" computing,
-# and then change the labels (specie name's predictions) from names to Biigle IDs
+# and then change the labels (specie name's predictions) from names to Biigle IDs.
+
+# if __name__ == "__main__":
+
+    # from pathlib import Path
+
+    # sample_name = "4_vol_281125_HM_1"
+    # ai_model_type = "Metazoa"  # "Generalist" or "Metazoa"
+
+    # combined_path, output_path, missing_report = run_biigle_csv_pipeline(
+    #     input_dir=Path(f"/Users/aavelino/Downloads/BiosoilAI/5_classification/{ai_model_type}/{sample_name}/2_IoU_biigle_vs_yolo/IoU_0.4"),
+    #     labels_json=Path("/Users/aavelino/Downloads/BiosoilAI/Label_trees/2026_01_22/label_trees.json"),
+    #     match_text="_for_biigle.csv",
+    #     combined_dir=Path(f"/Users/aavelino/Downloads/BiosoilAI/5_classification/{ai_model_type}/{sample_name}/2_IoU_biigle_vs_yolo"),
+    #     combined_name="image_annotation_labels_names.csv",
+    #     output_dir=Path(f"/Users/aavelino/Downloads/BiosoilAI/5_classification/{ai_model_type}/{sample_name}/2_IoU_biigle_vs_yolo"),
+    #     output_name="image_annotation_labels.csv",
+    #     strict=False,
+    #     missing_report=True,
+    # )
+    # print(combined_path, output_path, missing_report)
+
+# # ########################################################60
+# Merge label predictions from multiple Yolo models into a single CSV file. (OK!)
 
 if __name__ == "__main__":
 
-    from pathlib import Path
+    from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
 
-    combined_path, output_path, missing_report = run_biigle_csv_pipeline(
-        input_dir=Path("/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/4_vol_281125_HM_1/2_IoU_biigle_vs_yolo/IoU_0.4"),
-        labels_json=Path("/Users/aavelino/Downloads/BiosoilAI/Label_trees/2026_01_22/label_trees.json"),
-        match_text="_for_biigle.csv",
-        combined_dir=Path("/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/4_vol_281125_HM_1/2_IoU_biigle_vs_yolo"),
-        combined_name="image_annotation_labels_names.csv",
-        output_dir=Path("/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/4_vol_281125_HM_1/2_IoU_biigle_vs_yolo"),
-        output_name="image_annotation_labels.csv",
-        strict=False,
-        missing_report=True,
+    sample_name = "4_vol_281125_HM_1"
+
+    # Initialize with the two prediction files
+    merger = CSVLabelPredictionsMerger(
+        generalist_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/2_IoU_biigle_vs_yolo/image_annotation_labels.csv",
+        metazoa_path    = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/2_IoU_biigle_vs_yolo/image_annotation_labels.csv",
+        default_label_id = 4196
     )
-    print(combined_path, output_path, missing_report)
+
+    # Run the merge with your specific thresholds
+    merger.merge(
+        output_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv", # include the output FILENAME!
+        gen_threshold = 0.35,  # Replace if generalist is less than this confident threshold
+        met_threshold = 0.1  # And use metazoa prediction if it is at least this confident this threshold
+    )
+
 
 # # ########################################################60
 # # My function to find all the unique lines in a text file (OK!)
@@ -1834,28 +1861,6 @@ if __name__ == "__main__":
     #             f.write("4492,Mesostigmata (Gamase),4200,31e475,6,\n")
 
     #     generate_tree_diagram(INPUT_FILE, OUTPUT_DIR, OUTPUT_FILE, OUTPUT_FILE_TABS)
-
-# # ########################################################60
-# Merge label predictions from multiple Yolo models into a single CSV file. (OK!)
-
-# if __name__ == "__main__":
-
-    # from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
-
-    # # Initialize with the two prediction files
-    # merger = CSVLabelPredictionsMerger(
-    #     generalist_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
-    #     metazoa_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/3_vol_02122025_L_6/2_IoU_biigle_vs_yolo/IoU_0.3/image_annotation_labels.csv",
-    #     default_label_id = 4196
-    # )
-
-    # # Run the merge with your specific thresholds
-    # merger.merge(
-    #     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/test_1/image_annotation_labels_merged.csv",
-    #     gen_threshold = 0.35,  # Replace if generalist is less than this confident threshold
-    #     met_threshold = 0.1  # And use metazoa prediction if it is at least this confident this threshold
-    # )
-
 
 # # ########################################################60
 # # Function to filter annotations by labels (OK!)
