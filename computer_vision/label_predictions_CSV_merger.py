@@ -1,4 +1,5 @@
 import csv
+import os
 from pathlib import Path
 from typing import Dict
 
@@ -102,8 +103,18 @@ class CSVLabelPredictionsMerger:
         met_lookup = self._load_metazoa_lookup()
         self.stats = {"total_rows": 0, "labels_replaced": 0, "labels_set_unclassified": 0}
 
+        output_path_str = str(output_path)
+        output_path_obj = Path(output_path_str)
+        treat_as_dir = output_path_str.endswith(os.sep) or (output_path_obj.exists() and output_path_obj.is_dir())
+        if treat_as_dir:
+            output_path_obj.mkdir(parents=True, exist_ok=True)
+            output_file_path = output_path_obj / "image_annotation_labels.csv"
+        else:
+            output_path_obj.parent.mkdir(parents=True, exist_ok=True)
+            output_file_path = output_path_obj
+
         with open(self.generalist_path, mode='r', encoding='utf-8') as f_in, \
-             open(output_path, mode='w', newline='', encoding='utf-8') as f_out:
+             open(output_file_path, mode='w', newline='', encoding='utf-8') as f_out:
 
             reader = csv.DictReader(f_in)
             writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
