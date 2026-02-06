@@ -167,11 +167,29 @@ class CSVLabelPredictionsMerger:
 
                 writer.writerow(row)
 
-        print("Merge Complete!")
-        print(f"- Processed:            {self.stats['total_rows']} rows")
-        print(f"- Replaced by metazoa:  {self.stats['labels_replaced']} rows")
-        print(f"- Forced unclassified:  {self.stats['labels_set_unclassified']} rows")
-        print(f"- Output:               {output_path}")
+        summary_lines = [
+            "Input parameters for merging the generalist and metazoa classification forecasts:",
+            "",
+            f"- generalist_path = \"{self.generalist_path}\"",
+            f"- metazoa_path    = \"{self.metazoa_path}\"",
+            f"- default_label_id = {self.default_label_id}",
+            f"- output_path = \"{output_file_path}\"",
+            f"- gen_threshold = {gen_threshold}",
+            f"- met_threshold = {met_threshold}",
+            "",
+            "Merge Complete!",
+            f"- Processed:            {self.stats['total_rows']} rows",
+            f"- Replaced by metazoa:  {self.stats['labels_replaced']} rows",
+            f"- Forced unclassified:  {self.stats['labels_set_unclassified']} rows",
+            f"- Output:               {output_file_path}",
+        ]
+        summary_text = "\n".join(summary_lines)
+
+        print(summary_text)
+
+        log_path = output_file_path.parent / "merge_summary.txt"
+        with open(log_path, mode="w", encoding="utf-8") as log_file:
+            log_file.write(summary_text + "\n")
 
 
 # # --- Example Usage ---
