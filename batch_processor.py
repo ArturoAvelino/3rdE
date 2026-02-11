@@ -1022,21 +1022,23 @@ def generate_and_process_batch_configs(
 
     # processor = BiigleCSV_to_COCO_JSON(
 
-    #     # ----- Biigle file -------
-    #     csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
-    #     json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
+    #     # # ----- Biigle file -------
+    #     # annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+    #     # json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
+    #     # images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
+    #     # filename_pattern = "*.jpg",
+    #     # output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
+    #     # min_pixels_area = 700)
+
+    #     # # ----- Merged generalist-metazoa predictions -----
+    #     annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+    #     annotation_labels_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv",
+    #     images_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/images.csv",
+    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/Label_trees/2026_01_22/label_trees.json",
     #     images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
     #     filename_pattern = "*.jpg",
-    #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
+    #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
     #     min_pixels_area = 700)
-
-        # ----- Merged generalist-metazoa predictions -----
-        # csv_file = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotations_with_labels.csv",
-        # json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/segmentation/segmentation_all_labels_are_just_unclassified/originals/label_trees.json",
-        # images_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/3_vol_02122025_L_6/images",  # for cropping
-        # filename_pattern = "*.jpg",
-        # output_crops_path = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops",
-        # min_pixels_area = 700)
 
     # # Merge JSON files and save them into the "output/merged_json/" folder.
     # # This python command can be run independently of the previous step, i.e.,
@@ -1448,36 +1450,6 @@ def generate_and_process_batch_configs(
 
     # input_image_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images"
 
-    # # # # # ----- Merged generalist-metazoa model -----
-
-    # # # min_confidence = 0.0; max_confidence = 1.0
-    # # # show_label = True
-    # # # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/1_crops/merged_json"
-    # # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/bboxes"
-
-    # # # input_json_format = "coco"
-    # # # suffix_output_imagefiles = f"_merged_IoU_0.3"
-
-    # # # # ----- Generalist model -----
-
-    # # min_confidence = 0.35; max_confidence = 1.0
-    # # # # min_confidence = 0.3; max_confidence = 0.399
-    # # show_label = True
-    # # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/1_yolo_predictions/json_species_names"
-    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
-
-    # # input_json_format = "roboflow"
-    # # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
-
-    # # # # ----- Metazoa model -----
-
-    # # min_confidence = 0.1; max_confidence = 1.0
-    # min_confidence = 0.05; max_confidence = 1.0
-    # # min_confidence = 0.1; max_confidence = 0.3499
-
-    # show_label = False
-    # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/json_species_names"
-    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
     # # # # ----- Biigle segmentation -----
 
     # show_label = False  # "False" because all the objects are simply "unclassified".
@@ -1517,6 +1489,14 @@ def generate_and_process_batch_configs(
 
     # # # # # # ----- Merged generalist-metazoa model -----
 
+    # min_confidence = 0.0; max_confidence = 1.0
+    # show_label = True
+    # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/Conversion_biigle_segm_to_coco_bbox_by_imagefile/merged_json"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/Conversion_biigle_segm_to_coco_bbox_by_imagefile/bboxes/c_{min_confidence}_{max_confidence}/"
+
+    # input_json_format = "coco"
+    # suffix_output_imagefiles = f"_merged_IoU_0.4"
+
     # # # ----------------------
 
         # # --------------------------30
@@ -1554,7 +1534,7 @@ def generate_and_process_batch_configs(
     #     text_position="top",
     #     show_center=False,
     #     center_dot_size=12,
-    #     show_id=False,
+    #     show_id=False, # usually "False"
     #     show_label=show_label,
     #     show_confidence = True,
     #     show_summary=show_summary,
@@ -1758,26 +1738,25 @@ def generate_and_process_batch_configs(
 # # ########################################################60
 # Merge label predictions from multiple Yolo models into a single CSV file. (OK!)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
+    # from computer_vision.label_predictions_CSV_merger import CSVLabelPredictionsMerger
 
-    sample_name = "4_vol_281125_HM_1"
+    # sample_name = "4_vol_281125_HM_1"
 
-    # Initialize with the two prediction files
-    merger = CSVLabelPredictionsMerger(
-        generalist_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/2_IoU_biigle_vs_yolo/image_annotation_labels.csv",
-        metazoa_path    = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/2_IoU_biigle_vs_yolo/image_annotation_labels.csv",
-        default_label_id = 4196
-    )
+    # # Initialize with the two prediction files
+    # merger = CSVLabelPredictionsMerger(
+    #     generalist_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/2_IoU_biigle_vs_yolo/image_annotation_labels.csv",
+    #     metazoa_path    = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/2_IoU_biigle_vs_yolo/image_annotation_labels.csv",
+    #     default_label_id = 4196
+    # )
 
-    # Run the merge with your specific thresholds
-    merger.merge(
-        output_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv", # include the output FILENAME!
-        gen_threshold = 0.35,  # Replace if generalist is less than this confident threshold
-        met_threshold = 0.1  # And use metazoa prediction if it is at least this confident this threshold
-    )
-
+    # # Run the merge with your specific thresholds
+    # merger.merge(
+    #     output_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv", # include the output FILENAME!
+    #     gen_threshold = 0.35,  # Replace if generalist is less than this confident threshold
+    #     met_threshold = 0.1  # And use metazoa prediction if it is at least this confident this threshold
+    # )
 
 # # ########################################################60
 # # My function to find all the unique lines in a text file (OK!)

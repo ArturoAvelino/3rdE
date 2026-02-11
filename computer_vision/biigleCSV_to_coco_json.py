@@ -131,10 +131,10 @@ class BiigleCSV_to_COCO_JSON:
     INPUTS AND OUTPUTS SUMMARY
     ================================================================================
     **Inputs:**
-    - `csv_file`: Path to image_annotations.csv
+    - `annotations_csv_file`: Path to image_annotations.csv
     - `annotation_labels_file`: Path to image_annotation_labels.csv
-      (defaults next to csv_file)
-    - `images_csv_file`: Path to images.csv (defaults next to csv_file)
+      (defaults next to annotations_csv_file)
+    - `images_csv_file`: Path to images.csv (defaults next to annotations_csv_file)
     - `images_path`: Folder containing the actual image files
     - `json_label_tree_path`: Optional labels tree used for category names
 
@@ -173,7 +173,7 @@ class BiigleCSV_to_COCO_JSON:
     ================================================================================
 
     By default, `image_annotation_labels.csv` and `images.csv` are expected to be
-    in the same directory as `csv_file`. Use `annotation_labels_file` and
+    in the same directory as `annotations_csv_file`. Use `annotation_labels_file` and
     `images_csv_file` to override these paths if needed.
 
     **Basic Usage - Process All Objects:**
@@ -182,7 +182,7 @@ class BiigleCSV_to_COCO_JSON:
 
     # Initialize processor with required paths
     processor = BiigleCSV_to_COCO_JSON(
-     csv_file="annotations/objects.csv",
+     annotations_csv_file="annotations/objects.csv",
      images_path="images/source/",
      filename_pattern="capt*.jpg",
      output_crops_path="output/cropped_objects/",
@@ -200,7 +200,7 @@ class BiigleCSV_to_COCO_JSON:
     ``` python
     # Initialize with custom prefix and specific paths
     processor = BiigleCSV_to_COCO_JSON(
-     csv_file="/data/annotations/dataset_v2.csv",
+     annotations_csv_file="/data/annotations/dataset_v2.csv",
      images_path="/data/images/raw/",
      filename_pattern="capture_*.jpg",
      output_crops_path="/output/processed/",
@@ -305,14 +305,14 @@ class BiigleCSV_to_COCO_JSON:
 
     """
 
-    def __init__(self, csv_file, images_path, filename_pattern='*.jpg',
-                output_crops_path=None, prefix_filename='', json_label_tree_path=None,
-                min_pixels_area=500, annotation_labels_file=None, images_csv_file=None):
+    def __init__(self, annotations_csv_file, images_path, filename_pattern='*.jpg',
+                 output_crops_path=None, prefix_filename='', json_label_tree_path=None,
+                 min_pixels_area=500, annotation_labels_file=None, images_csv_file=None):
         """
         Initialize the BiigleCSV_to_COCO_JSON.
 
         Args:
-            csv_file (str): Path to the CSV file containing annotation data
+            annotations_csv_file (str): Path to the CSV file containing annotation data
             images_path (str): Path to the directory containing images
             filename_pattern (str): Pattern for matching image files
             output_crops_path (str): Path for output crops (optional)
@@ -324,7 +324,7 @@ class BiigleCSV_to_COCO_JSON:
             images_csv_file (str): Path to images.csv (optional)
         """
         # Convert string paths to Path objects
-        self.csv_file = Path(csv_file)
+        self.annotations_csv_file = Path(annotations_csv_file)
         self.images_path = Path(images_path)
         self.filename_pattern = filename_pattern
         self.output_crops_path = Path(output_crops_path)
@@ -333,9 +333,9 @@ class BiigleCSV_to_COCO_JSON:
             json_label_tree_path) if json_label_tree_path else None
         self.min_pixels_area = min_pixels_area
         self.annotation_labels_file = Path(
-            annotation_labels_file) if annotation_labels_file else self.csv_file.parent / "image_annotation_labels.csv"
+            annotation_labels_file) if annotation_labels_file else self.annotations_csv_file.parent / "image_annotation_labels.csv"
         self.images_csv_file = Path(
-            images_csv_file) if images_csv_file else self.csv_file.parent / "images.csv"
+            images_csv_file) if images_csv_file else self.annotations_csv_file.parent / "images.csv"
 
         # Create output directory
         self.output_crops_path.mkdir(parents=True, exist_ok=True)
@@ -500,11 +500,11 @@ class BiigleCSV_to_COCO_JSON:
 
         try:
             # Check if CSV file exists
-            if not os.path.exists(self.csv_file):
-                raise FileNotFoundError(f"CSV file not found: {self.csv_file}")
+            if not os.path.exists(self.annotations_csv_file):
+                raise FileNotFoundError(f"CSV file not found: {self.annotations_csv_file}")
 
             # Read the CSV file
-            df = pd.read_csv(self.csv_file)
+            df = pd.read_csv(self.annotations_csv_file)
 
             # Validate required columns exist
             required_columns = ['image_id', 'filename']
@@ -893,13 +893,13 @@ class BiigleCSV_to_COCO_JSON:
             FileNotFoundError: If the CSV file doesn't exist
             Exception: If there's an error reading or parsing the CSV file
         """
-        if not self.csv_file.exists():
-            raise FileNotFoundError(f"CSV file not found: {self.csv_file}")
+        if not self.annotations_csv_file.exists():
+            raise FileNotFoundError(f"CSV file not found: {self.annotations_csv_file}")
 
         csv_data = []
         missing_label_count = 0
         try:
-            with open(self.csv_file, 'r', newline='', encoding='utf-8') as file:
+            with open(self.annotations_csv_file, 'r', newline='', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
                 for row_num, row in enumerate(reader,
                                               start=2):  # start=2 because row 1 is header
@@ -973,7 +973,7 @@ class BiigleCSV_to_COCO_JSON:
                         continue
 
         except Exception as e:
-            self.logger.error(f"Error reading CSV file {self.csv_file}: {e}")
+            self.logger.error(f"Error reading CSV file {self.annotations_csv_file}: {e}")
             raise
 
         self.logger.info(f"Loaded {len(csv_data)} rows from CSV file")
@@ -1768,7 +1768,7 @@ class BiigleCSV_to_COCO_JSON:
 # if __name__ == "__main__":
 #     # Initialize the processor
 #     processor = BiigleCSV_to_COCO_JSON(
-#         csv_file="path/to/your/file.csv",
+#         annotations_csv_file="path/to/your/file.csv",
 #         images_path="path/to/images/directory",
 #         filename_pattern="capt*.jpg",
 #         output_crops_path="output/cropped_objects/",
@@ -1782,7 +1782,7 @@ class BiigleCSV_to_COCO_JSON:
 #
 # # Basic usage - merge all JSON files
 # processor = BiigleCSV_to_COCO_JSON(
-#     csv_file="annotations.csv",
+#     annotations_csv_file="annotations.csv",
 #     images_path="images/",
 #     filename_pattern="capt*.jpg",
 #     output_crops_path="output/"
