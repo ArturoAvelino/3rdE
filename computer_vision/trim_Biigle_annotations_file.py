@@ -1,4 +1,5 @@
 import csv
+import os
 from typing import Union, Iterable
 
 
@@ -12,7 +13,9 @@ def filter_annotations_by_labels(
     encoding: str = "utf-8",
 ) -> None:
     """
-    Filter an annotations CSV by IDs present in a labels CSV and write the result.
+    Filter an "image_annotations.csv" CSV file by IDs present in
+    a labels CSV ("image_annotation_labels.csv") and write the result as new
+    "image_annotations.csv" CSV file.
 
     This function keeps only the rows from ``annotations_csv`` whose identifier
     in ``annotations_id_col`` also appears in ``labels_csv`` under
@@ -45,6 +48,10 @@ def filter_annotations_by_labels(
             raise ValueError(f"Missing column '{labels_id_col}' in {labels_csv}")
         for row in reader:
             valid_ids.add(row[labels_id_col])
+
+    output_dir = os.path.dirname(output_csv)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
     # Stream annotations and write only matching rows
     with open(annotations_csv, newline="", encoding=encoding) as f_ann, \
