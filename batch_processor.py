@@ -1882,7 +1882,18 @@ filter_annotations_by_labels(
     output_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/for_Biigle/image_annotations.csv",
     annotations_id_col = "id",
     labels_id_col="annotation_id"
+    output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/images_test2",
+    width=1280,
+    height=853,
+    dpi=350,
+    jpeg_quality=80,
+    optimize=True,
+    recursive=True, #  Include subfolders when True.
+    log_filename="resize_log.txt",
 )
+
+# result for folder: (processed, skipped, failed, log_path)
+processed, skipped, failed, log_path = result
 
 # # ########################################################60
 # # Function to use supervision library for evaluating models performance

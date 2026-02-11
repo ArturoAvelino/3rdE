@@ -95,10 +95,25 @@ def reduce_folder(
     jpeg_quality: Optional[int] = None,
     optimize: bool = False,
     recursive: bool = True,
-) -> Tuple[int, int, int]:
+    log_filename: str = "resize_log.txt",
+) -> Tuple[int, int, int, Path]:
     """
     Resize all images in a folder (optionally including subfolders).
-    Returns (processed, skipped, failed).
+
+    Args:
+        input_dir: Folder containing source images.
+        output_dir: Folder to write resized images into (mirrors subfolders).
+        width: Target width in pixels. If keep_aspect=True, height is recomputed.
+        height: Target height in pixels. If keep_aspect=True, width is recomputed.
+        dpi: Output DPI. If None, preserve source DPI or default to 350.
+        keep_aspect: Preserve the original aspect ratio when True.
+        jpeg_quality: JPEG quality (1-95). Only applies to JPEG outputs.
+        optimize: Enable JPEG optimizer if True.
+        recursive: Include subfolders when True.
+        log_filename: Log file name created under output_dir.
+
+    Returns:
+        (processed, skipped, failed, log_path).
     """
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -110,6 +125,21 @@ def reduce_folder(
     processed = 0
     skipped = 0
     failed = 0
+    log_lines = [
+        "Input settings:",
+        "",
+        f"- input_path={input_dir!s}",
+        f"- output_path={output_dir!s}",
+        f"- width={width!r}",
+        f"- height={height!r}",
+        f"- dpi={dpi!r}",
+        f"- jpeg_quality={jpeg_quality!r}",
+        f"- optimize={optimize!r}",
+        f"- recursive={recursive!r}",
+        f"- log_filename={log_filename!r}",
+        "",
+        "Files:",
+    ]
     for path in entries:
         if not path.is_file():
             continue
@@ -131,9 +161,19 @@ def reduce_folder(
                 optimize=optimize,
             )
             processed += 1
+            log_lines.append(f"OK {rel_path}")
         except OSError:
             failed += 1
-    return processed, skipped, failed
+            log_lines.append(f"FAILED {rel_path}")
+    log_lines.append("")
+    log_lines.append(f"processed={processed}")
+    log_lines.append(f"skipped={skipped}")
+    log_lines.append(f"failed={failed}")
+    log_path = output_dir / log_filename
+    log_path.write_text("\n".join(log_lines), encoding="utf-8")
+    return processed, skipped, failed, log_path
+
+
 def resize_path(
     input_path: str | Path,
     output_path: str | Path,
@@ -216,33 +256,25 @@ def main() -> int:
         default=True,
         help="Include subfolders when input_path is a directory (default: True).",
     )
+    parser.add_argument(
+        "--log-filename",
+        default="resize_log.txt",
+        help="Log filename written under output_path when input_path is a directory.",
+    )
 
     args = parser.parse_args()
-    input_path = Path(args.input_path)
-    output_path = Path(args.output_path)
-    if input_path.is_dir():
-        reduce_folder(
-            input_path,
-            output_path,
-            width=args.width,
-            height=args.height,
-            dpi=args.dpi,
-            keep_aspect=args.keep_aspect,
-            jpeg_quality=args.jpeg_quality,
-            optimize=args.optimize,
-            recursive=args.recursive,
-        )
-    else:
-        reduce_image(
-            input_path,
-            output_path,
-            width=args.width,
-            height=args.height,
-            dpi=args.dpi,
-            keep_aspect=args.keep_aspect,
-            jpeg_quality=args.jpeg_quality,
-            optimize=args.optimize,
-        )
+    resize_path(
+        args.input_path,
+        args.output_path,
+        width=args.width,
+        height=args.height,
+        dpi=args.dpi,
+        keep_aspect=args.keep_aspect,
+        jpeg_quality=args.jpeg_quality,
+        optimize=args.optimize,
+        recursive=args.recursive,
+        log_filename=args.log_filename,
+    )
     return 0
 
 
