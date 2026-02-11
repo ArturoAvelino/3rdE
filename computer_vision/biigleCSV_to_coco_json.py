@@ -342,6 +342,7 @@ class BiigleCSV_to_COCO_JSON:
 
         # Set up logging
         self._setup_logging()
+        self._write_input_settings_log()
 
         # Load category names if label tree provided
         self.category_names = self._load_category_names() if json_label_tree_path else {}
@@ -364,6 +365,22 @@ class BiigleCSV_to_COCO_JSON:
             ]
         )
         self.logger = logging.getLogger(__name__)
+
+    def _write_input_settings_log(self):
+        """Write the input settings used for this run to the output directory."""
+        settings_file = self.output_crops_path / "input_settings.log"
+        lines = [
+            "Input settings to generate the JSON files per image:\n\n",
+            f"        annotations_csv_file = \"{self.annotations_csv_file}\",\n",
+            f"        json_label_tree_path = \"{self.json_label_tree_path}\",\n",
+            f"        images_path = \"{self.images_path}\",\n",
+            f"        images_csv_file = \"{self.images_csv_file}\",\n",
+            f"        annotation_labels_file = \"{self.annotation_labels_file}\",\n",
+            f"        filename_pattern = \"{self.filename_pattern}\",\n",
+            f"        output_crops_path = \"{self.output_crops_path}\",\n",
+            f"        min_pixels_area = {self.min_pixels_area}\n",
+        ]
+        settings_file.write_text("".join(lines), encoding="utf-8")
 
     def _ensure_log_file_handler(self, log_file_path):
         """
