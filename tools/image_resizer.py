@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 from PIL import Image
 
@@ -134,6 +134,63 @@ def reduce_folder(
         except OSError:
             failed += 1
     return processed, skipped, failed
+def resize_path(
+    input_path: str | Path,
+    output_path: str | Path,
+    *,
+    width: Optional[int] = DEFAULT_WIDTH,
+    height: Optional[int] = DEFAULT_HEIGHT,
+    dpi: Optional[int] = DEFAULT_DPI,
+    keep_aspect: bool = True,
+    jpeg_quality: Optional[int] = None,
+    optimize: bool = False,
+    recursive: bool = True,
+    log_filename: str = "resize_log.txt",
+) -> Union[Tuple[int, int], Tuple[int, int, int, Path]]:
+    """
+    Resize a file or a folder depending on input_path.
+
+    Args:
+        input_path: File or folder to resize.
+        output_path: Output file path or output folder path.
+        width: Target width in pixels. If keep_aspect=True, height is recomputed.
+        height: Target height in pixels. If keep_aspect=True, width is recomputed.
+        dpi: Output DPI. If None, preserve source DPI or default to 350.
+        keep_aspect: Preserve the original aspect ratio when True.
+        jpeg_quality: JPEG quality (1-95). Only applies to JPEG outputs.
+        optimize: Enable JPEG optimizer if True.
+        recursive: Include subfolders when input_path is a directory.
+        log_filename: Log file name created under output_path (folder mode only).
+
+    Returns:
+        (width, height) for single-image mode, or (processed, skipped, failed, log_path)
+        for folder mode.
+    """
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+    if input_path.is_dir():
+        return reduce_folder(
+            input_path,
+            output_path,
+            width=width,
+            height=height,
+            dpi=dpi,
+            keep_aspect=keep_aspect,
+            jpeg_quality=jpeg_quality,
+            optimize=optimize,
+            recursive=recursive,
+            log_filename=log_filename,
+        )
+    return reduce_image(
+        input_path,
+        output_path,
+        width=width,
+        height=height,
+        dpi=dpi,
+        keep_aspect=keep_aspect,
+        jpeg_quality=jpeg_quality,
+        optimize=optimize,
+    )
 
 
 def main() -> int:
