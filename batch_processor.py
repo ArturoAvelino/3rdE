@@ -1872,16 +1872,25 @@ def generate_and_process_batch_configs(
 # rows are written to ``output_csv`` with the same header as the
 # input "image_annotations.csv" file.
 
-from computer_vision.trim_Biigle_annotations_file import filter_annotations_by_labels
+# from computer_vision.trim_Biigle_annotations_file import filter_annotations_by_labels
 
-sample_name = "7_vol_281125_HM_12"
+# sample_name = "7_vol_281125_HM_12"
 
-filter_annotations_by_labels(
-    annotations_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
-    labels_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv",
-    output_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/for_Biigle/image_annotations.csv",
-    annotations_id_col = "id",
-    labels_id_col="annotation_id"
+# filter_annotations_by_labels(
+#     annotations_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+#     labels_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv",
+#     output_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/for_Biigle/image_annotations.csv",
+#     annotations_id_col = "id",
+#     labels_id_col="annotation_id"
+# )
+
+# # ########################################################60
+# Image resizing, specially, reducing its size.
+
+from tools.image_resizer import resize_path
+
+result = resize_path(
+    input_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/5_vol_281125_HM_10/images/",
     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/images_test2",
     width=1280,
     height=853,
