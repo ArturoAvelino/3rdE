@@ -1478,11 +1478,7 @@ def generate_and_process_batch_configs(
     # show_label = False
     # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/json_species_names"
     # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
-
-    # input_json_format = "roboflow"
-    # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
-
-    # # # ----- Biigle segmentation -----
+    # # # # ----- Biigle segmentation -----
 
     # show_label = False  # "False" because all the objects are simply "unclassified".
     # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile/merged_json"
@@ -1494,6 +1490,32 @@ def generate_and_process_batch_configs(
     # # Required parameter definitions even if they are not used when plotting the
     # # segmentation from Biigle:
     # min_confidence = 0.1; max_confidence = 1.0
+
+    # # # # # ----- Generalist model -----
+
+    # # # min_confidence = 0.35; max_confidence = 1.0
+    # # # # # min_confidence = 0.3; max_confidence = 0.399
+    # # # show_label = True
+    # # # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/1_yolo_predictions/json_species_names"
+    # # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Generalist/{sample_name}/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
+
+    # # # input_json_format = "roboflow"
+    # # # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
+
+    # # # # # ----- Metazoa model -----
+
+    # # # min_confidence = 0.1; max_confidence = 1.0
+    # # min_confidence = 0.05; max_confidence = 1.0
+    # # # min_confidence = 0.1; max_confidence = 0.3499
+
+    # # show_label = False
+    # # input_json_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/json_species_names"
+    # # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Metazoa/{sample_name}/1_yolo_predictions/bboxes/c_{min_confidence}_{max_confidence}/"
+
+    # # input_json_format = "roboflow"
+    # # suffix_output_imagefiles = f"_bbox_c_{min_confidence}_{max_confidence}"
+
+    # # # # # # ----- Merged generalist-metazoa model -----
 
     # # # ----------------------
 
@@ -1865,15 +1887,23 @@ if __name__ == "__main__":
 # # ########################################################60
 # # Function to filter annotations by labels (OK!)
 
-# from computer_vision.trim_Biigle_annotations_file import filter_annotations_by_labels
+# This function keeps only the rows from the "image_annotations.csv"
+# file whose identifier in its "id" column  also appears in
+# "image_annotation_labels.csv" under "annotation_id". The filtered
+# rows are written to ``output_csv`` with the same header as the
+# input "image_annotations.csv" file.
 
-# filter_annotations_by_labels(
-#     "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/for_Biigle/02122025_L_6/image_annotations.csv",
-#     "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_labels_merged_original.csv",
-#     "/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/3_vol_02122025_L_6/IoU_0.3/image_annotation_filtered.csv",
-#     annotations_id_col="id",
-#     labels_id_col="annotation_id"
-# )
+from computer_vision.trim_Biigle_annotations_file import filter_annotations_by_labels
+
+sample_name = "7_vol_281125_HM_12"
+
+filter_annotations_by_labels(
+    annotations_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+    labels_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv",
+    output_csv = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/for_Biigle/image_annotations.csv",
+    annotations_id_col = "id",
+    labels_id_col="annotation_id"
+)
 
 # # ########################################################60
 # # Function to use supervision library for evaluating models performance
