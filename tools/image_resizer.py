@@ -19,6 +19,7 @@ def _target_size(
     height: Optional[int],
     keep_aspect: bool,
 ) -> Tuple[int, int]:
+    """Compute the target size from an original size and optional overrides."""
     orig_w, orig_h = original
     if width is None and height is None:
         width, height = DEFAULT_WIDTH, DEFAULT_HEIGHT
@@ -50,8 +51,20 @@ def reduce_image(
     optimize: bool = False,
 ) -> Tuple[int, int]:
     """
-    Resize an image to reduce file size while preserving color profile and DPI.
-    Returns the (width, height) of the saved image.
+    Resize a single image to reduce file size while preserving color profile and DPI.
+
+    Args:
+        input_path: Path to the source image.
+        output_path: Path to the resized image (file).
+        width: Target width in pixels. If keep_aspect=True, height is recomputed.
+        height: Target height in pixels. If keep_aspect=True, width is recomputed.
+        dpi: Output DPI. If None, preserve source DPI or default to 350.
+        keep_aspect: Preserve the original aspect ratio when True.
+        jpeg_quality: JPEG quality (1-95). Only applies to JPEG outputs.
+        optimize: Enable JPEG optimizer if True.
+
+    Returns:
+        (width, height) of the saved image.
     """
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -234,6 +247,7 @@ def resize_path(
 
 
 def main() -> int:
+    """Parse CLI arguments and run resize_path()."""
     parser = argparse.ArgumentParser(
         description="Reduce image size by resizing while preserving DPI and ICC profile."
     )
@@ -280,3 +294,52 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# ########################################################60
+# Example of usage
+
+# from tools.image_resizer import resize_path
+#
+
+# # It can call a single function regardless of whether you pass a
+# # file or a folder:
+# result = resize_path(
+#     input_path="/path/to/images",
+#     output_path="/path/to/output",
+#     width=1280,
+#     height=853,
+#     dpi=350,
+#     jpeg_quality=80,
+#     optimize=True,
+#     recursive=True,
+#     log_filename="resize_log.txt",
+# )
+
+# # If you pass a single image path, the same call returns (width,
+# # height) of the saved image:
+# result = resize_path(
+#     input_path="/path/to/image.jpg",
+#     output_path="/path/to/output.jpg",
+#     jpeg_quality=85,
+#     optimize=True,
+# )
+# new_w, new_h = result
+
+# --------------------------------------------------------60
+# # Other examples
+
+# from tools.image_resizer import reduce_image, reduce_folder
+
+# reduce_image("input.jpg", "output.jpg", jpeg_quality=80, optimize=True)
+# reduce_folder("images", "images_small", jpeg_quality=75, optimize=True, recursive=True)
+
+# --------------------------------------------------------60
+# # Examples of using the function as command line in a terminal
+
+# python tools/image_resizer.py input.jpg output.jpg --jpeg-quality 80 --optimize
+# python tools/image_resizer.py /path/in /path/out --jpeg-quality 75 --optimize
+# python tools/image_resizer.py /path/in /path/out --no-recursive
+
+# python tools/image_resizer.py input.jpg output.jpg
+# python tools/image_resizer.py input.jpg output.jpg --width 1600 --dpi 300
+# python tools/image_resizer.py input.jpg output.jpg --height 1000
