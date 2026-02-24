@@ -307,7 +307,8 @@ class BiigleCSV_to_COCO_JSON:
 
     def __init__(self, annotations_csv_file, images_path, filename_pattern='*.jpg',
                  output_crops_path=None, prefix_filename='', json_label_tree_path=None,
-                 min_pixels_area=500, annotation_labels_file=None, images_csv_file=None):
+                 min_pixels_area=500, annotation_labels_file=None, images_csv_file=None,
+                 padding_in_crops=40):
         """
         Initialize the BiigleCSV_to_COCO_JSON.
 
@@ -322,6 +323,7 @@ class BiigleCSV_to_COCO_JSON:
                                  Objects smaller than this are discarded.
             annotation_labels_file (str): Path to image_annotation_labels.csv (optional)
             images_csv_file (str): Path to images.csv (optional)
+            padding_in_crops (int): Padding (in pixels) added to each side of the crop.
         """
         # Convert string paths to Path objects
         self.annotations_csv_file = Path(annotations_csv_file)
@@ -332,6 +334,9 @@ class BiigleCSV_to_COCO_JSON:
         self.json_label_tree_path = Path(
             json_label_tree_path) if json_label_tree_path else None
         self.min_pixels_area = min_pixels_area
+        if padding_in_crops < 0:
+            raise ValueError("padding_in_crops must be a non-negative integer")
+        self.padding_in_crops = int(padding_in_crops)
         self.annotation_labels_file = Path(
             annotation_labels_file) if annotation_labels_file else self.annotations_csv_file.parent / "image_annotation_labels.csv"
         self.images_csv_file = Path(
@@ -379,6 +384,7 @@ class BiigleCSV_to_COCO_JSON:
             f"        filename_pattern = \"{self.filename_pattern}\",\n",
             f"        output_crops_path = \"{self.output_crops_path}\",\n",
             f"        min_pixels_area = {self.min_pixels_area}\n",
+            f"        padding_in_crops = {self.padding_in_crops}\n",
         ]
         settings_file.write_text("".join(lines), encoding="utf-8")
 
@@ -1612,12 +1618,13 @@ class BiigleCSV_to_COCO_JSON:
 
         try:
             with Image.open(image_path) as img:
-                # Define crop box (left, upper, right, lower)
+                # Define crop box (left, upper, right, lower) with optional padding
+                padding = self.padding_in_crops
                 crop_box = (
-                    int(bbox_info['min_x']),
-                    int(bbox_info['min_y']),
-                    int(bbox_info['max_x']),
-                    int(bbox_info['max_y'])
+                    max(0, int(bbox_info['min_x']) - padding),
+                    max(0, int(bbox_info['min_y']) - padding),
+                    min(img.width, int(bbox_info['max_x']) + padding),
+                    min(img.height, int(bbox_info['max_y']) + padding)
                 )
 
                 # Crop the image
