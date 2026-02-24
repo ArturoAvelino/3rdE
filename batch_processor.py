@@ -694,12 +694,12 @@ def generate_and_process_batch_configs(
 
 # def main():
 
-    # # sample_name = "F13_CL"
+    # sample_name = "7_vol_281125_HM_12"
 
     # # # Setup logging (will create processing.log in the input directory)
     # log_output_dir = Path(
-    #     # f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}"
-    #     "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/A01-A/1_background_removal"
+    #     f"//Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/No_background/"
+    #     # "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/3_segmentation"
     # )
 
     # if not log_output_dir.exists():
@@ -713,25 +713,27 @@ def generate_and_process_batch_configs(
 
         # =========================================
         # # Remove the color background from images using clustering (OK).
+
         # # BATCH PROCESSING (OK!)
 
-        # sample_name =  "BM4_E"
+        # # sample_name =  "BM4_E"
 
-        # input_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/raw_data/1_vol_02_03_04/images/{sample_name}"
-        # output_dir = Path(f"/Users/aavelino/Downloads/BiosoilAI/7_big_insects/{sample_name}/")
+        # input_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images"
+        # output_dir = Path(f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/No_background")
         # logger.info(f"Input directory: {input_dir}")
         # logger.info(f"Output directory: {output_dir}")
 
         # process_background_remover(input_dir=input_dir,
         #                            output_dir=output_dir,
         #                            # image_pattern=f"{sample_name}*.jpg"
-        #                            image_pattern=f"capt*.jpg"
+        #                            image_pattern=f"*.jpg"
         #                            )
 
         # logger.info("Successfully completed batch processing")
 
         # # =========================================
         # # Remove the color background from images using clustering (OK).
+
         # # SINGLE IMAGE PROCESSING (OK!)
 
         # import numpy as np
@@ -858,12 +860,12 @@ def generate_and_process_batch_configs(
         #     # no_background_image_batch_path = f"/Users/aavelino/Downloads/2025_09_10_Emilie/{sample_name}",
 
         #     raw_image_pattern = "*.jpg",
-        #     raw_image_batch_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/stitched",
+        #     raw_image_batch_path = "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/1_stitched",
         #     no_background_image_pattern="*_no_bkgd.png",
-        #     no_background_image_batch_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/no_bkgd",
+        #     no_background_image_batch_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/2_no_bkgd",
 
         #     max_distance = 4, # 10 for the regular indvidual pictures
-        #     min_pixels =  7000, # 5000  # 1000 for the regular indvidual pictures
+        #     min_pixels =  7000, # 5000  # 1000 for the regular individual pictures
 
         #     # # Strategy to measure the objects size to be then used as parameter to
         #     # # compare with the "min_length" variable. Options:
@@ -877,7 +879,7 @@ def generate_and_process_batch_configs(
         #     padding = 10,   # 35 for the regular indvidual pictures
         #     cropping=True,  # "True" = Generate the cropped images of each object.
 
-        #     config_output_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/segmentation/A01-A",
+        #     config_output_path="/Users/aavelino/Downloads/BiosoilAI/7_big_insects/3_segmentation",
         #     use_nonwhitepixel_as_bboxcenter = False,
         #     create_cropped_images = True,
         #     include_segmentation = True # Generate and add the segmentation datapoints in COCO file.
@@ -990,9 +992,9 @@ def generate_and_process_batch_configs(
             # #     min_samples=5
             # # )
 
-#     except Exception as e:
-#         logger.error(f"An unexpected error occurred: {str(e)}")
-#         raise
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}")
+        raise
 # if __name__ == "__main__":
 #     main()
 
@@ -1011,34 +1013,35 @@ def generate_and_process_batch_configs(
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-    # # ========================================================60
-    # # Batch processor
+    # ========================================================60
+    # Batch processor
 
-    # from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
 
-    # sample_name = "7_vol_281125_HM_12"
+    sample_name = "7_vol_281125_HM_12"
 
-    # processor = BiigleCSV_to_COCO_JSON(
+    processor = BiigleCSV_to_COCO_JSON(
 
-    #     # # ----- Biigle file -------
-    #     # annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
-    #     # json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
-    #     # images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
-    #     # filename_pattern = "*.jpg",
-    #     # output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
-    #     # min_pixels_area = 700)
+        # ----- Biigle file -------
+        annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+        json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
+        images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
+        filename_pattern = "*.jpg",
+        output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
+        min_pixels_area = 700,
+        padding_in_crops = 40)
 
-    #     # # ----- Merged generalist-metazoa predictions -----
-    #     annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
-    #     annotation_labels_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv",
-    #     images_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/images.csv",
-    #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/Label_trees/2026_01_22/label_trees.json",
-    #     images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
-    #     filename_pattern = "*.jpg",
-    #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
-    #     min_pixels_area = 700)
+    # #     # # ----- Merged generalist-metazoa predictions -----
+    # #     annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+    # #     annotation_labels_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/image_annotation_labels.csv",
+    # #     images_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/images.csv",
+    # #     json_label_tree_path = "/Users/aavelino/Downloads/BiosoilAI/Label_trees/2026_01_22/label_trees.json",
+    # #     images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
+    # #     filename_pattern = "*.jpg",
+    # #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
+    # #     min_pixels_area = 700)
 
     # # Merge JSON files and save them into the "output/merged_json/" folder.
     # # This python command can be run independently of the previous step, i.e.,
@@ -1047,9 +1050,9 @@ def generate_and_process_batch_configs(
     # # i.e.,  without having to compute first the individual JSON file for each object.
     # processor.merge_json_files_by_image_id()
 
-    # # (Optional) Process all objects. Create the individual crops and individual JSON files
-    # # for each object in the CSV file.
-    # # processor.process_all_objects()  # optional
+    # # # (Optional) Create the individual crops and individual JSON files
+    # # # for each object in the CSV file.
+    processor.process_all_objects()  # optional
 
         # --------------------------------------------------------60
 
@@ -1887,22 +1890,23 @@ def generate_and_process_batch_configs(
 # # ########################################################60
 # Image resizing, specially, reducing its size.
 
-from tools.image_resizer import resize_path
+# from tools.image_resizer import resize_path
 
-result = resize_path(
-    input_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/5_vol_281125_HM_10/images/",
-    output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/images_test2",
-    width=1280,
-    height=853,
-    dpi=350,
-    jpeg_quality=80,
-    optimize=True,
-    recursive=True, #  Include subfolders when True.
-    log_filename="resize_log.txt",
-)
+# result = resize_path(
+#     input_path ="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models",
+#     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models",
+#     width=1280,
+#     height=853,
+#     dpi=350,
+#     jpeg_quality=80,
+#     optimize=True,
+#     recursive=True, #  Include subfolders when True.
+#     suffix="_resized", # suffix for the output image filename.
+#     log_filename="resizing_images_log.txt",
+# )
 
-# result for folder: (processed, skipped, failed, log_path)
-processed, skipped, failed, log_path = result
+# # # result for folder: (processed, skipped, failed, log_path)
+# processed, skipped, failed, log_path = result
 
 # # ########################################################60
 # # Function to use supervision library for evaluating models performance
