@@ -291,16 +291,16 @@ class BiigleCSV_to_COCO_JSON:
     ```
     output_crops_path/
     ├── 87/                           # Class subdirectory (label_id)
-    │   ├── capt0011_object_151_class_87.json
-    │   ├── capt0011_object_151_class_87.jpg
+    │   ├── capt0011_obj_151_c_87.json
+    │   ├── capt0011_obj_151_c_87.jpg
     │   └── ...
     ├── 117/                          # Another class subdirectory
-    │   ├── capt0010_object_150_class_117.json
-    │   ├── capt0010_object_150_class_117.jpg
+    │   ├── capt0010_obj_150_c_117.json
+    │   ├── capt0010_obj_150_c_117.jpg
     │   └── ...
     └── 126/                          # Third class subdirectory
-     ├── capt0004_object_149_class_126.json
-     ├── capt0004_object_149_class_126.jpg
+     ├── capt0004_obj_149_c_126.json
+     ├── capt0004_obj_149_c_126.jpg
      └── ...
     ```
 
@@ -1667,6 +1667,8 @@ class BiigleCSV_to_COCO_JSON:
             ValueError: If required data is missing from row_data
         """
         try:
+            file_extension = file_extension.lower()
+
             # Get basic information from row data
             object_id = row_data['id'] # when reading Biigle "exported" file
             # object_id = row_data['annotation_label_id']  # when reading Biigle "report" file
@@ -1686,9 +1688,9 @@ class BiigleCSV_to_COCO_JSON:
 
             # Create output filename with prefix if provided
             if self.prefix_filename:
-                filename = f"{self.prefix_filename}_{base_name}_object_{object_id}_class_{label_id}{file_extension}"
+                filename = f"{self.prefix_filename}_{base_name}_obj_{object_id}_c_{label_id}{file_extension}"
             else:
-                filename = f"{base_name}_object_{object_id}_class_{label_id}{file_extension}"
+                filename = f"{base_name}_obj_{object_id}_c_{label_id}{file_extension}"
 
             return filename
 
