@@ -1828,6 +1828,58 @@ class BiigleCSV_to_COCO_JSON:
                 # f"Error processing object {row_data.get('annotation_label_id', 'unknown')}: {e}") # when reading Biigle "report" file
             raise
 
+    def validate_crop_vs_json(self, image_path, json_path, tolerance=0):
+        """
+        Validate that a cropped image's dimensions match the JSON metadata.
+
+        Args:
+            image_path (Path): Path to the cropped image file
+            json_path (Path): Path to the JSON metadata file
+            tolerance (int): Allowed pixel difference in width/height
+
+        Returns:
+            dict: Validation details including match status and dimensions
+        """
+        try:
+            with Image.open(image_path) as img:
+                img_width, img_height = img.size
+
+            with open(json_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+
+            if not json_data.get('images'):
+                raise ValueError("JSON metadata has no images section")
+
+            meta = json_data['images'][0]
+            json_width = int(meta.get('width', -1))
+            json_height = int(meta.get('height', -1))
+
+            width_diff = abs(img_width - json_width)
+            height_diff = abs(img_height - json_height)
+            matches = width_diff <= tolerance and height_diff <= tolerance
+
+            if not matches:
+                self.logger.warning(
+                    f"Crop/JSON mismatch for {image_path}: "
+                    f"image=({img_width}x{img_height}) "
+                    f"json=({json_width}x{json_height}) "
+                    f"diff=({width_diff}, {height_diff})")
+
+            return {
+                "matches": matches,
+                "image_width": img_width,
+                "image_height": img_height,
+                "json_width": json_width,
+                "json_height": json_height,
+                "width_diff": width_diff,
+                "height_diff": height_diff
+            }
+
+        except Exception as e:
+            self.logger.error(
+                f"Error validating crop vs JSON for {image_path} and {json_path}: {e}")
+            raise
+
     def process_all_objects(self):
         """
         Process all objects from the CSV file: crop images and generate JSON metadata files.
