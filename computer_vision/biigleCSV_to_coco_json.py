@@ -1005,6 +1005,19 @@ class BiigleCSV_to_COCO_JSON:
                 f"Skipped {missing_label_count} rows due to missing label_id mapping")
         return csv_data
 
+    def _compute_annotation_image_id(self):
+        """
+        Create a timestamp-based image_id for per-object JSON outputs.
+
+        The value is the current date/time formatted as "yyyy-mm-dd HH:mm:ss.ssss"
+        with non-numeric symbols removed, returned as an integer.
+        Example: 2026-03-03 15:48:36.1458 -> 202603031548361458
+        """
+        now = datetime.now()
+        timestamp = f"{now:%Y-%m-%d %H:%M:%S}.{now.microsecond // 100:04d}"
+        numeric = "".join(ch for ch in timestamp if ch.isdigit())
+        return int(numeric)
+
     def parse_pixel_coordinates(self, points_list):
         """
         Parse pixel coordinates from a list into separate x and y coordinate arrays.
@@ -1084,7 +1097,27 @@ class BiigleCSV_to_COCO_JSON:
             self.logger.error(f"Error calculating bounding box: {e}")
             raise
 
-    def create_json_metadata(self, row_data, bbox_info, image_path=None):
+    def compute_crop_box(self, img_width, img_height, bbox_info):
+        """
+        Compute the crop box (left, upper, right, lower) for a bounding box with padding,
+        clamped to the image boundaries.
+
+        Args:
+            img_width (int): Width of the source image
+            img_height (int): Height of the source image
+            bbox_info (dict): Bounding box information containing coordinates
+
+        Returns:
+            tuple: (left, upper, right, lower) crop box coordinates
+        """
+        padding = self.padding_in_crops
+        left = max(0, int(bbox_info['min_x']) - padding)
+        upper = max(0, int(bbox_info['min_y']) - padding)
+        right = min(img_width, int(bbox_info['max_x']) + padding)
+        lower = min(img_height, int(bbox_info['max_y']) + padding)
+        return left, upper, right, lower
+
+    def create_json_metadata(self, row_data, bbox_info, image_path=None, output_filename=None):
         """
         Create a JSON metadata structure for an object.
 
@@ -1092,11 +1125,14 @@ class BiigleCSV_to_COCO_JSON:
             row_data (dict): Row data from CSV
             bbox_info (dict): Bounding box information
             image_path (Path): Path to the source image (optional)
+            output_filename (str): Output cropped image filename (optional)
 
         Returns:
             dict: JSON metadata structure
         """
         image_id = int(row_data['image_id'])
+        annotation_id = int(row_data['id'])
+        derived_image_id = self._compute_annotation_image_id()
         filename = self.image_mapping.get(image_id, f"unknown_{image_id}.jpg")
 
         # Extract base filename without extension for sample_name
@@ -1107,15 +1143,43 @@ class BiigleCSV_to_COCO_JSON:
         current_year = datetime.now().strftime("%Y")
 
         # Get actual image dimensions
+        crop_left = None
+        crop_upper = None
+        crop_right = None
+        crop_lower = None
         if image_path and image_path.exists():
             try:
-                width, height = self.get_image_dimensions(image_path)
+                img_width, img_height = self.get_image_dimensions(image_path)
+                crop_left, crop_upper, crop_right, crop_lower = self.compute_crop_box(
+                    img_width, img_height, bbox_info)
+                width = crop_right - crop_left
+                height = crop_lower - crop_upper
             except Exception as e:
                 self.logger.warning(
                     f"Could not get dimensions for {image_path}, using defaults: {e}")
-                width, height = 6000, 4000  # fallback values
+                width = int(bbox_info['box_width']) + (2 * self.padding_in_crops)
+                height = int(bbox_info['box_height']) + (2 * self.padding_in_crops)
         else:
-            width, height = 6000, 4000  # fallback values
+            width = int(bbox_info['box_width']) + (2 * self.padding_in_crops)
+            height = int(bbox_info['box_height']) + (2 * self.padding_in_crops)
+
+        # Determine output filename (cropped image)
+        if output_filename is None:
+            output_filename = filename
+
+        # Build segmentation relative to the cropped image
+        segmentation = []
+        if row_data.get('points'):
+            if crop_left is None or crop_upper is None:
+                crop_left = max(0, int(bbox_info['min_x']) - self.padding_in_crops)
+                crop_upper = max(0, int(bbox_info['min_y']) - self.padding_in_crops)
+            transformed_points = []
+            points_list = row_data['points']
+            for i in range(0, len(points_list), 2):
+                transformed_points.append(points_list[i] - crop_left)
+                transformed_points.append(points_list[i + 1] - crop_upper)
+            if transformed_points:
+                segmentation = [transformed_points]
 
         # Get the category name using the mapping
         category_id = int(row_data['label_id'])
@@ -1148,7 +1212,7 @@ class BiigleCSV_to_COCO_JSON:
                 {
                     "id": sample_name,
                     "license": 1,
-                    "file_name": filename,
+                    "file_name": output_filename,
                     "height": height,
                     "width": width,
                     "date_captured": row_data['created_at']
@@ -1156,9 +1220,9 @@ class BiigleCSV_to_COCO_JSON:
             ],
             "annotations": [
                 {
-                    "id": int(row_data['id']), # when reading Biigle "exported" file
+                    "id": annotation_id, # when reading Biigle "exported" file
                     # "id": int(row_data['annotation_label_id']), # when reading Biigle "report" file
-                    "image_id": image_id,
+                    "image_id": derived_image_id,
                     "category_id": category_id,
                     "bbox": [
                         bbox_info['center_x'],
@@ -1167,7 +1231,7 @@ class BiigleCSV_to_COCO_JSON:
                         bbox_info['box_height']
                     ],
                     "area": bbox_info['box_area'],
-                    "segmentation": [],
+                    "segmentation": segmentation,
                     "iscrowd": 0
                 }
             ]
@@ -1619,13 +1683,8 @@ class BiigleCSV_to_COCO_JSON:
         try:
             with Image.open(image_path) as img:
                 # Define crop box (left, upper, right, lower) with optional padding
-                padding = self.padding_in_crops
-                crop_box = (
-                    max(0, int(bbox_info['min_x']) - padding),
-                    max(0, int(bbox_info['min_y']) - padding),
-                    min(img.width, int(bbox_info['max_x']) + padding),
-                    min(img.height, int(bbox_info['max_y']) + padding)
-                )
+                crop_box = self.compute_crop_box(
+                    img.width, img.height, bbox_info)
 
                 # Crop the image
                 cropped_img = img.crop(crop_box)
@@ -1698,8 +1757,8 @@ class BiigleCSV_to_COCO_JSON:
             self.crop_object_image(image_path, bbox_info, jpg_output_path)
 
             # Create and save JSON metadata
-            json_metadata = self.create_json_metadata(row_data, bbox_info,
-                                                      image_path)
+            json_metadata = self.create_json_metadata(
+                row_data, bbox_info, image_path, output_filename=jpg_filename)
             with open(json_output_path, 'w', encoding='utf-8') as f:
                 json.dump(json_metadata, f, indent=4)
 
