@@ -95,6 +95,7 @@ class BiigleCSV_to_COCO_JSON:
     The label mapping CSV file must contain the following columns:
     - `annotation_id`: Matches image_annotations.id
     - `label_id`: Class/category identifier (integer)
+    - `confidence`: Confidence value for the annotation (numeric)
 
     **CSV File Structure (images.csv):**
     The image mapping CSV file must contain the following columns:
@@ -143,6 +144,16 @@ class BiigleCSV_to_COCO_JSON:
     - Merged per-image JSON files under `output_crops_path/merged_json/`
     - Processing logs in `output_crops_path/processing_log.log`
       and `output_crops_path/merged_json/processing_log.log`
+
+    **Per-object JSON specifics:**
+    - `annotations[].image_id` is the current date/time converted to an integer
+      in `yyyy-mm-dd HH:mm:ss.ssss` format with non-numeric symbols removed
+      (example: `2026-03-03 15:48:36.1458` -> `202603031548361458`)
+    - `annotations[].confidence` is taken from image_annotation_labels.csv
+
+    **Merged JSON specifics:**
+    - `annotations[].image_id` remains the original image_id
+    - `annotations[].confidence` is taken from image_annotation_labels.csv
 
     ================================================================================
     DETAILED METHOD DESCRIPTIONS
@@ -356,6 +367,7 @@ class BiigleCSV_to_COCO_JSON:
         self.image_mapping = self._create_image_mapping_from_images_csv()
 
         # Load annotation_id -> label_id mapping
+        self.annotation_confidence_mapping = {}
         self.annotation_label_mapping = self._load_annotation_label_mapping()
 
     def _setup_logging(self):
@@ -638,7 +650,9 @@ class BiigleCSV_to_COCO_JSON:
                 f"Annotation labels CSV file not found: {self.annotation_labels_file}")
 
         mapping_dict = {}
+        confidence_mapping = {}
         duplicates = 0
+        confidence_missing = False
         try:
             with open(self.annotation_labels_file, 'r', newline='', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
@@ -649,6 +663,10 @@ class BiigleCSV_to_COCO_JSON:
                 if missing_columns:
                     raise KeyError(
                         f"Missing required columns in annotation labels CSV: {missing_columns}")
+                if 'confidence' not in reader.fieldnames:
+                    confidence_missing = True
+                    self.logger.warning(
+                        "Annotation labels CSV is missing the 'confidence' column; confidence values will be None.")
 
                 for row_num, row in enumerate(reader, start=2):
                     try:
@@ -663,6 +681,30 @@ class BiigleCSV_to_COCO_JSON:
                             continue
 
                         mapping_dict.setdefault(annotation_id, label_id)
+
+                        if not confidence_missing:
+                            raw_confidence = row.get('confidence', '')
+                            if raw_confidence in (None, ''):
+                                confidence_value = None
+                            else:
+                                try:
+                                    parsed_conf = float(raw_confidence)
+                                    if parsed_conf.is_integer():
+                                        confidence_value = int(parsed_conf)
+                                    else:
+                                        confidence_value = parsed_conf
+                                except ValueError:
+                                    self.logger.warning(
+                                        f"Annotation labels CSV row {row_num}: invalid confidence value '{raw_confidence}'")
+                                    confidence_value = None
+
+                            if annotation_id not in confidence_mapping:
+                                confidence_mapping[annotation_id] = confidence_value
+                            elif (confidence_mapping[annotation_id] != confidence_value
+                                  and confidence_value is not None):
+                                self.logger.warning(
+                                    f"Annotation labels CSV row {row_num}: duplicate annotation_id {annotation_id} "
+                                    f"with different confidence {confidence_value}, keeping {confidence_mapping[annotation_id]}")
                     except (ValueError, KeyError) as e:
                         self.logger.warning(
                             f"Annotation labels CSV row {row_num}: skipping invalid row: {e}")
@@ -678,6 +720,7 @@ class BiigleCSV_to_COCO_JSON:
                 self.logger.warning(
                     f"Annotation labels CSV contained {duplicates} duplicate annotation_id entries with conflicting label_ids")
 
+            self.annotation_confidence_mapping = confidence_mapping
             return mapping_dict
 
         except Exception as e:
@@ -942,6 +985,8 @@ class BiigleCSV_to_COCO_JSON:
                             continue
 
                         row['label_id'] = label_id
+                        row['confidence'] = self.annotation_confidence_mapping.get(
+                            annotation_id)
 
                         # Parse the points string to a Python list
                         if 'points' in row and row['points']:
@@ -1224,6 +1269,7 @@ class BiigleCSV_to_COCO_JSON:
                     # "id": int(row_data['annotation_label_id']), # when reading Biigle "report" file
                     "image_id": derived_image_id,
                     "category_id": category_id,
+                    "confidence": row_data.get('confidence'),
                     "bbox": [
                         bbox_info['center_x'],
                         bbox_info['center_y'],
@@ -1321,6 +1367,7 @@ class BiigleCSV_to_COCO_JSON:
                     # "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
                     "image_id": image_id,
                     "category_id": int(obj_data['label_id']),
+                    "confidence": obj_data.get('confidence'),
                     "bbox": [
                         bbox_info['min_x'],
                         bbox_info['min_y'],
@@ -1446,6 +1493,7 @@ class BiigleCSV_to_COCO_JSON:
                     # "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
                     "image_id": image_id,
                     "category_id": int(obj_data['label_id']),
+                    "confidence": obj_data.get('confidence'),
                     "bbox": [
                         bbox_info['min_x'], # top-left corner of the bounding box
                         bbox_info['min_y'], # top-left corner of the bounding box
