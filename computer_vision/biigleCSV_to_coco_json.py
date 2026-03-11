@@ -1949,32 +1949,41 @@ class BiigleCSV_to_COCO_JSON:
             self.logger.error(f"Error in process_all_objects: {e}")
             raise
 
-# # Example usage
-# if __name__ == "__main__":
-#     # Initialize the processor
-#     processor = BiigleCSV_to_COCO_JSON(
-#         annotations_csv_file="path/to/your/file.csv",
-#         images_path="path/to/images/directory",
-#         filename_pattern="capt*.jpg",
-#         output_crops_path="output/cropped_objects/",
-#         prefix_filename=""  # Optional prefix
-# 		json_label_tree_path="labels/categories.json"
-#     )
-#
-#     # Process all objects
-#     processor.process_all_objects()
-#
-#
-# # Basic usage - merge all JSON files
-# processor = BiigleCSV_to_COCO_JSON(
-#     annotations_csv_file="annotations.csv",
-#     images_path="images/",
-#     filename_pattern="capt*.jpg",
-#     output_crops_path="output/"
-# )
-#
-# # Merge JSON files (saves to output/merged_json/)
-# processor.merge_json_files_by_image_id()
-#
-# # Or specify custom output path
-# processor.merge_json_files_by_image_id("custom/merged/path")
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Process BIIGLE CSV annotations into cropped images and COCO-style JSON metadata."
+    )
+    parser.add_argument("annotations_csv_file", help="Path to image_annotations.csv")
+    parser.add_argument("images_path", help="Directory containing source images")
+    parser.add_argument("output_crops_path", help="Output directory for crops and JSON files")
+    parser.add_argument("--filename-pattern", default="*.jpg", help="Glob pattern for images")
+    parser.add_argument("--prefix-filename", default="", help="Optional prefix for output filenames")
+    parser.add_argument("--json-label-tree-path", default=None, help="Optional labels JSON path")
+    parser.add_argument("--min-pixels-area", type=int, default=500, help="Minimum pixel area threshold")
+    parser.add_argument("--annotation-labels-file", default=None, help="Path to image_annotation_labels.csv")
+    parser.add_argument("--images-csv-file", default=None, help="Path to images.csv")
+    parser.add_argument("--padding-in-crops", type=int, default=40, help="Padding (pixels) around crops")
+    parser.add_argument("--merge-json", action="store_true",
+                        help="Also generate merged JSON files per image_id")
+
+    args = parser.parse_args()
+
+    processor = BiigleCSV_to_COCO_JSON(
+        annotations_csv_file=args.annotations_csv_file,
+        images_path=args.images_path,
+        filename_pattern=args.filename_pattern,
+        output_crops_path=args.output_crops_path,
+        prefix_filename=args.prefix_filename,
+        json_label_tree_path=args.json_label_tree_path,
+        min_pixels_area=args.min_pixels_area,
+        annotation_labels_file=args.annotation_labels_file,
+        images_csv_file=args.images_csv_file,
+        padding_in_crops=args.padding_in_crops,
+    )
+
+    processor.process_all_objects()
+
+    if args.merge_json:
+        processor.merge_json_files_by_image_id()

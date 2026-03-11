@@ -1013,25 +1013,25 @@ def generate_and_process_batch_configs(
 # The processor will then extract the bounding boxes
 # and save them in a single comma-separated value (.CSV) text file.
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # ========================================================60
     # Batch processor
 
-    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+    # from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
 
-    sample_name = "7_vol_281125_HM_12"
+    # sample_name = "7_vol_281125_HM_12"
 
-    processor = BiigleCSV_to_COCO_JSON(
+    # processor = BiigleCSV_to_COCO_JSON(
 
-        # ----- Biigle file -------
-        annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
-        json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
-        images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
-        filename_pattern = "*.jpg",
-        output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
-        min_pixels_area = 700,
-        padding_in_crops = 40)
+    #     # ----- Biigle file -------
+    #     annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+    #     json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
+    #     images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
+    #     filename_pattern = "*.jpg",
+    #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
+    #     min_pixels_area = 700,
+    #     padding_in_crops = 40)
 
     # #     # # ----- Merged generalist-metazoa predictions -----
     # #     annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
@@ -1043,16 +1043,16 @@ if __name__ == "__main__":
     # #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
     # #     min_pixels_area = 700)
 
-    # # Merge JSON files and save them into the "output/merged_json/" folder.
-    # # This python command can be run independently of the previous step, i.e.,
-    # # the "process_all_objects()" step.
-    # # I can directly generate the merged JSON file from the Biigle CSV file,
-    # # i.e.,  without having to compute first the individual JSON file for each object.
+    # # # Merge JSON files and save them into the "output/merged_json/" folder.
+    # # # This python command can be run independently of the previous step, i.e.,
+    # # # the "process_all_objects()" step.
+    # # # I can directly generate the merged JSON file from the Biigle CSV file,
+    # # # i.e.,  without having to compute first the individual JSON file for each object.
     # processor.merge_json_files_by_image_id()
 
     # # # (Optional) Create the individual crops and individual JSON files
     # # # for each object in the CSV file.
-    processor.process_all_objects()  # optional
+    # processor.process_all_objects()  # optional
 
         # --------------------------------------------------------60
 
@@ -1444,10 +1444,33 @@ if __name__ == "__main__":
     # # # Batch processing, either "coco" and "roboflow" JSON format (OK!)
     # # # ========================================================60
 
+
+    # # # # ----- On crops and JSON coming from CSV Biigle "image_annotations.csv" -----
+
+    # font_size = 10
+    # bbox_color = "white"
+    # text_color = "black"
+    # show_summary=False
+
+    # input_image_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/5_vol_281125_HM_10/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile/4196/subsample_for_bboxes"
+
+    # show_label = False  # "False" because all the objects are simply "unclassified".
+    # input_json_dir = "/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/5_vol_281125_HM_10/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile/4196/subsample_for_bboxes"
+    # output_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/5_vol_281125_HM_10/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile/4196/subsample_for_bboxes/bbox"
+
+    # input_json_format = "coco"
+    # suffix_output_imagefiles = f"_bbox_segm"
+
+    # # Required parameter definitions even if they are not used when plotting the
+    # # segmentation from Biigle:
+    # min_confidence = 0.0; max_confidence = 1.0
+
+    # # # -----------------------------------
+
     # font_size = 60
     # bbox_color = "white"
     # text_color = "black"
-    # show_summary=True,
+    # show_summary=True
 
     # sample_name = "7_vol_281125_HM_12"
 
@@ -1535,12 +1558,12 @@ if __name__ == "__main__":
     #     bbox_color = bbox_color,
     #     text_color = text_color,
     #     text_position="top",
-    #     show_center=False,
-    #     center_dot_size=12,
-    #     show_id=False, # usually "False"
-    #     show_label=show_label,
+    #     show_center = True, # In 6k x 4k images, usually "False"
+    #     center_dot_size = 12, # In 6k x 4k images, usually 12
+    #     show_id=False, # In 6k x 4k images, usually "False"
+    #     show_label = show_label,
     #     show_confidence = True,
-    #     show_summary=show_summary,
+    #     show_summary = show_summary,
     # )
 
         # ========================================================60
