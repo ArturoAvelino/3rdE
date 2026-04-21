@@ -4,7 +4,6 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from PIL import Image
-#old import shutil
 
 
 class BiigleCSV_to_COCO_JSON:
