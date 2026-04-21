@@ -146,9 +146,8 @@ class BiigleCSV_to_COCO_JSON:
       and `output_crops_path/merged_json/processing_log.log`
 
     **Per-object JSON specifics:**
-    - `annotations[].image_id` is the current date/time converted to an integer
-      in `yyyy-mm-dd HH:mm:ss.ssss` format with non-numeric symbols removed
-      (example: `2026-03-03 15:48:36.1458` -> `202603031548361458`)
+    - `annotations[].image_id` is taken directly from the `image_id` column in
+      `image_annotations.csv` for the given object
     - `annotations[].confidence` is taken from image_annotation_labels.csv
 
     **Merged JSON specifics:**
@@ -1056,19 +1055,6 @@ class BiigleCSV_to_COCO_JSON:
                 f"Skipped {missing_label_count} rows due to missing label_id mapping")
         return csv_data
 
-    def _compute_annotation_image_id(self):
-        """
-        Create a timestamp-based image_id for per-object JSON outputs.
-
-        The value is the current date/time formatted as "yyyy-mm-dd HH:mm:ss.ssss"
-        with non-numeric symbols removed, returned as an integer.
-        Example: 2026-03-03 15:48:36.1458 -> 202603031548361458
-        """
-        now = datetime.now()
-        timestamp = f"{now:%Y-%m-%d %H:%M:%S}.{now.microsecond // 100:04d}"
-        numeric = "".join(ch for ch in timestamp if ch.isdigit())
-        return int(numeric)
-
     def parse_pixel_coordinates(self, points_list):
         """
         Parse pixel coordinates from a list into separate x and y coordinate arrays.
@@ -1183,7 +1169,6 @@ class BiigleCSV_to_COCO_JSON:
         """
         image_id = int(row_data['image_id'])
         annotation_id = int(row_data['id'])
-        derived_image_id = self._compute_annotation_image_id()
         filename = self.image_mapping.get(image_id, f"unknown_{image_id}.jpg")
 
         # Extract base filename without extension for sample_name
@@ -1273,7 +1258,7 @@ class BiigleCSV_to_COCO_JSON:
                 {
                     "id": annotation_id, # when reading Biigle "exported" file
                     # "id": int(row_data['annotation_label_id']), # when reading Biigle "report" file
-                    "image_id": derived_image_id,
+                    "image_id": image_id,
                     "category_id": category_id,
                     "confidence": row_data.get('confidence'),
                     "bbox": [
