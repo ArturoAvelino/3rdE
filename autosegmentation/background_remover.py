@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 from sklearn.cluster import KMeans
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 import matplotlib.pyplot as plt
 
 
@@ -239,6 +239,27 @@ class BackgroundRemover:
             self.logger.info(
                 f"Loaded image: {self.image_path.name} ({self.image.size[0]}x{self.image.size[1]})")
 
+    @staticmethod
+    def _normalize_rgb_color(
+        color: Union[int, float, List[float], Tuple[float, float, float], np.ndarray]
+    ) -> np.ndarray:
+        """Normalize an RGB-like color input to a uint8 RGB array."""
+        if isinstance(color, (int, float, np.integer, np.floating)):
+            rgb = [int(round(color))] * 3
+        else:
+            arr = np.asarray(color, dtype=float).reshape(-1)
+            if arr.size != 3:
+                raise ValueError(
+                    f"background_color must have 3 values (R,G,B). Got {arr.size} values.")
+            rgb = [int(round(v)) for v in arr.tolist()]
+
+        for channel in rgb:
+            if channel < 0 or channel > 255:
+                raise ValueError(
+                    f"background_color values must be in [0, 255]. Got {rgb}.")
+
+        return np.asarray(rgb, dtype=np.uint8)
+
     def cluster_rgb_colors(self,
                            n_clusters: Optional[int] = None,
                            random_state: int = 42,
@@ -333,13 +354,17 @@ class BackgroundRemover:
 
     def remove_background(self,
                           background_clusters: Union[int, List[int]] = [0, 4],
-                          output_suffix: str = "_no_bkgd") -> 'BackgroundRemover':
+                          output_suffix: str = "_no_bkgd",
+                          background_color: Union[int, float, List[float], Tuple[float, float, float], np.ndarray] = (255, 255, 255)
+                          ) -> 'BackgroundRemover':
         """
-        Remove background pixels by replacing them with white color.
+        Remove background pixels by replacing them with a specified color.
 
         Args:
             background_clusters: Cluster index or list of indices to be treated as background (default: [0, 4])
             output_suffix: Custom suffix for the output image file (default: "_no_bkgd")
+            background_color: RGB color to replace background pixels. Accepts
+                scalar (grayscale) or 3-element RGB values in [0, 255] (default: white).
 
         Returns:
             self for method chaining
@@ -373,10 +398,11 @@ class BackgroundRemover:
         mask = ~np.isin(self.cluster_labels, background_clusters)
         mask = mask.reshape(self.image.size[::-1])
 
-        # Create new image with a white background (255, 255, 255)
+        # Create new image with a custom background color
+        bg_color = self._normalize_rgb_color(background_color)
         img_array = np.array(self.image)
-        new_img = np.full_like(img_array, 255)  # Create a white background
-        # new_img = np.full_like(img_array, 95)  # Create a color background
+        new_img = np.empty_like(img_array)
+        new_img[...] = bg_color
         new_img[mask] = img_array[mask]  # Copy non-background pixels
 
         # Save the image

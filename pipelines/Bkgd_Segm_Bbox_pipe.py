@@ -41,6 +41,7 @@ class PipelineConfig:
     # 1. Background removal settings
     n_clusters: int = 5
     background_clusters: List[int] = field(default_factory=lambda: [0, 4])
+    background_color: Tuple[int, int, int] = (255, 255, 255)
     
     # 2. Object segmentation settings
     max_distance: float = 4.0
@@ -198,7 +199,10 @@ class Bkgd_Segm_Bbox_pipe:
             processor.plot_rgb_clusters()
             processor.plot_rgb_clusters_colorful()
             processor.plot_replaced_colors_in_image()
-            processor.remove_background(background_clusters=self.config.background_clusters)
+            processor.remove_background(
+                background_clusters=self.config.background_clusters,
+                background_color=self.config.background_color
+            )
             
             if no_bg_image_path.exists():
                 self.logger.info(f"Step 1 completed successfully for {image_path.name}")

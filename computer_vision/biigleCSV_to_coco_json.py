@@ -154,6 +154,8 @@ class BiigleCSV_to_COCO_JSON:
     **Merged JSON specifics:**
     - `annotations[].image_id` remains the original image_id
     - `annotations[].confidence` is taken from image_annotation_labels.csv
+    - `annotations[].segmentation` can optionally include the image-level
+      polygon points (same coordinates as the original image)
 
     ================================================================================
     DETAILED METHOD DESCRIPTIONS
@@ -291,16 +293,16 @@ class BiigleCSV_to_COCO_JSON:
     ```
     output_crops_path/
     ├── 87/                           # Class subdirectory (label_id)
-    │   ├── capt0011_obj_151_c_87.json
-    │   ├── capt0011_obj_151_c_87.jpg
+    │   ├── capt0011_obj_151_class_87.json
+    │   ├── capt0011_obj_151_class_87.jpg
     │   └── ...
     ├── 117/                          # Another class subdirectory
-    │   ├── capt0010_obj_150_c_117.json
-    │   ├── capt0010_obj_150_c_117.jpg
+    │   ├── capt0010_obj_150_class_117.json
+    │   ├── capt0010_obj_150_class_117.jpg
     │   └── ...
     └── 126/                          # Third class subdirectory
-     ├── capt0004_obj_149_c_126.json
-     ├── capt0004_obj_149_c_126.jpg
+     ├── capt0004_obj_149_class_126.json
+     ├── capt0004_obj_149_class_126.jpg
      └── ...
     ```
 
@@ -319,7 +321,7 @@ class BiigleCSV_to_COCO_JSON:
     def __init__(self, annotations_csv_file, images_path, filename_pattern='*.jpg',
                  output_crops_path=None, prefix_filename='', json_label_tree_path=None,
                  min_pixels_area=500, annotation_labels_file=None, images_csv_file=None,
-                 padding_in_crops=40):
+                 padding_in_crops=40, include_segmentation_in_merged_json=False):
         """
         Initialize the BiigleCSV_to_COCO_JSON.
 
@@ -335,6 +337,8 @@ class BiigleCSV_to_COCO_JSON:
             annotation_labels_file (str): Path to image_annotation_labels.csv (optional)
             images_csv_file (str): Path to images.csv (optional)
             padding_in_crops (int): Padding (in pixels) added to each side of the crop.
+            include_segmentation_in_merged_json (bool): If True, include segmentation
+                polygons in per-image merged JSON outputs.
         """
         # Convert string paths to Path objects
         self.annotations_csv_file = Path(annotations_csv_file)
@@ -348,6 +352,7 @@ class BiigleCSV_to_COCO_JSON:
         if padding_in_crops < 0:
             raise ValueError("padding_in_crops must be a non-negative integer")
         self.padding_in_crops = int(padding_in_crops)
+        self.include_segmentation_in_merged_json = bool(include_segmentation_in_merged_json)
         self.annotation_labels_file = Path(
             annotation_labels_file) if annotation_labels_file else self.annotations_csv_file.parent / "image_annotation_labels.csv"
         self.images_csv_file = Path(
@@ -397,6 +402,7 @@ class BiigleCSV_to_COCO_JSON:
             f"        output_crops_path = \"{self.output_crops_path}\",\n",
             f"        min_pixels_area = {self.min_pixels_area}\n",
             f"        padding_in_crops = {self.padding_in_crops}\n",
+            f"        include_segmentation_in_merged_json = {self.include_segmentation_in_merged_json}\n",
         ]
         settings_file.write_text("".join(lines), encoding="utf-8")
 
@@ -1322,7 +1328,9 @@ class BiigleCSV_to_COCO_JSON:
             output_path (Path): Optional output path. If None, uses default location.
 
         Returns:
-            dict: The merged JSON metadata structure
+            dict: The merged JSON metadata structure. When
+                include_segmentation_in_merged_json is True, each annotation
+                includes a segmentation polygon in image coordinates.
         """
         try:
             # Get image information
@@ -1362,6 +1370,10 @@ class BiigleCSV_to_COCO_JSON:
                     continue
 
                 # Create annotation entry
+                segmentation = []
+                if self.include_segmentation_in_merged_json and obj_data.get('points'):
+                    segmentation = [list(obj_data['points'])]
+
                 annotation = {
                     "id": int(obj_data['id']), # when reading Biigle "exported" file
                     # "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
@@ -1375,7 +1387,7 @@ class BiigleCSV_to_COCO_JSON:
                         bbox_info['box_height']
                     ],
                     "area": bbox_info['box_area'],
-                    "segmentation": [],
+                    "segmentation": segmentation,
                     "iscrowd": 0
                 }
                 annotations.append(annotation)
@@ -1449,6 +1461,9 @@ class BiigleCSV_to_COCO_JSON:
         Temporary function to create the JSON files to be uploaded to Robo. They
         contain the insect ID instead of the insect species’s name in the
         “categories”/“name” section of the generated merged JSON files.
+
+        When include_segmentation_in_merged_json is True, each annotation
+        includes a segmentation polygon in image coordinates.
         """
         try:
             # Get image information
@@ -1488,6 +1503,10 @@ class BiigleCSV_to_COCO_JSON:
                     continue
 
                 # Create annotation entry
+                segmentation = []
+                if self.include_segmentation_in_merged_json and obj_data.get('points'):
+                    segmentation = [list(obj_data['points'])]
+
                 annotation = {
                     "id": int(obj_data['id']), # when reading Biigle "exported" file
                     # "id": int(obj_data['annotation_label_id']), # when reading Biigle "report" file
@@ -1501,7 +1520,7 @@ class BiigleCSV_to_COCO_JSON:
                         bbox_info['box_height']
                     ],
                     "area": bbox_info['box_area'],
-                    "segmentation": [],
+                    "segmentation": segmentation,
                     "iscrowd": 0
                 }
                 annotations.append(annotation)
@@ -1588,6 +1607,9 @@ class BiigleCSV_to_COCO_JSON:
         create the output JSON files to upload to Robo. They contain the insect
         ID instead of the insect species’s name in the “categories”/“name”
         section of the generated JSON file.
+
+        If include_segmentation_in_merged_json is True, each merged annotation
+        includes a segmentation polygon in image coordinates.
         """
         try:
             # Set default output path directory if none provided
@@ -1688,9 +1710,9 @@ class BiigleCSV_to_COCO_JSON:
 
             # Create output filename with prefix if provided
             if self.prefix_filename:
-                filename = f"{self.prefix_filename}_{base_name}_obj_{object_id}_c_{label_id}{file_extension}"
+                filename = f"{self.prefix_filename}_{base_name}_obj_{object_id}_class_{label_id}{file_extension}"
             else:
-                filename = f"{base_name}_obj_{object_id}_c_{label_id}{file_extension}"
+                filename = f"{base_name}_obj_{object_id}_class_{label_id}{file_extension}"
 
             return filename
 
@@ -1967,6 +1989,8 @@ if __name__ == "__main__":
     parser.add_argument("--padding-in-crops", type=int, default=40, help="Padding (pixels) around crops")
     parser.add_argument("--merge-json", action="store_true",
                         help="Also generate merged JSON files per image_id")
+    parser.add_argument("--include-merged-segmentation", action="store_true",
+                        help="Include segmentation polygons in merged JSON files per image")
 
     args = parser.parse_args()
 
@@ -1981,6 +2005,7 @@ if __name__ == "__main__":
         annotation_labels_file=args.annotation_labels_file,
         images_csv_file=args.images_csv_file,
         padding_in_crops=args.padding_in_crops,
+        include_segmentation_in_merged_json=args.include_merged_segmentation,
     )
 
     processor.process_all_objects()

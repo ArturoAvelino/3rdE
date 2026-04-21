@@ -380,15 +380,21 @@ def process_json_crop(input_dir, image_pattern="capt*.jpg", padding = 0):
             logger.error(f"Error processing {image_file.name}: {str(e)}")
 
 
-def process_background_remover(input_dir, output_dir=None,
-                               image_pattern="capt*.jpg"):
+def process_background_remover(
+        input_dir,
+        output_dir=None,
+        image_pattern="capt*.jpg",
+        n_clusters=5,
+        background_clusters=None,
+        background_color=(255, 255, 255),
+        kmeans_init_centers=None):
     """
     Process a batch of images, creating
     visualization plots and organizing outputs in dedicated directories.
     """
-    # Configuration constants
-    DEFAULT_N_CLUSTERS = 5
-    DEFAULT_BACKGROUND_CLUSTERS = [0, 4]
+    # Configuration defaults
+    if background_clusters is None:
+        background_clusters = [0, 4]
 
     logger = logging.getLogger(__name__)
     input_path = Path(input_dir)
@@ -423,13 +429,18 @@ def process_background_remover(input_dir, output_dir=None,
             # -----------
             # Remove color background from the images.
             processor = BackgroundRemover(image_file, image_output_dir)
-            processor.cluster_rgb_colors(n_clusters=DEFAULT_N_CLUSTERS)
+            processor.cluster_rgb_colors(
+                n_clusters=n_clusters,
+                kmeans_init_centers=kmeans_init_centers
+            )
             processor.plot_rgb_rawdata()
             processor.plot_rgb_clusters()
             processor.plot_rgb_clusters_colorful()
             processor.plot_replaced_colors_in_image()
             processor.remove_background(
-                background_clusters=DEFAULT_BACKGROUND_CLUSTERS)
+                background_clusters=background_clusters,
+                background_color=background_color
+            )
             # -----------
 
             logger.info(f"Successfully processed {image_file.name}")
@@ -694,11 +705,11 @@ def generate_and_process_batch_configs(
 
 # def main():
 
-    # sample_name = "7_vol_281125_HM_12"
+    # sample_name = "BM4_E"
 
     # # # Setup logging (will create processing.log in the input directory)
     # log_output_dir = Path(
-    #     f"//Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/No_background/"
+    #     f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/raw_data/1_vol_02_03_04/images/{sample_name}_darker_blue/"
     #     # "/Users/aavelino/Downloads/BiosoilAI/7_big_insects/3_segmentation"
     # )
 
@@ -711,25 +722,32 @@ def generate_and_process_batch_configs(
 
     # try:
 
-        # =========================================
-        # # Remove the color background from images using clustering (OK).
+    #     # =========================================
+    #     # Remove the color background from images using clustering (OK).
 
-        # # BATCH PROCESSING (OK!)
+    #     # BATCH PROCESSING (OK!)
 
-        # # sample_name =  "BM4_E"
+    #     # sample_name =  "BM4_E"
 
-        # input_dir = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images"
-        # output_dir = Path(f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/No_background")
-        # logger.info(f"Input directory: {input_dir}")
-        # logger.info(f"Output directory: {output_dir}")
+    #     input_dir = f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/raw_data/1_vol_02_03_04/images/{sample_name}"
+    #     output_dir = Path(f"/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/raw_data/1_vol_02_03_04/images/{sample_name}_darker_blue/")
+    #     logger.info(f"Input directory: {input_dir}")
+    #     logger.info(f"Output directory: {output_dir}")
 
-        # process_background_remover(input_dir=input_dir,
-        #                            output_dir=output_dir,
-        #                            # image_pattern=f"{sample_name}*.jpg"
-        #                            image_pattern=f"*.jpg"
-        #                            )
+    #     process_background_remover(input_dir=input_dir,
+    #                                output_dir=output_dir,
+    #                                # image_pattern=f"{sample_name}*.jpg"
+    #                                image_pattern=f"*.jpg",
+    #                                n_clusters=5,
+    #                                background_clusters=[1, 4],
+    #                                # replace background with custom blue:
+    #                                background_color=(48.60,72.47,161.70)
 
-        # logger.info("Successfully completed batch processing")
+    #                                # Darker blue background of the more recent photos
+    #                                # background_color=(48.60,72.47,161.70)
+    #                                )
+
+    #     logger.info("Successfully completed batch processing")
 
         # # =========================================
         # # Remove the color background from images using clustering (OK).
@@ -992,9 +1010,10 @@ def generate_and_process_batch_configs(
             # #     min_samples=5
             # # )
 
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {str(e)}")
-        raise
+    # except Exception as e:
+    #     logger.error(f"An unexpected error occurred: {str(e)}")
+    #     raise
+
 # if __name__ == "__main__":
 #     main()
 
@@ -1015,23 +1034,23 @@ def generate_and_process_batch_configs(
 
 # if __name__ == "__main__":
 
-    # ========================================================60
-    # Batch processor
+    # # ========================================================60
+    # # Batch processor
 
-    # from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
+    from computer_vision.biigleCSV_to_coco_json import BiigleCSV_to_COCO_JSON
 
-    # sample_name = "7_vol_281125_HM_12"
+    sample_name = "7_vol_281125_HM_12"
 
-    # processor = BiigleCSV_to_COCO_JSON(
+    processor = BiigleCSV_to_COCO_JSON(
 
-    #     # ----- Biigle file -------
-    #     annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
-    #     json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
-    #     images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
-    #     filename_pattern = "*.jpg",
-    #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
-    #     min_pixels_area = 700,
-    #     padding_in_crops = 40)
+        # ----- Biigle file -------
+        annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
+        json_label_tree_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/label_trees.json",
+        images_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/images",  # for cropping
+        filename_pattern = "*.jpg",
+        output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
+        min_pixels_area = 700,
+        padding_in_crops = 40)
 
     # #     # # ----- Merged generalist-metazoa predictions -----
     # #     annotations_csv_file = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Raw_data/{sample_name}/segmentation/originals/image_annotations.csv",
@@ -1043,16 +1062,16 @@ def generate_and_process_batch_configs(
     # #     output_crops_path = f"/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models/{sample_name}/IoU_0.4/Conversion_biigle_segm_to_coco_bbox_by_imagefile",
     # #     min_pixels_area = 700)
 
-    # # # Merge JSON files and save them into the "output/merged_json/" folder.
-    # # # This python command can be run independently of the previous step, i.e.,
-    # # # the "process_all_objects()" step.
-    # # # I can directly generate the merged JSON file from the Biigle CSV file,
-    # # # i.e.,  without having to compute first the individual JSON file for each object.
-    # processor.merge_json_files_by_image_id()
+    # # Merge JSON files and save them into the "output/merged_json/" folder.
+    # # This python command can be run independently of the previous step, i.e.,
+    # # the "process_all_objects()" step.
+    # # I can directly generate the merged JSON file from the Biigle CSV file,
+    # # i.e.,  without having to compute first the individual JSON file for each object.
+    processor.merge_json_files_by_image_id()
 
-    # # # (Optional) Create the individual crops and individual JSON files
-    # # # for each object in the CSV file.
-    # processor.process_all_objects()  # optional
+    # # (Optional) Create the individual crops and individual JSON files
+    # # for each object in the CSV file.
+    processor.process_all_objects()  # optional
 
         # --------------------------------------------------------60
 
@@ -1916,14 +1935,14 @@ def generate_and_process_batch_configs(
 # from tools.image_resizer import resize_path
 
 # result = resize_path(
-#     input_path ="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models",
-#     output_path="/Users/aavelino/Downloads/BiosoilAI/5_classification/Merged_models",
+#     input_path ="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/raw_data/1_vol_02_03_04/images/BM13_B_margo/",
+#     output_path="/Users/aavelino/Downloads/BiosoilAI/4_Training_dataset/raw_data/1_vol_02_03_04/images/BM13_B_margo_resized/",
 #     width=1280,
 #     height=853,
 #     dpi=350,
 #     jpeg_quality=80,
 #     optimize=True,
-#     recursive=True, #  Include subfolders when True.
+#     recursive=False, #  Include subfolders when True.
 #     suffix="_resized", # suffix for the output image filename.
 #     log_filename="resizing_images_log.txt",
 # )
