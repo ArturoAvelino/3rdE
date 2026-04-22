@@ -4,6 +4,10 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from PIL import Image
+try:
+    from tqdm import tqdm
+except Exception:  # pragma: no cover - fallback when tqdm isn't available
+    tqdm = None
 
 
 class BiigleCSV_to_COCO_JSON:
@@ -1621,7 +1625,16 @@ class BiigleCSV_to_COCO_JSON:
             total_images = len(grouped_objects)
             processed_images = 0
 
-            for image_id, objects_list in grouped_objects.items():
+            use_tqdm = tqdm is not None
+            progress_iter = tqdm(
+                grouped_objects.items(),
+                total=total_images,
+                desc="Merging JSON per image",
+                unit="img",
+                smoothing=0.05,
+            ) if use_tqdm else grouped_objects.items()
+
+            for idx, (image_id, objects_list) in enumerate(progress_iter, 1):
                 # Regular JSON file containing the species names.
                 try:
                     # Create merged JSON for this image_id
@@ -1633,6 +1646,13 @@ class BiigleCSV_to_COCO_JSON:
                     self.logger.error(
                         f"Failed to merge JSON for image_id {image_id}: {e}")
                     continue
+
+                if use_tqdm:
+                    remaining_images = total_images - idx
+                    progress_iter.set_postfix(
+                        remaining=remaining_images,
+                        refresh=False,
+                    )
 
                 # ----->
                 # Temporary implementation to create the JSON files to be used
@@ -1910,22 +1930,45 @@ class BiigleCSV_to_COCO_JSON:
                 return {'processed': 0, 'failed': 0, 'total': 0}
 
             total_objects = len(csv_data)
+            total_images = len({int(row['image_id']) for row in csv_data if row.get('image_id') is not None})
             processed_count = 0
             failed_count = 0
             failed_objects = []
+            processed_images = set()
 
             self.logger.info(f"Starting processing of {total_objects} objects")
 
-            # Process each object
-            for idx, row_data in enumerate(csv_data, 1):
+            # Process each object with progress tracking
+            use_tqdm = tqdm is not None
+            progress_iter = tqdm(
+                csv_data,
+                total=total_objects,
+                desc="Processing objects",
+                unit="obj",
+                smoothing=0.05,
+            ) if use_tqdm else csv_data
+
+            for idx, row_data in enumerate(progress_iter, 1):
                 try:
                     self.process_single_object(row_data)
                     processed_count += 1
+                    try:
+                        processed_images.add(int(row_data['image_id']))
+                    except Exception:
+                        pass
 
                     # Log progress every 100 objects
                     if idx % 100 == 0:
                         self.logger.info(
                             f"Progress: {idx}/{total_objects} objects processed")
+                    if use_tqdm:
+                        remaining_objects = total_objects - idx
+                        progress_iter.set_postfix(
+                            remaining=remaining_objects,
+                            images_done=len(processed_images),
+                            images_total=total_images,
+                            refresh=False,
+                        )
 
                 except Exception as e:
                     failed_count += 1
@@ -1939,6 +1982,9 @@ class BiigleCSV_to_COCO_JSON:
             # Log final results
             self.logger.info(
                 f"Processing complete: {processed_count} successful, {failed_count} failed")
+            if total_images:
+                self.logger.info(
+                    f"Images seen during processing: {len(processed_images)}/{total_images}")
 
             if failed_objects:
                 self.logger.warning(
